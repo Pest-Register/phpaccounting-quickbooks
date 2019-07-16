@@ -163,6 +163,7 @@ class UpdateAccountRequest extends AbstractRequest
         $this->issetParam('Description', 'description');
         $this->issetParam('TaxCodeRef', 'tax_type');
         $this->issetParam('CurrencyRef', 'currency_code');
+        $this->data['sparse'] = true;
         return $this->data;
     }
 
@@ -182,7 +183,14 @@ class UpdateAccountRequest extends AbstractRequest
             $updateParams[$key] = $data[$key];
         }
         $id = $this->getAccountingID();
-        $targetAccount = $quickbooks->Query("select * from Account where Id='".$id."'");
+        try {
+            $targetAccount = $quickbooks->Query("select * from Account where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => $exception->getMessage()
+            ]);
+        }
         if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
             $account = Account::update(current($targetAccount),$updateParams);
             $response = $quickbooks->Update($account);

@@ -1,21 +1,21 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Contacts\Requests;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Contacts\Responses\DeleteContactResponse;
-use XeroPHP\Models\Accounting\Contact;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
+use QuickBooksOnline\API\Facades\Customer;
 
 /**
  * Delete Contact(s)
- * @package PHPAccounting\XERO\Message\Contacts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
 class DeleteContactRequest extends AbstractRequest
 {
 
     /**
-     * Set AccountingID from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/contacts
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param $value
      * @return DeleteContactRequest
      */
@@ -24,24 +24,13 @@ class DeleteContactRequest extends AbstractRequest
     }
 
     /**
-     * Get Accounting ID Parameter from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/contacts
+     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @return mixed
      */
     public function getAccountingID() {
         return  $this->getParameter('accounting_id');
     }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
-     * @param string $value Contact Name
-     * @return DeleteContactRequest
-     */
-    public function setStatus($value) {
-        return  $this->setParameter('status', $value);
-    }
-
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -53,8 +42,8 @@ class DeleteContactRequest extends AbstractRequest
     public function getData()
     {
         $this->validate('accounting_id');
-        $this->issetParam('ContactID', 'accounting_id');
-        $this->data['ContactStatus'] = 'ARCHIVED';
+        $this->issetParam('Id', 'accounting_id');
+        $this->data['Active'] = false;
         return $this->data;
     }
 
@@ -62,40 +51,54 @@ class DeleteContactRequest extends AbstractRequest
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|DeleteContactResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
      */
     public function sendData($data)
     {
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
+        $updateParams = [];
+
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
         try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
-
-            $contact = new Contact($xero);
-            foreach ($data as $key => $value){
-                $methodName = 'set'. $key;
-                $contact->$methodName($value);
-            }
-
-            $response = $contact->save();
-
-        } catch (\Exception $exception){
-            $response = [
+            $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
                 'status' => 'error',
                 'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+            ]);
+        }
+        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+            $customer = Customer::update(current($targetCustomer),$updateParams);
+            $response = $quickbooks->Update($customer);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
+            }
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Customer not Found'
+            ]);
         }
 
-        return $this->createResponse($response->getElements());
+
+        return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
-     * @return DeleteContactResponse
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
+     * @return GetContactResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new DeleteContactResponse($this, $data);
+        return $this->response = new GetContactResponse($this, $data);
     }
 }

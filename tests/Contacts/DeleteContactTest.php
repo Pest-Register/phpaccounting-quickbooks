@@ -21,13 +21,12 @@ class DeleteContactTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => 'c40f872d-9b22-40e0-b2dc-9e1e7a6cbb01',
+                'accounting_id' => '81',
             ];
 
             $response = $this->gateway->deleteContact($params)->send();
             if ($response->isSuccessful()) {
                 $contacts = $response->getContacts();
-                var_dump($contacts);
                 $this->assertIsArray($contacts);
             }
         } catch (\Exception $exception) {

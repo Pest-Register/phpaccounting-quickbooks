@@ -1,9 +1,8 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Responses;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use XeroPHP\Models\Accounting\Item;
 
 /**
  * Get Inventory Item(s) Response

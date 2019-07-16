@@ -1,9 +1,9 @@
 <?php
 
 namespace PHPAccounting\Xero\Message\InventoryItems\Requests;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\InventoryItems\Responses\GetInventoryItemResponse;
-use XeroPHP\Models\Accounting\Item;
+use PHPAccounting\Quickbooks\Message\Contacts\Requests\GetContactRequest;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 
 /**
  * Get Inventory Items(s)
@@ -12,19 +12,20 @@ use XeroPHP\Models\Accounting\Item;
 class GetInventoryItemRequest extends AbstractRequest
 {
 
+
     /**
-     * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return GetInventoryItemRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return GetInventoryItemRequest
      */
@@ -33,12 +34,12 @@ class GetInventoryItemRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (ContactGroupIDs)
+     * Accounting ID (AccountID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -48,11 +49,7 @@ class GetInventoryItemRequest extends AbstractRequest
      * @return integer
      */
     public function getPage() {
-        if ($this->getParameter('page')) {
-            return $this->getParameter('page');
-        }
-
-        return 1;
+        return $this->getParameter('page');
     }
 
     /**
@@ -62,35 +59,29 @@ class GetInventoryItemRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $accounts = $xero->loadByGUID(Item::class, $this->getAccountingIDs());
-                }
-                else {
-                    $accounts = $xero->loadByGUIDs(Item::class, $this->getAccountingIDs());
-                }
-            } else {
-                $accounts = $xero->load(Item::class)->execute();
+        if ($this->getAccountingID()) {
+            $items = $quickbooks->FindById('item', $this->getAccountingID());
+            $response = $items;
+        } else {
+            $response = $quickbooks->FindAll('item', $this->getPage(), 500);
+            $error = $quickbooks->getLastError();
+
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
             }
-            $response = $accounts;
-
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
         }
         return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return GetInventoryItemResponse
      */
     public function createResponse($data)

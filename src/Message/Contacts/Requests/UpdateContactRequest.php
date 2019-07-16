@@ -1,12 +1,11 @@
 <?php
-namespace PHPAccounting\Xero\Message\Contacts\Requests;
+namespace PHPAccounting\Quickbooiks\Message\Contacts\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Contacts\Responses\CreateContactResponse;
-use XeroPHP\Models\Accounting\Address;
-use XeroPHP\Models\Accounting\Contact;
-use XeroPHP\Models\Accounting\Phone;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Facades\Customer;
 
 /**
  * Update Contact(s)
@@ -16,7 +15,7 @@ class UpdateContactRequest extends AbstractRequest
 {
     /**
      * Set Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact Name
      * @return UpdateContactRequest
      */
@@ -26,7 +25,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Set First Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact First Name
      * @return UpdateContactRequest
      */
@@ -36,7 +35,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Set Last Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact Last Name
      * @return UpdateContactRequest
      */
@@ -46,7 +45,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Set Is Individual Boolean Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact Individual Status
      * @return UpdateContactRequest
      */
@@ -55,8 +54,17 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
+     * Get Email Address Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @return UpdateContactRequest
+     */
+    public function getEmailAddress(){
+        return $this->getParameter('email_address');
+    }
+
+    /**
      * Set Email Address Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact Email Address
      * @return UpdateContactRequest
      */
@@ -65,8 +73,27 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
+     * Get Website Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @return UpdateContactRequest
+     */
+    public function getWebsite(){
+        return $this->getParameter('website');
+    }
+
+    /**
+     * Set Website Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @param string $value Contact Email Address
+     * @return UpdateContactRequest
+     */
+    public function setWebsite($value){
+        return $this->setParameter('website', $value);
+    }
+
+    /**
      * Set Phones Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param array $value Array of Contact Phone Numbers
      * @return UpdateContactRequest
      */
@@ -76,7 +103,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Get Phones Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.xero.com/documentation/api/contactgroups
      * @return mixed
      */
     public function getPhones(){
@@ -84,27 +111,8 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
-     * Set AccountingID from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/contacts
-     * @param $value
-     * @return UpdateContactRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/contacts
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
-    }
-
-    /**
      * Set Addresses Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param array $value Array of Contact Addresses
      * @return UpdateContactRequest
      */
@@ -113,17 +121,37 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
+     * Set Contact Groups Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @param array $value Array of Contact Groups
+     * @return UpdateContactRequest
+     */
+    public function setContactGroups($value) {
+        return $this->setParameter('contact_groups', $value);
+    }
+
+    /**
+     * Get ContactGroups Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @return mixed
+     */
+    public function getContactGroups() {
+        return $this->getParameter('contact_groups');
+    }
+
+    /**
      * Get Addresses Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.xero.com/documentation/api/contactgroups
      * @return mixed
      */
     public function getAddresses(){
         return $this->getParameter('addresses');
     }
 
+
     /**
      * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param $value
      * @return mixed
      */
@@ -134,7 +162,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Get Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @return mixed
      */
     public function getStatus(){
@@ -142,85 +170,108 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param $value
+     * @return UpdateContactRequest
+     */
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
+    }
+
+    /**
+     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getAccountingID() {
+        return  $this->getParameter('accounting_id');
+    }
+
+    /**
      * Get Address Array with Address Details for Contact
      * @access public
-     * @param array $data Array of Xero Addresses
+     * @param array $data Array of Quickbooks Addresses
      * @return array
      */
-    public function getAddressData($data) {
-        $addresses = [];
+    public function getAddressData($data, $contact) {
         foreach($data as $address) {
-            $newAddress = new Address();
-            $newAddress->setAddressType(IndexSanityCheckHelper::indexSanityCheck('type', $address));
-            $newAddress->setAddressLine1(IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address));
-            $newAddress->setCity(IndexSanityCheckHelper::indexSanityCheck('city', $address));
-            $newAddress->setPostalCode(IndexSanityCheckHelper::indexSanityCheck('postal_code', $address));
-            $newAddress->setCountry(IndexSanityCheckHelper::indexSanityCheck('country', $address));
-            array_push($addresses, $newAddress);
-        }
-
-        return $addresses;
-    }
-
-
-    /**
-     * Add Addresses to Contact
-     * @param Contact $contact Xero Contact Object
-     * @param array $addresses Array of Address Objects
-     */
-    private function addAddressesToContact(Contact $contact, $addresses) {
-        if ($addresses) {
-            foreach($addresses as $address) {
-                $contact->addAddress($address);
+            switch ($address['type']) {
+                case 'STREET':
+                    $contact['ShipAddr'] =
+                        [
+                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
+                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
+                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
+                        ];
+                    break;
+                case 'POBOX':
+                    $contact['BillAddr'] =
+                        [
+                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
+                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
+                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
+                        ];
+                    break;
+                default:
+                    $contact['OtherAdr'] =
+                        [
+                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
+                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
+                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
+                        ];
+                    break;
             }
         }
+        return $contact;
     }
 
-    /**
-     * Add Phones to Contact
-     * @param Contact $contact Xero Contact Object
-     * @param array $phones Array of Phone Objects
-     */
-    private function addPhonesToContact(Contact $contact, $phones) {
-        if ($phones) {
-            foreach($phones as $phone) {
-                $contact->addPhone($phone);
-            }
-        }
-    }
 
     /**
      * Get Phones Array with Phone Details for Contact
      * @access public
      * @param array $data Array of Xero Phones
+     * @param $contact
      * @return array
      */
-    public function getPhoneData($data) {
-        $phones = [];
+    public function getPhoneData($data, $contact) {
         foreach($data as $phone) {
-            $newPhone = new Phone();
-            $newPhone->setPhoneCountryCode(IndexSanityCheckHelper::indexSanityCheck('country_code', $phone));
-            $newPhone->setPhoneAreaCode(IndexSanityCheckHelper::indexSanityCheck('area_code', $phone));
-            $newPhone->setPhoneNumber(IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone));
-            switch (IndexSanityCheckHelper::indexSanityCheck('type',$phone)) {
+            switch ($phone['type']) {
                 case 'BUSINESS':
-                    $newPhone->setPhoneType('BUSINESS');
+                    $contact['PrimaryPhone'] =
+                        [
+                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
+                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
+                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
+                        ];
                     break;
                 case 'MOBILE':
-                    $newPhone->setPhoneType('MOBILE');
-                    break;
-                case 'DDI':
-                    $newPhone->setPhoneType('DDI');
+                    $contact['Mobile'] =
+                        [
+                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
+                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
+                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
+                        ];
                     break;
                 default:
-                    $newPhone->setPhoneType('DEFAULT');
+                    if (!$contact['AlternatePhone']) {
+                        $contact['AlternatePhone'] =
+                            [
+                                'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
+                                    IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
+                                    IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
+                            ];
+                        break;
+                    }
                     break;
             }
-            array_push($phones, $newPhone);
         }
-
-        return $phones;
+        return $contact;
     }
+
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -231,64 +282,81 @@ class UpdateContactRequest extends AbstractRequest
      */
     public function getData()
     {
+        $this->validate('name', 'accounting_id');
 
-        $this->validate('accounting_id');
+        $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('DisplayName', 'name');
+        $this->issetParam('GivenName', 'first_name');
+        $this->issetParam('FamilyName', 'last_name');
 
-        $this->issetParam('ContactID', 'accounting_id');
-        $this->issetParam('Name', 'name');
-        $this->issetParam('FirstName', 'display_name');
-        $this->issetParam('LastName', 'last_name');
-        $this->issetParam('EmailAddress', 'email_address');
-        $this->issetParam('Website', 'website');
-        $this->issetParam('IsIndividual', 'is_individual');
-        $this->issetParam('BankAccountDetails', 'bank_account_details');
-        $this->issetParam('TaxNumber', 'tax_number');
-        $this->issetParam('AccountsReceivableTaxType', 'accounts_receivable_tax_type');
-        $this->issetParam('AccountsPayableTaxType', 'accounts_payable_tax_type');
-        $this->issetParam('DefaultCurrency', 'default_currency');
-        $this->issetParam('ContactStatus','status');
+        if ($this->getEmailAddress()) {
+            $this->data['PrimaryEmailAddr'] = [
+                'Address' => $this->getEmailAddress()
+            ];
+        }
 
-        $this->data['Phones'] = ($this->getPhones() != null ? $this->getPhoneData($this->getPhones()) : null);
-        $this->data['Addresses'] = ($this->getAddresses() != null ? $this->getAddressData($this->getAddresses()) : null);
+        if ($this->getWebsite()) {
+            $this->data['WebAddr'] = [
+                'URI' => $this->getWebsite()
+            ];
+        }
+
+        if ($this->getPhones()) {
+            $this->data = $this->getPhoneData($this->getPhones(), $this->data);
+        }
+
+        if ($this->getAddresses()) {
+            $this->data = $this->getAddressData($this->getAddresses(), $this->data);
+        }
+
+        $this->data['sparse'] = true;
         return $this->data;
-
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|CreateContactResponse
+     * @return \Omnipay\Common\Message\ResponseInterface|UpdateContactRequest
+     * @throws \QuickBooksOnline\API\Exception\IdsException
      */
     public function sendData($data)
     {
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
+        $updateParams = [];
+
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
         try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
-
-            $contact = new Contact($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'Phones') {
-                    $this->addPhonesToContact($contact, $value);
-                } elseif ($key === 'Addresses') {
-                    $this->addAddressesToContact($contact, $value);
-                } else {
-                    $methodName = 'set'. $key;
-                    $contact->$methodName($value);
-                }
-            }
-
-            $response = $contact->save();
-
-        } catch (\Exception $exception){
-            $response = [
+            $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
                 'status' => 'error',
                 'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+            ]);
         }
 
-        return $this->createResponse($response->getElements());
+        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+            $customer = Customer::update(current($targetCustomer),$updateParams);
+            $response = $quickbooks->Update($customer);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
+            }
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Customer not Found'
+            ]);
+        }
+
+
+        return $this->createResponse($response);
     }
 
     /**
