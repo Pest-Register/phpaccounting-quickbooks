@@ -1,14 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Accounts\Responses;
+namespace PHPAccounting\Quickbooks\Message\Accounts\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use XeroPHP\Models\Accounting\Account;
-use XeroPHP\Models\Accounting\ContactGroup;
+use QuickBooksOnline\API\Data\IPPAccount;
 
 /**
- * Get ContactGroup(s) Response
- * @package PHPAccounting\XERO\Message\ContactGroups\Responses
+ * Get Account(s) Response
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Responses
  */
 class GetAccountResponse extends AbstractResponse
 {
@@ -19,8 +18,8 @@ class GetAccountResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if($this->data->status){
+            return $this->data->status;
         }
         return true;
     }
@@ -30,8 +29,8 @@ class GetAccountResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if($this->data->status){
+            return $this->data;
         }
         return null;
     }
@@ -42,42 +41,36 @@ class GetAccountResponse extends AbstractResponse
      */
     public function getAccounts(){
         $accounts = [];
-        if ($this->data instanceof Account){
+        if ($this->data instanceof IPPAccount){
             $account = $this->data;
             $newAccount = [];
-            $newAccount['accounting_id'] = $account->getAccountID();
-            $newAccount['code'] = $account->getCode();
-            $newAccount['name'] = $account->getName();
-            $newAccount['description'] = $account->getDescription();
-            $newAccount['type'] = $account->getType();
-            $newAccount['is_bank_account'] = ($account->getType() === 'BANK');
-            $newAccount['enable_payments_to_account'] = $account->getEnablePaymentsToAccount();
-            $newAccount['show_inexpense_claims'] = $account->getShowInexpenseClaims();
-            $newAccount['tax_type'] = $account->getTaxType();
-            $newAccount['bank_account_number'] = $account->getBankAccountNumber();
-            $newAccount['bank_account_type'] = $account->getBankAccountType();
-            $newAccount['currency_code'] = $account->getCurrencyCode();
-            $newAccount['system_account'] = $account->getSystemAccount();
-            $newAccount['updated_at'] = $account->getUpdatedDateUTC();
+            $newAccount['accounting_id'] = $account->Id;
+            $newAccount['code'] = $account->AcctNum;
+            $newAccount['name'] = $account->Name;
+            $newAccount['description'] = $account->Description;
+            $newAccount['type'] = $account->AccountType;
+            $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+            $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
+            $newAccount['tax_type'] = $account->TaxCodeRef;
+            $newAccount['bank_account_number'] = $account->BankNum;
+            $newAccount['currency_code'] = $account->CurrencyRef;
+            $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
             array_push($accounts, $newAccount);
         }
         else {
             foreach ($this->data as $account) {
                 $newAccount = [];
-                $newAccount['accounting_id'] = $account->getAccountID();
-                $newAccount['code'] = $account->getCode();
-                $newAccount['name'] = $account->getName();
-                $newAccount['description'] = $account->getDescription();
-                $newAccount['type'] = $account->getType();
-                $newAccount['is_bank_account'] = ($account->getType() === 'BANK');
-                $newAccount['enable_payments_to_account'] = $account->getEnablePaymentsToAccount();
-                $newAccount['show_inexpense_claims'] = $account->getShowInexpenseClaims();
-                $newAccount['tax_type'] = $account->getTaxType();
-                $newAccount['bank_account_number'] = $account->getBankAccountNumber();
-                $newAccount['bank_account_type'] = $account->getBankAccountType();
-                $newAccount['currency_code'] = $account->getCurrencyCode();
-                $newAccount['system_account'] = $account->getSystemAccount();
-                $newAccount['updated_at'] = $account->getUpdatedDateUTC();
+                $newAccount['accounting_id'] = $account->Id;
+                $newAccount['code'] = $account->AcctNum;
+                $newAccount['name'] = $account->Name;
+                $newAccount['description'] = $account->Description;
+                $newAccount['type'] = $account->AccountType;
+                $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+                $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
+                $newAccount['tax_type'] = $account->TaxCodeRef;
+                $newAccount['bank_account_number'] = $account->BankNum;
+                $newAccount['currency_code'] = $account->CurrencyRef;
+                $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
                 array_push($accounts, $newAccount);
             }
         }

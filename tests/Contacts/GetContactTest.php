@@ -4,7 +4,6 @@ namespace Tests;
 
 use Omnipay\Omnipay;
 use PHPUnit\Framework\TestCase;
-use XeroPHP\Remote\Collection;
 
 
 /**
@@ -22,15 +21,14 @@ class GetContactTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_ids' => [""],
                 'page' => 1
             ];
 
             $response = $this->gateway->getContact($params)->send();
             if ($response->isSuccessful()) {
-                var_dump($response->getContacts());
-            } else {
-                var_dump($response->getErrorMessage());
+                $contacts = $response->getContacts();
+                var_dump($contacts);
+                $this->assertIsArray($contacts);
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());

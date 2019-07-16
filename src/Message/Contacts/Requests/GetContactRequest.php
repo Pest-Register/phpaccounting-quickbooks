@@ -1,30 +1,29 @@
 <?php
-namespace PHPAccounting\Xero\Message\Contacts\Requests;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Contacts\Responses\GetContactResponse;
-use XeroPHP\Models\Accounting\Contact;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
 
 /**
  * Get Contact(s)
- * @package PHPAccounting\XERO\Message\Contacts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
 class GetContactRequest extends AbstractRequest
 {
 
     /**
-     * Set AccountingID from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/contacts
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param $value
      * @return GetContactRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contacts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param $value
      * @return GetContactRequest
      */
@@ -33,12 +32,12 @@ class GetContactRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (ContactGroupIDs)
+     * Accounting ID (AccountID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -48,49 +47,40 @@ class GetContactRequest extends AbstractRequest
      * @return integer
      */
     public function getPage() {
-        if ($this->getParameter('page')) {
-            return $this->getParameter('page');
-        }
-
-        return 1;
+        return $this->getParameter('page');
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $contacts = $xero->loadByGUID(Contact::class, $this->getAccountingIDs());
-                } else {
-                    $contacts = $xero->loadByGUIDs(Contact::class, $this->getAccountingIDs());
-                }
-            } else {
-                $contacts = $xero->load(Contact::class)->page($this->getPage())->execute();
+        if ($this->getAccountingID()) {
+            $accounts = $quickbooks->FindById('customer', $this->getAccountingID());
+            $response = $accounts;
+        } else {
+            $response = $quickbooks->FindAll('customer', $this->getPage(), 500);
+            $error = $quickbooks->getLastError();
+
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
             }
-            $response = $contacts;
-
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
         }
         return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return GetContactResponse
      */
     public function createResponse($data)

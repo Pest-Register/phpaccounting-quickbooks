@@ -1,10 +1,8 @@
 <?php
-namespace PHPAccounting\Xero\Message;
+namespace PHPAccounting\Quickbooks\Message;
 
 use Omnipay\Common\Message\ResponseInterface;
-use XeroPHP\Application\PartnerApplication;
-use XeroPHP\Application\PrivateApplication;
-use XeroPHP\Application\PublicApplication;
+use QuickBooksOnline\API\DataService\DataService;
 
 class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
@@ -14,65 +12,106 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @var string URL
      */
-    protected $xeroInstance;
+    protected $quickbooksDataService;
 
     protected $data = [];
 
     /**
-     * Get Access Token
+     * ClientID getters and setters
+     * @return mixed
      */
-
-    public function getAccessToken(){
-        return $this->getParameter('accessToken');
+    public function getClientID(){
+        return $this->getParameter('clientID');
     }
 
-    public function setXeroConfig($value){
-        return $this->setParameter('xeroConfig', $value);
-    }
-
-    public function getXeroConfig(){
-        return $this->getParameter('xeroConfig');
-    }
-
-    public function getAccessTokenSecret() {
-        return $this->getParameter('accessTokenSecret');
-    }
-
-    public function setAccessTokenSecret($value) {
-        return $this->setParameter('accessTokenSecret', $value);
-    }
-
-    protected function createXeroApplication(){
-        $value  = $this->getXeroConfig();
-        $type = $value['type'];
-        switch ($type) {
-            case "private":
-                $this->xeroInstance = new PrivateApplication($value['config']);
-                break;
-            case "public":
-                $this->xeroInstance = new PublicApplication($value['config']);
-                break;
-            case "partner":
-                $this->xeroInstance = new PartnerApplication($value['config']);
-                break;
-            default:
-                throw new \Exception('Application type must be set');
-        }
-        return $this->xeroInstance;
-    }
-
-    public function getXeroInstance(){
-        return $this->xeroInstance;
+    public function setClientID($value) {
+        return $this->setParameter('clientID', $value);
     }
 
     /**
-     * Set Access Token
-     * @param $value
-     * @return AbstractRequest
+     * ClientSecret getters and setters
+     * @return mixed
+     */
+    public function getClientSecret(){
+        return $this->getParameter('clientSecret');
+    }
+
+    public function setClientSecret($value) {
+        return $this->setParameter('clientSecret', $value);
+    }
+
+    /**
+     * Access Token getters and setters
+     * @return mixed
      */
 
-    public function setAccessToken($value){
+    public function getAccessToken()
+    {
+        return $this->getParameter('accessToken');
+    }
+
+    public function setAccessToken($value)
+    {
         return $this->setParameter('accessToken', $value);
+    }
+
+    /**
+     * RefreshToken getters and setters
+     * @return mixed
+     */
+    public function getRefreshToken(){
+        return $this->getParameter('refreshToken');
+    }
+
+    public function setRefreshToken($value) {
+        return $this->setParameter('refreshToken', $value);
+    }
+
+    /**
+     * QBORealmID getters and setters
+     * @return mixed
+     */
+    public function getQBORealmID(){
+        return $this->getParameter('qboRealmID');
+    }
+
+    public function setQBORealmID($value) {
+        return $this->setParameter('qboRealmID', $value);
+    }
+
+    /**
+     * BaseURL getters and setters
+     * @return mixed
+     */
+    public function getBaseURL(){
+        return $this->getParameter('baseURL');
+    }
+
+    public function setBaseURL($value) {
+        return $this->setParameter('baseURL', $value);
+    }
+
+    protected function createQuickbooksDataService(){
+        try {
+            $quickbooksDataService = DataService::Configure(array(
+                'auth_mode' => 'oauth2',
+                'ClientID' => $this->getClientID(),
+                'ClientSecret' => $this->getClientSecret(),
+                'accessTokenKey' => $this->getAccessToken(),
+                'refreshTokenKey' => $this->getRefreshToken(),
+                'QBORealmID' => $this->getQBORealmID(),
+                'baseUrl' => $this->getBaseURL()
+            ));
+            $this->quickbooksDataService = $quickbooksDataService;
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
+
+        return $this->quickbooksDataService;
+    }
+
+    public function getQuickbooksDataService(){
+        return $this->quickbooksDataService;
     }
 
     /**
@@ -80,9 +119,9 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * @param $XeroKey
      * @param $localKey
      */
-    public function issetParam($XeroKey, $localKey){
+    public function issetParam($quickbooksKey, $localKey){
         if(array_key_exists($localKey, $this->getParameters())){
-            $this->data[$XeroKey] = $this->getParameter($localKey);
+            $this->data[$quickbooksKey] = $this->getParameter($localKey);
         }
     }
 

@@ -1,11 +1,11 @@
 <?php
-namespace PHPAccounting\Xero;
+namespace PHPAccounting\Quickbooks;
 
 use Omnipay\Common\AbstractGateway;
 
 /**
  * Created by IntelliJ IDEA.
- * User: Dylan
+ * User: Max
  * Date: 13/05/2019
  * Time: 3:11 PM
  * @method \PhpAccounting\Common\Message\NotificationInterface acceptNotification(array $options = array())
@@ -32,7 +32,31 @@ class Gateway extends AbstractGateway
      */
     public function getName()
     {
-        return 'Xero';
+        return 'Quickbooks';
+    }
+
+    /**
+     * ClientID getters and setters
+     * @return mixed
+     */
+    public function getClientID(){
+        return $this->getParameter('clientID');
+    }
+
+    public function setClientID($value) {
+        return $this->setParameter('clientID', $value);
+    }
+
+    /**
+     * ClientSecret getters and setters
+     * @return mixed
+     */
+    public function getClientSecret(){
+        return $this->getParameter('clientSecret');
+    }
+
+    public function setClientSecret($value) {
+        return $this->setParameter('clientSecret', $value);
     }
 
     /**
@@ -51,26 +75,39 @@ class Gateway extends AbstractGateway
     }
 
     /**
-     * Consumer Key getters and setters
+     * RefreshToken getters and setters
      * @return mixed
      */
+    public function getRefreshToken(){
+        return $this->getParameter('refreshToken');
+    }
 
-    public function setXeroConfig($value){
-        return $this->setParameter('xeroConfig', $value);
+    public function setRefreshToken($value) {
+        return $this->setParameter('refreshToken', $value);
     }
 
     /**
-     * Token Secret getters and setters
+     * QBORealmID getters and setters
      * @return mixed
      */
-
-    public function setAccessTokenSecret($value)
-    {
-        return $this->setParameter('accessTokenSecret', $value);
+    public function getQBORealmID(){
+        return $this->getParameter('qboRealmID');
     }
 
-    public function getAccessTokenSecret() {
-        return $this->getParameter('accessTokenSecret');
+    public function setQBORealmID($value) {
+        return $this->setParameter('qboRealmID', $value);
+    }
+
+    /**
+     * BaseURL getters and setters
+     * @return mixed
+     */
+    public function getBaseURL(){
+        return $this->getParameter('baseURL');
+    }
+
+    public function setBaseURL($value) {
+        return $this->setParameter('baseURL', $value);
     }
 
 
@@ -80,13 +117,7 @@ class Gateway extends AbstractGateway
      * @return \Omnipay\Common\Message\AbstractRequest
      */
 
-    public function createContact(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Contacts\Requests\CreateContactRequest', $parameters);
-    }
 
-    public function updateContact(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Contacts\Requests\UpdateContactRequest', $parameters);
-    }
 
     /**
      * Get One or Multiple Contacts
@@ -96,12 +127,20 @@ class Gateway extends AbstractGateway
      * @bodyParam parameters.accountingIDs array optional Array of GUIDs for Contact Retrieval / Filtration
      * @return \Omnipay\Common\Message\AbstractRequest
      */
+    public function createContact(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Contacts\Requests\CreateContactRequest', $parameters);
+    }
+
+    public function updateContact(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Contacts\Requests\UpdateContactRequest', $parameters);
+    }
+
     public function getContact(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Contacts\Requests\GetContactRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Contacts\Requests\GetContactRequest', $parameters);
     }
 
     public function deleteContact(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Contacts\Requests\DeleteContactRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Contacts\Requests\DeleteContactRequest', $parameters);
     }
 
 
@@ -111,19 +150,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createContactGroup(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\ContactGroups\Requests\CreateContactGroupRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\ContactGroups\Requests\CreateContactGroupRequest', $parameters);
     }
 
     public function updateContactGroup(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\ContactGroups\Requests\UpdateContactGroupRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\ContactGroups\Requests\UpdateContactGroupRequest', $parameters);
     }
 
     public function getContactGroup(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\ContactGroups\Requests\GetContactGroupRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\ContactGroups\Requests\GetContactGroupRequest', $parameters);
     }
 
     public function deleteContactGroup(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\ContactGroups\Requests\DeleteContactGroupRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\ContactGroups\Requests\DeleteContactGroupRequest', $parameters);
     }
 
 
@@ -134,19 +173,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createInvoice(array $parameters = []){
-            return $this->createRequest('\PHPAccounting\Xero\Message\Invoices\Requests\CreateInvoiceRequest', $parameters);
+            return $this->createRequest('\PHPAccounting\Quickbooks\Message\Invoices\Requests\CreateInvoiceRequest', $parameters);
     }
 
     public function updateInvoice(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Invoices\Requests\UpdateInvoiceRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Invoices\Requests\UpdateInvoiceRequest', $parameters);
     }
 
     public function getInvoice(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Invoices\Requests\GetInvoiceRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Invoices\Requests\GetInvoiceRequest', $parameters);
     }
 
     public function deleteInvoice(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Invoices\Requests\DeleteInvoiceRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Invoices\Requests\DeleteInvoiceRequest', $parameters);
     }
 
     /**
@@ -156,19 +195,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createAccount(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Accounts\Requests\CreateAccountRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Accounts\Requests\CreateAccountRequest', $parameters);
     }
 
     public function updateAccount(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Accounts\Requests\UpdateAccountRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest', $parameters);
     }
 
     public function getAccount(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Accounts\Requests\GetAccountRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Accounts\Requests\GetAccountRequest', $parameters);
     }
 
     public function deleteAccount(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Accounts\Requests\DeleteAccountRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Accounts\Requests\DeleteAccountRequest', $parameters);
     }
 
     /**
@@ -178,19 +217,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createPayment(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Payments\Requests\CreatePaymentRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Payments\Requests\CreatePaymentRequest', $parameters);
     }
 
     public function updatePayment(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Payments\Requests\UpdatePaymentRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Payments\Requests\UpdatePaymentRequest', $parameters);
     }
 
     public function getPayment(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Payments\Requests\GetPaymentRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Payments\Requests\GetPaymentRequest', $parameters);
     }
 
     public function deletePayment(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Payments\Requests\DeletePaymentRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Payments\Requests\DeletePaymentRequest', $parameters);
     }
 
     /**
@@ -200,7 +239,7 @@ class Gateway extends AbstractGateway
      */
 
     public function getOrganisation(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\Organisations\Requests\GetOrganisationRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Organisations\Requests\GetOrganisationRequest', $parameters);
     }
 
     /**
@@ -210,19 +249,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createInventoryItem(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\InventoryItems\Requests\CreateInventoryItemRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\InventoryItems\Requests\CreateInventoryItemRequest', $parameters);
     }
 
     public function updateInventoryItem(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\InventoryItems\Requests\UpdateInventoryItemRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\InventoryItems\Requests\UpdateInventoryItemRequest', $parameters);
     }
 
     public function getInventoryItem(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\InventoryItems\Requests\GetInventoryItemRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\InventoryItems\Requests\GetInventoryItemRequest', $parameters);
     }
 
     public function deleteInventoryItem(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\InventoryItems\Requests\DeleteInventoryItemRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\InventoryItems\Requests\DeleteInventoryItemRequest', $parameters);
     }
 
     /**
@@ -232,19 +271,19 @@ class Gateway extends AbstractGateway
      */
 
     public function createTaxRate(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\TaxRates\Requests\CreateTaxRateRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\TaxRates\Requests\CreateTaxRateRequest', $parameters);
     }
 
     public function updateTaxRate(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\TaxRates\Requests\UpdateTaxRateRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\TaxRates\Requests\UpdateTaxRateRequest', $parameters);
     }
 
     public function getTaxRate(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\TaxRates\Requests\GetTaxRateRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\TaxRates\Requests\GetTaxRateRequest', $parameters);
     }
 
     public function deleteTaxRate(array $parameters = []){
-        return $this->createRequest('\PHPAccounting\Xero\Message\TaxRates\Requests\DeleteTaxRateRequest', $parameters);
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\TaxRates\Requests\DeleteTaxRateRequest', $parameters);
     }
 
 }

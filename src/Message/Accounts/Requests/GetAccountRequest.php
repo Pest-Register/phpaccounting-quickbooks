@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Accounts\Requests;
+namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Accounts\Responses\GetAccountResponse;
-use XeroPHP\Models\Accounting\Account;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
+use QuickBooksOnline\API\Data\IPPAccount;
+use QuickBooksOnline\API\Exception\IdsException;
 
 
 /**
@@ -16,17 +16,17 @@ class GetAccountRequest extends AbstractRequest
 {
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param $value
      * @return GetAccountRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param $value
      * @return GetAccountRequest
      */
@@ -35,12 +35,12 @@ class GetAccountRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (AccountIDs)
+     * Accounting ID (AccountID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -57,31 +57,26 @@ class GetAccountRequest extends AbstractRequest
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetAccountResponse
+     * @throws IdsException
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $accounts = $xero->loadByGUID(Account::class, $this->getAccountingIDs());
-                }
-                else {
-                    $accounts = $xero->loadByGUIDs(Account::class, $this->getAccountingIDs());
-                }
-            } else {
-                $accounts = $xero->load(Account::class)->execute();
-            }
+        if ($this->getAccountingID()) {
+            $accounts = $quickbooks->FindById('account', $this->getAccountingID());
             $response = $accounts;
+        } else {
+            $response = $quickbooks->FindAll('account', $this->getPage(), 500);
+            $error = $quickbooks->getLastError();
 
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
+            }
         }
         return $this->createResponse($response);
     }

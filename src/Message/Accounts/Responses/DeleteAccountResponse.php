@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Accounts\Responses;
+namespace PHPAccounting\Quickbooks\Message\Accounts\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPAccount;
 
 /**
  * Delete ContactGroup(s) Response
@@ -17,8 +17,8 @@ class DeleteAccountResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if($this->data->status){
+            return $this->data->status;
         }
         return true;
     }
@@ -28,24 +28,50 @@ class DeleteAccountResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if($this->data->status){
+            return $this->data;
         }
         return null;
     }
 
     /**
-     * Return all Accounts with Generic Schema Variable Assignment
+     * Return all Invoices with Generic Schema Variable Assignment
      * @return array
      */
     public function getAccounts(){
         $accounts = [];
-        foreach ($this->data as $account) {
+        if ($this->data instanceof IPPAccount){
+            $account = $this->data;
             $newAccount = [];
-            $newAccount['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('AccountID', $account);
-            $newAccount['status'] = IndexSanityCheckHelper::indexSanityCheck('Status', $account);
-            $newAccount['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $account);
+            $newAccount['accounting_id'] = $account->Id;
+            $newAccount['code'] = $account->AcctNum;
+            $newAccount['name'] = $account->Name;
+            $newAccount['description'] = $account->Description;
+            $newAccount['type'] = $account->AccountType;
+            $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+            $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
+            $newAccount['tax_type'] = $account->TaxCodeRef;
+            $newAccount['bank_account_number'] = $account->BankNum;
+            $newAccount['currency_code'] = $account->CurrencyRef;
+            $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
             array_push($accounts, $newAccount);
+        }
+        else {
+            foreach ($this->data as $account) {
+                $newAccount = [];
+                $newAccount['accounting_id'] = $account->Id;
+                $newAccount['code'] = $account->AcctNum;
+                $newAccount['name'] = $account->Name;
+                $newAccount['description'] = $account->Description;
+                $newAccount['type'] = $account->AccountType;
+                $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+                $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
+                $newAccount['tax_type'] = $account->TaxCodeRef;
+                $newAccount['bank_account_number'] = $account->BankNum;
+                $newAccount['currency_code'] = $account->CurrencyRef;
+                $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
+                array_push($accounts, $newAccount);
+            }
         }
 
         return $accounts;

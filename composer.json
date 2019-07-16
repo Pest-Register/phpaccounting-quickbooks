@@ -1,12 +1,12 @@
 {
-    "name": "pest-register/php-accounting-xero",
-    "description": "Xero package for PHP Accounting",
+    "name": "pest-register/php-accounting-quickbooks",
+    "description": "Quickbooks package for PHP Accounting",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Dylan",
-            "email": "dylan@pestregister.com"
+            "name": "Max",
+            "email": "max@pestregister.com"
         }
     ],
     "require-dev": {
@@ -15,7 +15,7 @@
         "nesbot/carbon": "^2.18"
     },
     "autoload": {
-        "psr-4": { "PHPAccounting\\Xero\\" : "src/" }
+        "psr-4": { "PHPAccounting\\Quickbooks\\" : "src/" }
     },
     "autoload-dev": {
         "psr-4": {
@@ -26,8 +26,8 @@
         "php-http/guzzle6-adapter": "*",
         "ext-json": "*",
         "omnipay/common": "^3.0",
-        "calcinai/xero-php": "^1.8",
-        "fzaninotto/faker": "^1.8"
+        "fzaninotto/faker": "^1.8",
+        "quickbooks/v3-php-sdk": "^5.0"
     },
     "scripts": {
         "docs": "swagger src/"

@@ -4,7 +4,6 @@ namespace Tests;
 
 use Omnipay\Omnipay;
 use PHPUnit\Framework\TestCase;
-use XeroPHP\Remote\Collection;
 
 
 /**
@@ -20,12 +19,11 @@ class GetAccountTest extends BaseTest
     public function testGetAccounts()
     {
         $this->setUp();
+        $params = [
+            'accountingID' => 78,
+            'page' => 1
+        ];
         try {
-            $params = [
-                'accounting_ids' => [""],
-                'page' => 1
-            ];
-
             $response = $this->gateway->getAccount($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getAccounts());

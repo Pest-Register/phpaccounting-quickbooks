@@ -7,28 +7,24 @@ use Omnipay\Omnipay;
 
 class UpdateAccountTest extends BaseTest
 {
-    public function testUpdateAccount()
-    {
+    public function testUpdateAccount(){
         $this->setUp();
-        $faker = Faker\Factory::create();
         try {
 
             $params = [
-                'accounting_id' => 'b086f4fc-b699-463e-8bcc-b8d56a3b3a45',
+                'accounting_id' => 118,
+                'code' => 999,
                 'name' => 'Test 1',
-                'type' => 'EXPENSE',
-                'description' => 'Test Description 1',
+                'type' => 'Accounts Receivable',
                 'tax_type' => 'INPUT',
-                'enable_payments_to_account' => true,
-                'show_inexpense_claims' => true
+                'description' => 'Test Description 5'
             ];
 
             $response = $this->gateway->updateAccount($params)->send();
             if ($response->isSuccessful()) {
-                $accounts = $response->getAccounts();
-                var_dump($accounts);
-                $this->assertIsArray($accounts);
+                var_dump($response->getAccounts());
             }
+            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }

@@ -1,8 +1,8 @@
 <?php
-namespace PHPAccounting\Xero\Message\Contacts\Responses;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use XeroPHP\Models\Accounting\Contact;
+use QuickBooksOnline\API\Data\IPPCustomer;
 
 /**
  * Get Contact(s) Response
@@ -17,8 +17,8 @@ class GetContactResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if(!is_array($this->data)){
+            return false;
         }
         return true;
     }
@@ -28,90 +28,10 @@ class GetContactResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if($this->data->status){
+            return $this->data;
         }
         return null;
-    }
-
-    /**
-     * Add ContactGroups to Contact
-     * @param $data Array of ContactGroups
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parseContactGroups($data, $contact) {
-        $contact['contact_groups'] = [];
-        if ($data) {
-            $contactGroups = [];
-            foreach($data as $contactGroup) {
-                $newContactGroup = [];
-                $newContactGroup['accounting_id'] = $contactGroup->getContactGroupID();
-                $newContactGroup['name'] = $contactGroup->getName();
-                $newContactGroup['status'] = $contactGroup->getStatus();
-                array_push($contactGroups, $newContactGroup);
-            }
-            $contact['contact_groups'] = $contactGroups;
-        }
-
-        return $contact;
-    }
-
-    /**
-     * Add Addresses to Contact
-     * @param $data Array of Addresses
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parseAddresses($data, $contact) {
-        $contact['addresses'] = [];
-        if ($data) {
-            $addresses = [];
-            foreach($data as $address) {
-                $newAddress = [];
-                $newAddress['address_type'] = $address->getAddressType();
-                $newAddress['address_line_1'] = $address->getAddressLine1();
-                $newAddress['city'] = $address->getCity();
-                $newAddress['postal_code'] = $address->getPostalCode();
-                $newAddress['country'] = $address->getCountry();
-                array_push($addresses, $newAddress);
-            }
-            $contact['addresses'] = $addresses;
-        }
-
-        return $contact;
-    }
-
-    /**
-     * Add Phones to Contact
-     * @param $data Array of Phones
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parsePhones($data, $contact) {
-        $contact['phones'] = [];
-        if ($data) {
-            $phones = [];
-            foreach($data as $phone) {
-                $phoneType = $phone->getPhoneType();
-                $phoneCountryCode = $phone->getPhoneCountryCode();
-                $phoneAreaCode = $phone->getPhoneAreaCode();
-                $phoneNumberRaw = $phone->getPhoneNumber();
-                $phoneNumber = $phoneCountryCode.$phoneAreaCode.$phoneNumberRaw;
-                if ($phoneNumber !== '') {
-                    $newPhone = [];
-                    $newPhone['type'] = $phoneType;
-                    $newPhone['phone_number'] = $phoneNumberRaw;
-                    $newPhone['area_code'] = $phoneAreaCode;
-                    $newPhone['country_code'] = $phoneCountryCode;
-                    array_push($phones, $newPhone);
-                }
-
-            }
-            $contact['phones'] = $phones;
-        }
-
-        return $contact;
     }
 
     /**
@@ -120,47 +40,144 @@ class GetContactResponse extends AbstractResponse
      */
     public function getContacts(){
         $contacts = [];
-        if ($this->data instanceof Contact) {
+        if ($this->data instanceof IPPCustomer){
             $contact = $this->data;
             $newContact = [];
-            $newContact['accounting_id'] = $contact->getContactID();
-            $newContact['display_name'] = $contact->getName();
-            $newContact['first_name'] = $contact->getFirstName();
-            $newContact['last_name'] = $contact->getLastName();
-            $newContact['email_address'] = $contact->getEmailAddress();
-            $newContact['website'] = $contact->getWebsite();
-            $newContact['type'] = ($contact->getIsSupplier() ? 'SUPPLIER' : 'CUSTOMER');
-            $newContact['is_individual'] = !$contact->getIsSupplier();
-            $newContact['bank_account_details'] = $contact->getBankAccountDetails();
-            $newContact['tax_number'] = $contact->getTaxNumber();
-            $newContact['accounts_receivable_tax_type'] = $contact->getAccountsReceivableTaxType();
-            $newContact['accounts_payable_tax_type'] = $contact->getAccountsPayableTaxType();
-            $newContact['default_currency'] = $contact->getDefaultCurrency();
-            $newContact['updated_at'] = $contact->getUpdatedDateUTC();
-            $newContact = $this->parseContactGroups($contact->getContactGroups(), $newContact);
-            $newContact = $this->parsePhones($contact->getPhones(), $newContact);
-            $newContact = $this->parseAddresses($contact->getAddresses(), $newContact);
+            $newContact['addresses'] = [];
+            $newContact['phones'] = [];
+            $newContact['accounting_id'] = $contact->Id;
+            $newContact['display_name'] = $contact->DisplayName;
+            $newContact['first_name'] = $contact->GivenName;
+            $newContact['last_name'] = $contact->FamilyName;
+            $newContact['type'] = ['CUSTOMER'];
+            $newContact['is_individual'] = ($contact->CompanyName ? true : false);
+            $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+            $newContact['currency_code'] = $contact->CurrencyRef;
+            $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+            if ($contact->ShipAddr) {
+                array_push($newContact['addresses'], [
+                    'address_type' =>  'STREET',
+                    'address_line_1' => $contact->ShipAddr->Line1,
+                    'city' => $contact->ShipAddr->City,
+                    'postal_code' => $contact->ShipAddr->PostalCode,
+                    'country' => $contact->ShipAddr->Country
+                ]);
+            }
+            if ($contact->BillAddr) {
+                array_push($newContact['addresses'], [
+                    'address_type' =>  'POBOX',
+                    'address_line_1' => $contact->BillAddr->Line1,
+                    'city' => $contact->BillAddr->City,
+                    'postal_code' => $contact->BillAddr->PostalCode,
+                    'country' => $contact->BillAddr->Country
+                ]);
+            }
+            if ($contact->OtherAddr) {
+                array_push($newContact['addresses'], [
+                    'type' =>  'EXTRA',
+                    'address_line_1' => $contact->OtherAddr->Line1,
+                    'city' => $contact->OtherAddr->City,
+                    'postal_code' => $contact->OtherAddr->PostalCode,
+                    'country' => $contact->OtherAddr->Country
+                ]);
+            }
+            if ($contact->PrimaryEmailAddr) {
+                $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
+            }
+            if ($contact->PrimaryPhone) {
+                array_push($newContact['phones'], [
+                    'type' =>  'BUSINESS',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->PrimaryPhone->FreeFormNumber
+                ]);
+            }
+            if ($contact->Mobile) {
+                array_push($newContact['phones'], [
+                    'type' =>  'MOBILE',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->Mobile->FreeFormNumber
+                ]);
+            }
+            if ($contact->AlternatePhone) {
+                array_push($newContact['phones'], [
+                    'type' =>  'OTHER',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->Mobile->FreeFormNumber
+                ]);
+            }
             array_push($contacts, $newContact);
-        } else {
+        }
+        else {
             foreach ($this->data as $contact) {
                 $newContact = [];
-                $newContact['accounting_id'] = $contact->getContactID();
-                $newContact['display_name'] = $contact->getName();
-                $newContact['first_name'] = $contact->getFirstName();
-                $newContact['last_name'] = $contact->getLastName();
-                $newContact['email_address'] = $contact->getEmailAddress();
-                $newContact['website'] = $contact->getWebsite();
-                $newContact['type'] = ($contact->getIsSupplier() ? 'SUPPLIER' : 'CUSTOMER');
-                $newContact['is_individual'] = !$contact->getIsSupplier();
-                $newContact['bank_account_details'] = $contact->getBankAccountDetails();
-                $newContact['tax_number'] = $contact->getTaxNumber();
-                $newContact['accounts_receivable_tax_type'] = $contact->getAccountsReceivableTaxType();
-                $newContact['accounts_payable_tax_type'] = $contact->getAccountsPayableTaxType();
-                $newContact['default_currency'] = $contact->getDefaultCurrency();
-                $newContact['updated_at'] = $contact->getUpdatedDateUTC();
-                $newContact = $this->parseContactGroups($contact->getContactGroups(), $newContact);
-                $newContact = $this->parsePhones($contact->getPhones(), $newContact);
-                $newContact = $this->parseAddresses($contact->getAddresses(), $newContact);
+                $newContact['addresses'] = [];
+                $newContact['phones'] = [];
+                $newContact['accounting_id'] = $contact->Id;
+                $newContact['display_name'] = $contact->DisplayName;
+                $newContact['first_name'] = $contact->GivenName;
+                $newContact['last_name'] = $contact->FamilyName;
+                $newContact['type'] = ['CUSTOMER'];
+                $newContact['is_individual'] = ($contact->CompanyName ? true : false);
+                $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+                $newContact['currency_code'] = $contact->CurrencyRef;
+                $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+                if ($contact->ShipAddr) {
+                    array_push($newContact['addresses'], [
+                        'address_type' =>  'STREET',
+                        'address_line_1' => $contact->ShipAddr->Line1,
+                        'city' => $contact->ShipAddr->City,
+                        'postal_code' => $contact->ShipAddr->PostalCode,
+                        'country' => $contact->ShipAddr->Country
+                    ]);
+                }
+                if ($contact->BillAddr) {
+                    array_push($newContact['addresses'], [
+                        'address_type' =>  'POBOX',
+                        'address_line_1' => $contact->BillAddr->Line1,
+                        'city' => $contact->BillAddr->City,
+                        'postal_code' => $contact->BillAddr->PostalCode,
+                        'country' => $contact->BillAddr->Country
+                    ]);
+                }
+                if ($contact->OtherAddr) {
+                    array_push($newContact['addresses'], [
+                        'type' =>  'EXTRA',
+                        'address_line_1' => $contact->OtherAddr->Line1,
+                        'city' => $contact->OtherAddr->City,
+                        'postal_code' => $contact->OtherAddr->PostalCode,
+                        'country' => $contact->OtherAddr->Country
+                    ]);
+                }
+                if ($contact->PrimaryEmailAddr) {
+                    $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
+                }
+                if ($contact->PrimaryPhone) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'BUSINESS',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->PrimaryPhone->FreeFormNumber
+                    ]);
+                }
+                if ($contact->Mobile) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'MOBILE',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->Mobile->FreeFormNumber
+                    ]);
+                }
+                if ($contact->AlternatePhone) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'OTHER',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->Mobile->FreeFormNumber
+                    ]);
+                }
                 array_push($contacts, $newContact);
             }
         }

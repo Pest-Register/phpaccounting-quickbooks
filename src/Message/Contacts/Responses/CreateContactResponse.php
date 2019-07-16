@@ -1,12 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Contacts\Responses;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
+
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPCustomer;
 
 /**
  * Create Contact(s) Response
- * @package PHPAccounting\XERO\Message\Contacts\Responses
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Responses
  */
 class CreateContactResponse extends AbstractResponse
 {
@@ -17,8 +18,8 @@ class CreateContactResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if($this->data->status){
+            return $this->data->status;
         }
         return true;
     }
@@ -28,89 +29,10 @@ class CreateContactResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if($this->data->status){
+            return $this->data;
         }
         return null;
-    }
-
-    /**
-     * Add ContactGroups to Contact
-     * @param $data Array of ContactGroups
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parseContactGroups($data, $contact) {
-        $contact['contact_groups'] = [];
-        if ($data) {
-            $contactGroups = [];
-            foreach($data as $contactGroup) {
-                $newContactGroup = [];
-                $newContactGroup['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ContactGroupID',$contactGroup);
-                $newContactGroup['name'] = IndexSanityCheckHelper::indexSanityCheck('Name',$contactGroup);
-                $newContactGroup['status'] = IndexSanityCheckHelper::indexSanityCheck('Status',$contactGroup);
-                array_push($contactGroups, $newContactGroup);
-            }
-            $contact['contact_groups'] = $contactGroups;
-        }
-
-        return $contact;
-    }
-
-    /**
-     * Add Addresses to Contact
-     * @param $data Array of Addresses
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parseAddresses($data, $contact) {
-        $contact['addresses'] = [];
-        if ($data) {
-            $addresses = [];
-            foreach($data as $address) {
-                $newAddress = [];
-                $newAddress['address_type'] =  IndexSanityCheckHelper::indexSanityCheck('AddressType',$address);
-                $newAddress['address_line_1'] = IndexSanityCheckHelper::indexSanityCheck('AddressLine1',$address);;
-                $newAddress['city'] = IndexSanityCheckHelper::indexSanityCheck('City',$address);
-                $newAddress['postal_code'] = IndexSanityCheckHelper::indexSanityCheck('PostalCode',$address);
-                $newAddress['country'] = IndexSanityCheckHelper::indexSanityCheck('Country',$address);
-                array_push($addresses, $newAddress);
-            }
-            $contact['addresses'] = $addresses;
-        }
-
-        return $contact;
-    }
-
-    /**
-     * Add Phones to Contact
-     * @param $data Array of Phones
-     * @param array $contact Xero Contact Object Mapping
-     * @return mixed
-     */
-    private function parsePhones($data, $contact) {
-        if ($data) {
-            $phones = [];
-            foreach($data as $phone) {
-                $phoneType = IndexSanityCheckHelper::indexSanityCheck('PhoneType',$phone);
-                $phoneCountryCode = IndexSanityCheckHelper::indexSanityCheck('PhoneCountryCode',$phone);
-                $phoneAreaCode = IndexSanityCheckHelper::indexSanityCheck('PhoneAreaCode', $phone);
-                $phoneNumberRaw = IndexSanityCheckHelper::indexSanityCheck('PhoneNumber', $phone);
-                $phoneNumber = $phoneCountryCode.$phoneAreaCode.$phoneNumberRaw;
-                if ($phoneNumber !== '') {
-                    $newPhone = [];
-                    $newPhone['type'] = $phoneType;
-                    $newPhone['phone_number'] = $phoneNumberRaw;
-                    $newPhone['area_code'] = $phoneAreaCode;
-                    $newPhone['country_code'] = $phoneCountryCode;
-                    array_push($phones, $newPhone);
-                }
-
-            }
-            $contact['phones'] = $phones;
-        }
-
-        return $contact;
     }
 
     /**
@@ -119,32 +41,146 @@ class CreateContactResponse extends AbstractResponse
      */
     public function getContacts(){
         $contacts = [];
-        foreach ($this->data as $contact) {
+        if ($this->data instanceof IPPCustomer){
+            $contact = $this->data;
             $newContact = [];
-            $newContact['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ContactID', $contact);
-            $newContact['display_name'] = IndexSanityCheckHelper::indexSanityCheck('FirstName', $contact);;
-            $newContact['last_name'] = IndexSanityCheckHelper::indexSanityCheck('LastName', $contact);
-            $newContact['email_address'] =IndexSanityCheckHelper::indexSanityCheck('EmailAddress', $contact);;
-            $newContact['website'] = IndexSanityCheckHelper::indexSanityCheck('Website', $contact);;
-            $newContact['type'] = (IndexSanityCheckHelper::indexSanityCheck('IsSupplier', $contact) === 'true' ? 'SUPPLIER' : 'CUSTOMER');
-            $newContact['is_individual'] = (IndexSanityCheckHelper::indexSanityCheck('IsSupplier', $contact) === 'true' ? true : false);
-            $newContact['bank_account_details'] = IndexSanityCheckHelper::indexSanityCheck('BankAccountDetails', $contact);;
-            $newContact['tax_number'] = IndexSanityCheckHelper::indexSanityCheck('TaxNumber', $contact);;
-            $newContact['accounts_receivable_tax_type'] = IndexSanityCheckHelper::indexSanityCheck('ReceivableTaxType', $contact);;
-            $newContact['accounts_payable_tax_type'] = IndexSanityCheckHelper::indexSanityCheck('AccountsPayableTaxType', $contact);;
-            $newContact['default_currency'] = IndexSanityCheckHelper::indexSanityCheck('DefaultCurrency', $contact);
-            $newContact['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $contact);
-            if (IndexSanityCheckHelper::indexSanityCheck('ContactGroups', $contact)) {
-                $newContact = $this->parseContactGroups($contact['ContactGroups'], $newContact);
+            $newContact['addresses'] = [];
+            $newContact['phones'] = [];
+            $newContact['accounting_id'] = $contact->Id;
+            $newContact['display_name'] = $contact->DisplayName;
+            $newContact['first_name'] = $contact->GivenName;
+            $newContact['last_name'] = $contact->FamilyName;
+            $newContact['type'] = ['CUSTOMER'];
+            $newContact['is_individual'] = ($contact->CompanyName ? true : false);
+            $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+            $newContact['currency_code'] = $contact->CurrencyRef;
+            $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+            if ($contact->ShipAddr) {
+                array_push($newContact['addresses'], [
+                    'address_type' =>  'STREET',
+                    'address_line_1' => $contact->ShipAddr->Line1,
+                    'city' => $contact->ShipAddr->City,
+                    'postal_code' => $contact->ShipAddr->PostalCode,
+                    'country' => $contact->ShipAddr->Country
+                ]);
             }
-            if (IndexSanityCheckHelper::indexSanityCheck('Phones', $contact)) {
-                $newContact = $this->parsePhones($contact['Phones'], $newContact);
+            if ($contact->BillAddr) {
+                array_push($newContact['addresses'], [
+                    'address_type' =>  'POBOX',
+                    'address_line_1' => $contact->BillAddr->Line1,
+                    'city' => $contact->BillAddr->City,
+                    'postal_code' => $contact->BillAddr->PostalCode,
+                    'country' => $contact->BillAddr->Country
+                ]);
             }
-            if (IndexSanityCheckHelper::indexSanityCheck('Addresses', $contact)) {
-                $newContact = $this->parseAddresses($contact['Addresses'], $newContact);
+            if ($contact->OtherAddr) {
+                array_push($newContact['addresses'], [
+                    'type' =>  'EXTRA',
+                    'address_line_1' => $contact->OtherAddr->Line1,
+                    'city' => $contact->OtherAddr->City,
+                    'postal_code' => $contact->OtherAddr->PostalCode,
+                    'country' => $contact->OtherAddr->Country
+                ]);
             }
-
+            if ($contact->PrimaryEmailAddr) {
+                $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
+            }
+            if ($contact->PrimaryPhone) {
+                array_push($newContact['phones'], [
+                    'type' =>  'BUSINESS',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->PrimaryPhone->FreeFormNumber
+                ]);
+            }
+            if ($contact->Mobile) {
+                array_push($newContact['phones'], [
+                    'type' =>  'MOBILE',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->Mobile->FreeFormNumber
+                ]);
+            }
+            if ($contact->AlternatePhone) {
+                array_push($newContact['phones'], [
+                    'type' =>  'OTHER',
+                    'area_code' => '',
+                    'country_code' => '',
+                    'phone_number' => $contact->Mobile->FreeFormNumber
+                ]);
+            }
             array_push($contacts, $newContact);
+        }
+        else {
+            foreach ($this->data as $contact) {
+                $newContact = [];
+                $newContact['addresses'] = [];
+                $newContact['phones'] = [];
+                $newContact['accounting_id'] = $contact->Id;
+                $newContact['display_name'] = $contact->DisplayName;
+                $newContact['first_name'] = $contact->GivenName;
+                $newContact['last_name'] = $contact->FamilyName;
+                $newContact['type'] = ['CUSTOMER'];
+                $newContact['is_individual'] = ($contact->CompanyName ? true : false);
+                $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+                $newContact['currency_code'] = $contact->CurrencyRef;
+                $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+                if ($contact->ShipAddr) {
+                    array_push($newContact['addresses'], [
+                        'address_type' =>  'STREET',
+                        'address_line_1' => $contact->ShipAddr->Line1,
+                        'city' => $contact->ShipAddr->City,
+                        'postal_code' => $contact->ShipAddr->PostalCode,
+                        'country' => $contact->ShipAddr->Country
+                    ]);
+                }
+                if ($contact->BillAddr) {
+                    array_push($newContact['addresses'], [
+                        'address_type' =>  'POBOX',
+                        'address_line_1' => $contact->BillAddr->Line1,
+                        'city' => $contact->BillAddr->City,
+                        'postal_code' => $contact->BillAddr->PostalCode,
+                        'country' => $contact->BillAddr->Country
+                    ]);
+                }
+                if ($contact->OtherAddr) {
+                    array_push($newContact['addresses'], [
+                        'type' =>  'EXTRA',
+                        'address_line_1' => $contact->OtherAddr->Line1,
+                        'city' => $contact->OtherAddr->City,
+                        'postal_code' => $contact->OtherAddr->PostalCode,
+                        'country' => $contact->OtherAddr->Country
+                    ]);
+                }
+                if ($contact->PrimaryEmailAddr) {
+                    $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
+                }
+                if ($contact->PrimaryPhone) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'BUSINESS',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->PrimaryPhone->FreeFormNumber
+                    ]);
+                }
+                if ($contact->Mobile) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'MOBILE',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->Mobile->FreeFormNumber
+                    ]);
+                }
+                if ($contact->AlternatePhone) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'OTHER',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $contact->Mobile->FreeFormNumber
+                    ]);
+                }
+                array_push($contacts, $newContact);
+            }
         }
 
         return $contacts;

@@ -1,14 +1,10 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Accounts\Requests;
+namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Accounts\Responses\CreateAccountResponse;
-use PHPAccounting\Xero\Message\Accounts\Responses\GetAccountResponse;
-use PHPAccounting\Xero\Message\Accounts\Responses\UpdateAccountResponse;
-use PHPAccounting\Xero\Message\Contacts\Requests\UpdateContactRequest;
-use XeroPHP\Models\Accounting\Account;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Responses\UpdateAccountResponse;
+use QuickBooksOnline\API\Facades\Account;
 
 /**
  * Update Account(s)
@@ -18,7 +14,7 @@ class UpdateAccountRequest extends AbstractRequest
 {
     /**
      * Get Code Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getCode(){
@@ -27,7 +23,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Code Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Code
      * @return UpdateAccountRequest
      */
@@ -37,7 +33,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Get Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getName(){
@@ -46,7 +42,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Name
      * @return UpdateAccountRequest
      */
@@ -56,7 +52,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Get Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getType(){
@@ -65,7 +61,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Type
      * @return UpdateAccountRequest
      */
@@ -74,27 +70,8 @@ class UpdateAccountRequest extends AbstractRequest
     }
 
     /**
-     * Get Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @return mixed
-     */
-    public function getStatus(){
-        return $this->getParameter('status');
-    }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @param string $value Account Status
-     * @return UpdateAccountRequest
-     */
-    public function setStatus($value){
-        return $this->setParameter('status', $value);
-    }
-
-    /**
      * Get Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getDescription(){
@@ -103,7 +80,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Description
      * @return UpdateAccountRequest
      */
@@ -113,7 +90,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Get Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getTaxType(){
@@ -122,7 +99,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Tax Type
      * @return UpdateAccountRequest
      */
@@ -131,84 +108,8 @@ class UpdateAccountRequest extends AbstractRequest
     }
 
     /**
-     * Get Enable Payments to Account Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @return mixed
-     */
-    public function getEnablePaymentsToAccount(){
-        return $this->getParameter('enable_payments_to_account');
-    }
-
-    /**
-     * Set Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @param string $value Account Enable Payments to Account
-     * @return UpdateAccountRequest
-     */
-    public function setEnablePaymentsToAccount($value){
-        return $this->setParameter('enable_payments_to_account', $value);
-    }
-
-    /**
-     * Get Show Inexpense Claim Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @return mixed
-     */
-    public function getShowInexpenseClaims(){
-        return $this->getParameter('show_inexpense_claims');
-    }
-
-    /**
-     * Set Show Inexpense Claim Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @param string $value Account Show Inexpense Claim
-     * @return UpdateAccountRequest
-     */
-    public function setShowInexpenseClaims($value){
-        return $this->setParameter('show_inexpense_claims', $value);
-    }
-
-    /**
-     * Set Bank Account Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @param string $value Account Show Inexpense Claim
-     * @return UpdateAccountRequest
-     */
-    public function setBankAccountType($value){
-        return $this->setParameter('bank_account_type', $value);
-    }
-
-    /**
-     * Get Bank Account Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @return mixed
-     */
-    public function getBankAccountType(){
-        return $this->getParameter('bank_account_type');
-    }
-
-    /**
-     * Set Bank Account Number Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @param string $value Account Show Inexpense Claim
-     * @return UpdateAccountRequest
-     */
-    public function setBankAccountNumber($value){
-        return $this->setParameter('bank_account_number', $value);
-    }
-
-    /**
-     * Get Bank Account Number Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
-     * @return mixed
-     */
-    public function getBankAccountNumber(){
-        return $this->getParameter('bank_account_number');
-    }
-
-    /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param $value
      * @return UpdateAccountRequest
      */
@@ -218,7 +119,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getAccountingID() {
@@ -227,7 +128,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Set Currency Code Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param string $value Account Show Inexpense Claim
      * @return UpdateAccountRequest
      */
@@ -237,7 +138,7 @@ class UpdateAccountRequest extends AbstractRequest
 
     /**
      * Get Bank Account Number Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/accounts
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getCurrencyCode(){
@@ -255,55 +156,57 @@ class UpdateAccountRequest extends AbstractRequest
     {
         $this->validate('accounting_id');
 
-        $this->issetParam('AccountID', 'accounting_id');
-        $this->issetParam('Code', 'code');
+        $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('AcctNum', 'code');
         $this->issetParam('Name', 'name');
-        $this->issetParam('Type', 'type');
-        $this->issetParam('Status', 'status');
+        $this->issetParam('AccountType', 'type');
         $this->issetParam('Description', 'description');
-        $this->issetParam('TaxType', 'tax_type');
-        $this->issetParam('EnablePaymentsToAccount', 'enable_payments_to_account');
-        $this->issetParam('ShowInexpenseClaims', 'show_inexpense_claims');
+        $this->issetParam('TaxCodeRef', 'tax_type');
+        $this->issetParam('CurrencyRef', 'currency_code');
         return $this->data;
     }
 
     /**
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|CreateAccountResponse
+     * @return \Omnipay\Common\Message\ResponseInterface|UpdateAccountResponse
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
+        $updateParams = [];
 
-            $account = new Account($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'ShowInexpenseClaims') {
-                    $methodName = 'setShowInexpenseClaim';
-                    $account->$methodName($value);
-                } else {
-                    $methodName = 'set'. $key;
-                    $account->$methodName($value);
-                }
-
-            }
-            $response = $account->save();
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
         }
-        return $this->createResponse($response->getElements());
+        $id = $this->getAccountingID();
+        $targetAccount = $quickbooks->Query("select * from Account where Id='".$id."'");
+        if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
+            $account = Account::update(current($targetAccount),$updateParams);
+            $response = $quickbooks->Update($account);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = [
+                    'status' => $error->getHttpStatusCode(),
+                    'detail' => $error->getResponseBody()
+                ];
+            }
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Account not Found'
+            ]);
+        }
+
+
+        return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return UpdateAccountResponse
      */
     public function createResponse($data)

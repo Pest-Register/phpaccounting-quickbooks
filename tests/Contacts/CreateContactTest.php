@@ -23,6 +23,14 @@ class CreateContactTest extends BaseTest
                         'postal_code' => $faker->postcode,
                         'country' => $faker->country
                     ]
+                ],
+                'phones' => [
+                    [
+                        'type' => 'MOBILE',
+                        'area_code' => '',
+                        'country_code' => '',
+                        'phone_number' => $faker->phoneNumber
+                    ]
                 ]
             ];
 
