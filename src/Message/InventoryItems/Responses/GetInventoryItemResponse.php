@@ -3,6 +3,7 @@
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
+use QuickBooksOnline\API\Data\IPPItem;
 
 /**
  * Get Inventory Item(s) Response
@@ -35,12 +36,8 @@ class GetInventoryItemResponse extends AbstractResponse
 
     public function parsePurchaseDetails($data, $item, $isTracked) {
         if ($data) {
-            if ($isTracked) {
-                $item['buying_account_code'] = $data->getCOGSAccountCode();
-            } else {
-                $item['buying_account_code'] = $data->getAccountCode();
-            }
-
+            $item['buying_account_code'] = $data->value;
+            $item['buying_description'] = $data->name;
             $item['buying_tax_type_code'] = $data->getTaxType();
             $item['buying_unit_price'] = $data->getUnitPrice();
         }
@@ -64,22 +61,22 @@ class GetInventoryItemResponse extends AbstractResponse
      */
     public function getInventoryItems(){
         $items = [];
-        if ($this->data instanceof Item){
+        var_dump($this->data);
+        if ($this->data instanceof IPPItem){
             $item = $this->data;
             $newItem = [];
-            $newItem['accounting_id'] = $item->getItemID();
-            $newItem['code'] = $item->getCode();
-            $newItem['name'] = $item->getName();
-            $newItem['description'] = $item->getDescription();
-            $newItem['type'] = 'UNSPECIFIED';
-            $newItem['is_buying'] = $item->getIsPurchased();
-            $newItem['is_selling'] = $item->getIsSold();
-            $newItem['is_tracked'] = $item->getIsTrackedAsInventory();
-            $newItem['buying_description'] = $item->getPurchaseDescription();
-            $newItem['selling_description'] = $item->getDescription();
-            $newItem['quantity'] = $item->getQuantityOnHand();
-            $newItem['cost_pool'] = $item->getTotalCostPool();
-            $newItem['updated_at'] = $item->getUpdatedDateUTC();
+            $newItem['accounting_id'] = $item->Id;
+            $newItem['name'] = $item->Name;
+            $newItem['description'] = $item->Description;
+            $newItem['type'] = $item->Type;
+            $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
+            $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
+            $newItem['is_tracked'] = $item->TrackQtyOnHand;
+            $newItem['buying_description'] = $item->PurchaseDesc;
+            $newItem['selling_description'] = $item->PurchaseDesc;
+            $newItem['quantity'] = $item->QtyOnHand;
+            $newItem['cost_pool'] = $item->AvgCost;
+            $newItem['updated_at'] = $item->MetaData->LastUpdatedTime;
             $newItem = $this->parsePurchaseDetails($item->getPurchaseDetails(), $newItem, $item->getIsTrackedAsInventory());
             $newItem = $this->parseSellingDetails($item->getSalesDetails(), $newItem);
             array_push($items, $newItem);

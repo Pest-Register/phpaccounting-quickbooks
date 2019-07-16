@@ -1,20 +1,19 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Requests;
-use PHPAccounting\Quickbooks\Message\Contacts\Requests\GetContactRequest;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
+
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 
 /**
  * Get Inventory Items(s)
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class GetInventoryItemRequest extends AbstractRequest
 {
 
-
     /**
-     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * Set AccountingID from Parameter Bag (ID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return GetInventoryItemRequest
@@ -34,7 +33,7 @@ class GetInventoryItemRequest extends AbstractRequest
     }
 
     /**
-     * Accounting ID (AccountID)
+     * Inventory Item ID (ID)
      * @return mixed comma-delimited-string
      */
     public function getAccountingID() {
@@ -53,9 +52,10 @@ class GetInventoryItemRequest extends AbstractRequest
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetInventoryItemResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
      */
     public function sendData($data)
     {
