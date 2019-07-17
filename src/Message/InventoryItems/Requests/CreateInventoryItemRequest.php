@@ -1,12 +1,11 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Requests;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\InventoryItems\Responses\CreateInventoryItemResponse;
-use PHPAccounting\Xero\Message\InventoryItems\Responses\CreateTaxRateResponse;
-use XeroPHP\Models\Accounting\Item;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\CreateInventoryItemResponse;
+use QuickBooksOnline\API\Facades\Item;
 
 /**
  * Create Inventory Item
@@ -16,7 +15,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 {
     /**
      * Get Code Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getCode(){
@@ -25,7 +24,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Code Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param string $value Account Code
      * @return CreateInventoryItemRequest
      */
@@ -35,7 +34,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Inventory Asset AccountCode Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getInventoryAccountCode() {
@@ -44,7 +43,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Inventory Asset AccountCode Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -54,7 +53,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getName() {
@@ -63,7 +62,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -73,7 +72,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Is Buying Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getIsBuying() {
@@ -82,7 +81,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Is Buying Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -92,7 +91,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Is Buying Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getIsSelling() {
@@ -101,7 +100,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Is Selling Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -111,7 +110,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getDescription() {
@@ -120,7 +119,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -130,7 +129,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Buying Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getBuyingDescription() {
@@ -139,7 +138,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Buying Description Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -149,7 +148,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Purchase Details Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getPurchaseDetails() {
@@ -157,8 +156,27 @@ class CreateInventoryItemRequest extends AbstractRequest
     }
 
     /**
+     * Set Type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param $value
+     * @return mixed
+     */
+    public function setType($value) {
+        return $this->setParameter('type', $value);
+    }
+
+    /**
+     * Get Type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getType() {
+        return $this->getParameter('type');
+    }
+
+    /**
      * Set Purchase Details Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -168,7 +186,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Get Sales Details Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
     public function getSalesDetails() {
@@ -177,7 +195,7 @@ class CreateInventoryItemRequest extends AbstractRequest
 
     /**
      * Set Sales Details Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/items
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @param $value
      * @return mixed
      */
@@ -185,54 +203,6 @@ class CreateInventoryItemRequest extends AbstractRequest
         return $this->setParameter('sales_details', $value);
     }
 
-    public function addPurchaseDetailsToItem(Item $item, $purchaseDetails) {
-        if ($purchaseDetails) {
-            $purchase = new Item\Purchase();
-            if (array_key_exists('tracked_buying_account_code',$purchaseDetails)) {
-                $purchase->setCOGSAccountCode($purchaseDetails['tracked_buying_account_code']);
-            } else {
-                $purchase->setAccountCode($purchaseDetails['buying_account_code']);
-            }
-            $purchase->setUnitPrice($purchaseDetails['buying_unit_price']);
-            $purchase->setTaxType($purchaseDetails['buying_tax_type_code']);
-            $item->setPurchaseDetails($purchase);
-        }
-    }
-
-    public function addSalesDetailsToItem(Item $item, $salesDetails) {
-        if ($salesDetails) {
-            $sale = new Item\Sale();
-            $sale->setAccountCode($salesDetails['selling_account_code']);
-            $sale->setUnitPrice($salesDetails['selling_unit_price']);
-            $sale->setTaxType($salesDetails['selling_tax_type_code']);
-            $item->setSalesDetails($sale);
-        }
-    }
-
-    /**
-     * @param $data
-     * @return mixed
-     */
-    public function getSalesDetailsData($data) {
-        $data['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('selling_unit_price', $data);
-        $data['AccountCode'] = IndexSanityCheckHelper::indexSanityCheck('selling_account_code', $data);
-        $data['TaxType'] = IndexSanityCheckHelper::indexSanityCheck('selling_tax_type_code', $data);
-
-        return $data;
-    }
-
-    /**
-     * @param $data
-     * @return mixed
-     */
-    public function getPurchaseDetailsData($data) {
-        $data['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('buying_unit_price', $data);
-        $data['AccountCode'] = IndexSanityCheckHelper::indexSanityCheck('buying_account_code', $data);
-        $data['TaxType'] = IndexSanityCheckHelper::indexSanityCheck('buying_tax_type_code', $data);
-        $data['COGSAccountCode'] = IndexSanityCheckHelper::indexSanityCheck('tracked_buying_account_code', $data);
-
-        return $data;
-    }
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
@@ -242,59 +212,79 @@ class CreateInventoryItemRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('code');
+        $datetime = new \DateTime('NOW');
+        $this->validate('name');
 
-        $this->issetParam('Code', 'code');
-        $this->issetParam('InventoryAssetAccountCode', 'inventory_account_code');
         $this->issetParam('Name', 'name');
-        $this->issetParam('IsSold', 'is_selling');
-        $this->issetParam('IsPurchased', 'is_buying');
         $this->issetParam('Description', 'description');
-        $this->issetParam('PurchaseDescription', 'buying_description');
-        $this->data['PurchaseDetails'] = ($this->getPurchaseDetails() != null ? $this->getPurchaseDetailsData($this->getPurchaseDetails()) : null);
-        $this->data['SalesDetails'] = ($this->getSalesDetails() != null ? $this->getSalesDetailsData($this->getSalesDetails()) : null);
+        $this->issetParam('PurchaseDesc', 'buying_description');
+        $this->issetParam('UnitPrice', 'selling_unit_price');
+        $this->issetParam('Type', 'type');
+//        $this->issetParam('QtyOnHand', 'quantity');
+        if ($this->getInventoryAccountCode()) {
+            $this->data['COGSAccountRef'] = [
+                'value' => $this->getInventoryAccountCode()
+            ];
+        }
+        $purchaseDetails = $this->getPurchaseDetails();
+        if (array_key_exists('tracked_buying_account_code',$this->getPurchaseDetails())) {
+            $purchaseDetails = $this->getPurchaseDetails();
+            $this->data['COGSAccountCode'] = [
+                'value' => $purchaseDetails['tracked_buying_account_code']
+            ];
+        } else {
+            $this->data['ExpenseAccountRef'] = [
+                'value' => $purchaseDetails['buying_account_code']
+            ];
+        }
+        $this->data['PurchaseCost'] = $purchaseDetails['buying_unit_price'];
+
+        if (array_key_exists('selling_account_code',$this->getSalesDetails())) {
+            $salesDetails = $this->getSalesDetails();
+            $this->data['IncomeAccountRef'] = [
+                'value' => $salesDetails['selling_account_code']
+            ];
+        }
+
+//        $this->data['TrackQtyOnHand'] = true;
+        $this->data['Active'] = true;
+        $this->data['InvStartDate'] = $datetime;
 
         return $this->data;
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return CreateInventoryItemResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
+        $createParams = [];
 
-            $item = new Item($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'PurchaseDetails') {
-                    $this->addPurchaseDetailsToItem($item, $value);
-                } elseif ($key === 'SalesDetails') {
-                    $this->addSalesDetailsToItem($item, $value);
-                } else {
-                    $methodName = 'set'. $key;
-                    $item->$methodName($value);
-                }
-
-            }
-            $response = $item->save();
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+        foreach ($data as $key => $value){
+            $createParams[$key] = $data[$key];
         }
-        return $this->createResponse($response->getElements());
+
+        $item = Item::create($createParams);
+        $response = $quickbooks->Add($item);
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = [
+                'status' => $error->getHttpStatusCode(),
+                'detail' => $error->getResponseBody()
+            ];
+        }
+
+        return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return CreateInventoryItemResponse
      */
     public function createResponse($data)

@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Responses;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPItem;
 
 /**
  * Create Inventory Item(s) Response
@@ -17,8 +17,8 @@ class CreateInventoryItemResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if(!is_array($this->data)){
+            return false;
         }
         return true;
     }
@@ -28,35 +28,10 @@ class CreateInventoryItemResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if($this->data->status){
+            return $this->data;
         }
         return null;
-    }
-
-    public function parsePurchaseDetails($data, $item, $isTracked) {
-        if ($data) {
-            if ($isTracked) {
-                $item['buying_account_code'] = IndexSanityCheckHelper::indexSanityCheck('COGSAccountCode', $data);
-            } else {
-                $item['buying_account_code'] = IndexSanityCheckHelper::indexSanityCheck('AccountCode', $data);
-            }
-
-            $item['buying_tax_type_code'] = IndexSanityCheckHelper::indexSanityCheck('TaxType', $data);
-            $item['buying_unit_price'] = IndexSanityCheckHelper::indexSanityCheck('UnitPrice', $data);
-        }
-
-        return $item;
-    }
-
-    public function parseSalesDetails($data, $item) {
-        if ($data) {
-            $item['selling_account_code'] = IndexSanityCheckHelper::indexSanityCheck('AccountCode', $data);
-            $item['selling_tax_type_code'] = IndexSanityCheckHelper::indexSanityCheck('TaxType', $data);
-            $item['selling_unit_price'] = IndexSanityCheckHelper::indexSanityCheck('UnitPrice', $data);
-        }
-
-        return $item;
     }
 
     /**
@@ -65,34 +40,61 @@ class CreateInventoryItemResponse extends AbstractResponse
      */
     public function getInventoryItems(){
         $items = [];
-        foreach ($this->data as $item) {
+        var_dump($this->data);
+        if ($this->data instanceof IPPItem){
+            $item = $this->data;
             $newItem = [];
-            $newItem['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ItemID', $item);
-            $newItem['code'] = IndexSanityCheckHelper::indexSanityCheck('Code', $item);
-            $newItem['name'] = IndexSanityCheckHelper::indexSanityCheck('Name', $item);
-            $newItem['description'] = IndexSanityCheckHelper::indexSanityCheck('Description', $item);
-            $newItem['type'] = 'UNSPECIFIED';
-            $newItem['is_buying'] = IndexSanityCheckHelper::indexSanityCheck('IsPurchased', $item);
-            $newItem['is_selling'] = IndexSanityCheckHelper::indexSanityCheck('IsSold', $item);
-            $newItem['is_tracked'] = IndexSanityCheckHelper::indexSanityCheck('IsTracked', $item);
-            $newItem['buying_description'] = IndexSanityCheckHelper::indexSanityCheck('PurchaseDescription', $item);
-            $newItem['selling_description'] = IndexSanityCheckHelper::indexSanityCheck('Description', $item);
-            $newItem['quantity'] = IndexSanityCheckHelper::indexSanityCheck('QuantityOnHand', $item);
-            $newItem['cost_pool'] = IndexSanityCheckHelper::indexSanityCheck('TotalCostPool', $item);
-            $newItem['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $item);
-
-            if (IndexSanityCheckHelper::indexSanityCheck('PurchaseDetails', $item)) {
-                if (IndexSanityCheckHelper::indexSanityCheck('IsTrackedAsInventory', $item)) {
-                    $newItem = $this->parsePurchaseDetails($item['PurchaseDetails'], $newItem, $item['IsTrackedAsInventory']);
-                } else {
-                    $newItem = $this->parsePurchaseDetails($item['PurchaseDetails'], $newItem, false);
-                }
+            $newItem['accounting_id'] = $item->Id;
+            $newItem['name'] = $item->Name;
+            $newItem['description'] = $item->Description;
+            $newItem['type'] = $item->Type;
+            $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
+            $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
+            $newItem['is_tracked'] = $item->TrackQtyOnHand;
+            $newItem['buying_description'] = $item->PurchaseDesc;
+            $newItem['selling_description'] = $item->Description;
+            $newItem['quantity'] = $item->QtyOnHand;
+            $newItem['cost_pool'] = $item->AvgCost;
+            $newItem['updated_at'] = $item->MetaData->LastUpdatedTime;
+            if ($item->TrackQtyOnHand) {
+                $item['buying_account_code'] = $item->COGSAccountRef;
+            } else {
+                $item['buying_account_code'] = $item->ExpenseAccountRef;
             }
-            if (IndexSanityCheckHelper::indexSanityCheck('SalesDetails', $item)) {
-                $newItem = $this->parseSalesDetails($item['SalesDetails'], $newItem);
-            }
-
+            $item['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
+            $item['buying_unit_price'] = $item->PurchaseCost;
+            $item['selling_account_code'] = $item->IncomeAccountRef;
+            $item['selling_tax_type_code'] = $item->SalesTaxCodeRef;
+            $item['selling_unit_price'] = $item->UnitPrice;
             array_push($items, $newItem);
+
+        } else {
+            foreach ($this->data as $item) {
+                $newItem = [];
+                $newItem['accounting_id'] = $item->Id;
+                $newItem['name'] = $item->Name;
+                $newItem['description'] = $item->Description;
+                $newItem['type'] = $item->Type;
+                $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
+                $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
+                $newItem['is_tracked'] = $item->TrackQtyOnHand;
+                $newItem['buying_description'] = $item->PurchaseDesc;
+                $newItem['selling_description'] = $item->Description;
+                $newItem['quantity'] = $item->QtyOnHand;
+                $newItem['cost_pool'] = $item->AvgCost;
+                $newItem['updated_at'] = $item->MetaData->LastUpdatedTime;
+                if ($item->TrackQtyOnHand) {
+                    $newItem['buying_account_code'] = $item->COGSAccountRef;
+                } else {
+                    $newItem['buying_account_code'] = $item->ExpenseAccountRef;
+                }
+                $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
+                $newItem['buying_unit_price'] = $item->PurchaseCost;
+                $newItem['selling_account_code'] = $item->IncomeAccountRef;
+                $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
+                $newItem['selling_unit_price'] = $item->UnitPrice;
+                array_push($items, $newItem);
+            }
         }
 
         return $items;
