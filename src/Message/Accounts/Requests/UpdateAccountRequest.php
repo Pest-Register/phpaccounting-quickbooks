@@ -8,7 +8,7 @@ use QuickBooksOnline\API\Facades\Account;
 
 /**
  * Update Account(s)
- * @package PHPAccounting\XERO\Message\Accounts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Accounts\Requests
  */
 class UpdateAccountRequest extends AbstractRequest
 {

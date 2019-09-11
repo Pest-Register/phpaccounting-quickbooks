@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\TaxRates\Responses;
+namespace PHPAccounting\Quickbooks\Message\TaxRates\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use XeroPHP\Models\Accounting\TaxRate;
 
 /**
  * Get Tax Rate(s) Response
- * @package PHPAccounting\XERO\Message\TaxRate\Responses
+ * @package PHPAccounting\Quickbooks\Message\TaxRate\Responses
  */
 class GetTaxRateResponse extends AbstractResponse
 {

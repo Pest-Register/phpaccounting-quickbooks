@@ -1,15 +1,15 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Payments\Responses;
+namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use XeroPHP\Models\Accounting\Invoice;
 use XeroPHP\Models\Accounting\Payment;
 
 /**
  * Get Invoice(s) Response
- * @package PHPAccounting\XERO\Message\Invoices\Responses
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Responses
  */
 class GetPaymentResponse extends AbstractResponse
 {

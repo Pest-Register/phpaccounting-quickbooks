@@ -1,10 +1,10 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\ContactGroups\Requests;
+namespace PHPAccounting\Quickbooks\Message\ContactGroups\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\ContactGroups\Responses\DeleteContactGroupResponse;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\ContactGroups\Responses\DeleteContactGroupResponse;
 use XeroPHP\Application;
 use XeroPHP\Models\Accounting\Contact;
 use XeroPHP\Models\Accounting\ContactGroup;
@@ -14,7 +14,7 @@ use XeroPHP\Remote\URL;
 
 /**
  * Delete Contact Group(s)
- * @package PHPAccounting\XERO\Message\ContactGroups\Requests
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Requests
  */
 class DeleteContactGroupRequest extends AbstractRequest
 {

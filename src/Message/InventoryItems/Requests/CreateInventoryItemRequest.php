@@ -9,7 +9,7 @@ use QuickBooksOnline\API\Facades\Item;
 
 /**
  * Create Inventory Item
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class CreateInventoryItemRequest extends AbstractRequest
 {

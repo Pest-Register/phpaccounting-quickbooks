@@ -7,7 +7,7 @@ use QuickBooksOnline\API\Data\IPPAccount;
 
 /**
  * Delete ContactGroup(s) Response
- * @package PHPAccounting\XERO\Message\ContactGroups\Responses
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Responses
  */
 class DeleteAccountResponse extends AbstractResponse
 {

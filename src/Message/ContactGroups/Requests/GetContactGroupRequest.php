@@ -1,14 +1,14 @@
 <?php
-namespace PHPAccounting\Xero\Message\ContactGroups\Requests;
+namespace PHPAccounting\Quickbooks\Message\ContactGroups\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\ContactGroups\Responses\GetAccountResponse;
-use PHPAccounting\Xero\Message\ContactGroups\Responses\GetContactGroupResponse;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\ContactGroups\Responses\GetAccountResponse;
+use PHPAccounting\Quickbooks\Message\ContactGroups\Responses\GetContactGroupResponse;
 use XeroPHP\Models\Accounting\ContactGroup;
 
 /**
  * Get Contact Group(s)
- * @package PHPAccounting\XERO\Message\ContactGroups\Requests
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Requests
  */
 class GetContactGroupRequest extends AbstractRequest
 {

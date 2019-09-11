@@ -1,41 +1,36 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Dylan
- * Date: 12/07/2019
- * Time: 9:07 AM
- */
-
-namespace PHPAccounting\Xero\Message\Organisations\Requests;
+namespace PHPAccounting\Quickbooks\Message\Organisations\Requests;
 
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Organisations\Responses\GetOrganisationResponse;
-use XeroPHP\Models\Accounting\Organisation;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
+use PHPAccounting\Quickbooks\Message\Organisations\Responses\GetOrganisationResponse;
+use QuickBooksOnline\API\Exception\IdsException;
 
 class GetOrganisationRequest extends AbstractRequest
 {
 
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetOrganisationResponse
+     * @throws IdsException
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $quickbooks->throwExceptionOnError(true);
 
-            $response = $xero->load(Organisation::class)->execute();
-        } catch (\Exception $exception) {
+        $response = $quickbooks->getCompanyInfo();
+        $error = $quickbooks->getLastError();
+        if ($error) {
             $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
+                'status' => $error->getHttpStatusCode(),
+                'detail' => $error->getResponseBody()
             ];
         }
+
         return $this->createResponse($response);
     }
 

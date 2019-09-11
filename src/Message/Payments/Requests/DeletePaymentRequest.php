@@ -1,14 +1,14 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Payments\Requests;
+namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Payments\Responses\DeletePaymentResponse;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Payments\Responses\DeletePaymentResponse;
 use XeroPHP\Models\Accounting\Invoice;
 
 /**
  * Delete Invoice
- * @package PHPAccounting\XERO\Message\Invoices\Requests
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
 class DeletePaymentRequest extends AbstractRequest
 {

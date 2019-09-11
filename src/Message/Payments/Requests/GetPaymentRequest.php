@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Payments\Requests;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Payments\Responses\GetPaymentResponse;
+namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Payments\Responses\GetPaymentResponse;
 use XeroPHP\Models\Accounting\Payment;
 
 /**
  * Get Invoice(s)
- * @package PHPAccounting\XERO\Message\Invoices\Requests
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
 class GetPaymentRequest extends AbstractRequest
 {

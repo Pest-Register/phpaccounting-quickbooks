@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Payments\Responses;
+namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 
 /**
  * Create Invoice(s) Response
- * @package PHPAccounting\XERO\Message\Invoices\Responses
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Responses
  */
 class CreatePaymentResponse extends AbstractResponse
 {

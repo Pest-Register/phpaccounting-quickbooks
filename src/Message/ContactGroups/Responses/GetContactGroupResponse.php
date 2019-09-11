@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\ContactGroups\Responses;
+namespace PHPAccounting\Quickbooks\Message\ContactGroups\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use XeroPHP\Models\Accounting\ContactGroup;
 
 /**
  * Get ContactGroup(s) Response
- * @package PHPAccounting\XERO\Message\ContactGroups\Responses
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Responses
  */
 class GetContactGroupResponse extends AbstractResponse
 {

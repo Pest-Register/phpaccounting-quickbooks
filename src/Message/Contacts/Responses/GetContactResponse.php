@@ -6,7 +6,7 @@ use QuickBooksOnline\API\Data\IPPCustomer;
 
 /**
  * Get Contact(s) Response
- * @package PHPAccounting\XERO\Message\Contacts\Responses
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Responses
  */
 class GetContactResponse extends AbstractResponse
 {

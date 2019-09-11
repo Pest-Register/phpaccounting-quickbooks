@@ -1,12 +1,12 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\TaxRates\Responses;
+namespace PHPAccounting\Quickbooks\Message\TaxRates\Responses;
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 
 /**
  * Update Inventory Item(s) Response
- * @package PHPAccounting\XERO\Message\InventoryItems\Responses
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Responses
  */
 class UpdateTaxRateResponse extends AbstractResponse
 {

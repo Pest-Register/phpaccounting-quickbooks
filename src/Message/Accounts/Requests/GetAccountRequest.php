@@ -10,7 +10,7 @@ use QuickBooksOnline\API\Exception\IdsException;
 
 /**
  * Get Account(s)
- * @package PHPAccounting\XERO\Message\Accounts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Accounts\Requests
  */
 class GetAccountRequest extends AbstractRequest
 {
@@ -54,7 +54,7 @@ class GetAccountRequest extends AbstractRequest
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetAccountResponse
      * @throws IdsException
@@ -65,19 +65,19 @@ class GetAccountRequest extends AbstractRequest
         $quickbooks->throwExceptionOnError(true);
 
         if ($this->getAccountingID()) {
-            $accounts = $quickbooks->FindById('account', $this->getAccountingID());
-            $response = $accounts;
+            $response = $quickbooks->FindById('account', $this->getAccountingID());
         } else {
             $response = $quickbooks->FindAll('account', $this->getPage(), 500);
-            $error = $quickbooks->getLastError();
 
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         }
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = [
+                'status' => $error->getHttpStatusCode(),
+                'detail' => $error->getResponseBody()
+            ];
+        }
+
         return $this->createResponse($response);
     }
 

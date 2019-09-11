@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\ContactGroups\Responses;
+namespace PHPAccounting\Quickbooks\Message\ContactGroups\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 
 /**
  * Delete ContactGroup(s) Response
- * @package PHPAccounting\XERO\Message\ContactGroups\Responses
+ * @package PHPAccounting\Quickbooks\Message\ContactGroups\Responses
  */
 class DeleteContactGroupResponse extends AbstractResponse
 {

@@ -10,7 +10,7 @@ use QuickBooksOnline\API\Facades\Account;
 
 /**
  * Create Account(s)
- * @package PHPAccounting\XERO\Message\Accounts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Accounts\Requests
  */
 class CreateAccountRequest extends AbstractRequest
 {

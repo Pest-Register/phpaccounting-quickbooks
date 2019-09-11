@@ -4,7 +4,7 @@ namespace PHPAccounting\Quickbooks\Helpers;
 
 /**
  * Class IndexSanityCheckHelper
- * @package PHPAccounting\Xero\Helpers
+ * @package PHPAccounting\Quickbooks\Helpers
  */
 class IndexSanityCheckHelper
 {

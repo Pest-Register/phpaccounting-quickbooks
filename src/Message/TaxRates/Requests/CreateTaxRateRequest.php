@@ -1,15 +1,15 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\TaxRates\Requests;
+namespace PHPAccounting\Quickbooks\Message\TaxRates\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\TaxRates\Responses\CreateTaxRateResponse;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\TaxRates\Responses\CreateTaxRateResponse;
 use XeroPHP\Models\Accounting\TaxRate;
 
 /**
  * Create Inventory Item
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class CreateTaxRateRequest extends AbstractRequest
 {

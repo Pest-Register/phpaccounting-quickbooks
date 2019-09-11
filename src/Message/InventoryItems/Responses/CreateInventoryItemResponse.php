@@ -7,7 +7,7 @@ use QuickBooksOnline\API\Data\IPPItem;
 
 /**
  * Create Inventory Item(s) Response
- * @package PHPAccounting\XERO\Message\InventoryItems\Responses
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Responses
  */
 class CreateInventoryItemResponse extends AbstractResponse
 {

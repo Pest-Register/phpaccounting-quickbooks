@@ -1,12 +1,12 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Responses;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 
 /**
  * Update Inventory Item(s) Response
- * @package PHPAccounting\XERO\Message\InventoryItems\Responses
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Responses
  */
 class UpdateInventoryItemResponse extends AbstractResponse
 {

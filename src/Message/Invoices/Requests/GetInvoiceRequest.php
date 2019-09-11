@@ -1,14 +1,14 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Invoices\Requests;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Contacts\Responses\GetContactResponse;
-use PHPAccounting\Xero\Message\Invoices\Responses\GetInvoiceResponse;
+namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
+use PHPAccounting\Quickbooks\Message\Invoices\Responses\GetInvoiceResponse;
 use XeroPHP\Models\Accounting\Invoice;
 
 /**
  * Get Invoice(s)
- * @package PHPAccounting\XERO\Message\Invoices\Requests
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
 class GetInvoiceRequest extends AbstractRequest
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\TaxRates\Requests;
-use PHPAccounting\Xero\Message\AbstractRequest;
+namespace PHPAccounting\Quickbooks\Message\TaxRates\Requests;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
 
 /**
  * Delete Inventory Item
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class DeleteTaxRateRequest extends AbstractRequest
 {

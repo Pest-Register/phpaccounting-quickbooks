@@ -1,18 +1,18 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Invoices\Requests;
+namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityInsertionHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Invoices\Responses\UpdateInvoiceResponse;
-use PHPAccounting\Xero\Message\Invoices\Responses\UpdatePaymentResponse;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Invoices\Responses\UpdateInvoiceResponse;
+use PHPAccounting\Quickbooks\Message\Invoices\Responses\UpdatePaymentResponse;
 use XeroPHP\Models\Accounting\Contact;
 use XeroPHP\Models\Accounting\Invoice;
 use XeroPHP\Models\Accounting\Invoice\LineItem;
 
 /**
  * Update Invoice(s)
- * @package PHPAccounting\XERO\Message\Invoices\Requests
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
 class UpdateInvoiceRequest extends AbstractRequest
 {

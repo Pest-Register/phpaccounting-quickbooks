@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Invoices\Responses;
+namespace PHPAccounting\Quickbooks\Message\Invoices\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Xero\Helpers\IndexSanityCheckHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 
 /**
  * Delete Invoice(s) Response
- * @package PHPAccounting\XERO\Message\Invoices\Responses
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Responses
  */
 class DeleteInvoiceResponse extends AbstractResponse
 {

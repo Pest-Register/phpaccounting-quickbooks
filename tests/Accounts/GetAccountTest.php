@@ -25,6 +25,7 @@ class GetAccountTest extends BaseTest
         ];
         try {
             $response = $this->gateway->getAccount($params)->send();
+            var_dump($response);
             if ($response->isSuccessful()) {
                 var_dump($response->getAccounts());
             } else {

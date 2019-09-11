@@ -1,10 +1,10 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Payments\Requests;
+namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
-use PHPAccounting\Xero\Helpers\IndexSanityInsertionHelper;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\Payments\Responses\UpdatePaymentResponse;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Payments\Responses\UpdatePaymentResponse;
 use XeroPHP\Models\Accounting\Account;
 use XeroPHP\Models\Accounting\Contact;
 use XeroPHP\Models\Accounting\CreditNote;
@@ -16,7 +16,7 @@ use XeroPHP\Models\Accounting\Prepayment;
 
 /**
  * Update Invoice(s)
- * @package PHPAccounting\XERO\Message\Invoices\Requests
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
 class UpdatePaymentRequest extends AbstractRequest
 {

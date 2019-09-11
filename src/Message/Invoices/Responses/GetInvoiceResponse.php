@@ -1,13 +1,13 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\Invoices\Responses;
+namespace PHPAccounting\Quickbooks\Message\Invoices\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use XeroPHP\Models\Accounting\Invoice;
 
 /**
  * Get Invoice(s) Response
- * @package PHPAccounting\XERO\Message\Invoices\Responses
+ * @package PHPAccounting\Quickbooks\Message\Invoices\Responses
  */
 class GetInvoiceResponse extends AbstractResponse
 {

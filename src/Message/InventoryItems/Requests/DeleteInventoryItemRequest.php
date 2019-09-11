@@ -1,12 +1,12 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\InventoryItems\Requests;
+namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
-use PHPAccounting\Xero\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
 
 /**
  * Delete Inventory Item
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class DeleteInventoryItemRequest extends AbstractRequest
 {

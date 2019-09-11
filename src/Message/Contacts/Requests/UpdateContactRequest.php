@@ -9,7 +9,7 @@ use QuickBooksOnline\API\Facades\Customer;
 
 /**
  * Update Contact(s)
- * @package PHPAccounting\XERO\Message\Contacts\Requests
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
 class UpdateContactRequest extends AbstractRequest
 {

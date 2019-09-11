@@ -1,14 +1,14 @@
 <?php
 
-namespace PHPAccounting\Xero\Message\TaxRates\Requests;
-use PHPAccounting\Xero\Message\AbstractRequest;
-use PHPAccounting\Xero\Message\TaxRates\Responses\GetTaxRateResponse;
+namespace PHPAccounting\Quickbooks\Message\TaxRates\Requests;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\TaxRates\Responses\GetTaxRateResponse;
 use XeroPHP\Models\Accounting\TaxRate;
 use XeroPHP\Models\Accounting\TaxType;
 
 /**
  * Get Tax Rate(s)
- * @package PHPAccounting\XERO\Message\InventoryItems\Requests
+ * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
 class GetTaxRateRequest extends AbstractRequest
 {
