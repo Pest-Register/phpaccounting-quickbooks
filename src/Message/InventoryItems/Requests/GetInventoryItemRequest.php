@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 
@@ -56,26 +57,24 @@ class GetInventoryItemRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetInventoryItemResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
 
         if ($this->getAccountingID()) {
             $items = $quickbooks->FindById('item', $this->getAccountingID());
             $response = $items;
         } else {
             $response = $quickbooks->FindAll('item', $this->getPage(), 500);
-            $error = $quickbooks->getLastError();
-
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
         return $this->createResponse($response);
     }
 

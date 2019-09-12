@@ -18,7 +18,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getType(){
@@ -27,7 +27,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param string $value Invoice Type
      * @return CreateInvoiceRequest
      */
@@ -37,7 +37,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Invoice Data Parameter from Parameter Bag (LineItems generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getInvoiceData(){
@@ -46,7 +46,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Invoice Data Parameter from Parameter Bag (LineItems)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param array $value Invoice Item Lines
      * @return CreateInvoiceRequest
      */
@@ -56,7 +56,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getDate(){
@@ -65,7 +65,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param string $value Invoice date
      * @return CreateInvoiceRequest
      */
@@ -75,7 +75,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Due Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getDueDate(){
@@ -84,7 +84,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Due Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param string $value Invoice Due Date
      * @return CreateInvoiceRequest
      */
@@ -94,7 +94,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Contact Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getContact(){
@@ -103,7 +103,7 @@ class CreateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Contact Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param Contact $value Contact
      * @return CreateInvoiceRequest
      */

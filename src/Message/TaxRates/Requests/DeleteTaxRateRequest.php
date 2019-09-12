@@ -11,7 +11,7 @@ class DeleteTaxRateRequest extends AbstractRequest
 {
     /**
      * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return DeleteTaxRateRequest
      */
@@ -21,7 +21,7 @@ class DeleteTaxRateRequest extends AbstractRequest
 
     /**
      * Get Accounting ID Parameter from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getAccountingID() {

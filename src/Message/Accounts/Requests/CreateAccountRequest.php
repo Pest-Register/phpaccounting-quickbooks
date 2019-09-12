@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\CreateAccountResponse;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
@@ -114,11 +115,11 @@ class CreateAccountRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|CreateAccountResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $createParams = [];
 
         foreach ($data as $key => $value){
@@ -127,12 +128,10 @@ class CreateAccountRequest extends AbstractRequest
 
         $account = Account::create($createParams);
         $response = $quickbooks->Add($account);
+
         $error = $quickbooks->getLastError();
         if ($error) {
-            $response = [
-                'status' => $error->getHttpStatusCode(),
-                'detail' => $error->getResponseBody()
-            ];
+            $response = ErrorParsingHelper::parseError($error);
         }
 
         return $this->createResponse($response);

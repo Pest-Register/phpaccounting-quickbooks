@@ -19,7 +19,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getType(){
@@ -28,7 +28,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Type from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -38,7 +38,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get InvoiceData Parameter from Parameter Bag (LineItems generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getInvoiceData(){
@@ -47,7 +47,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Invoice Data from Parameter Bag (LineItems generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -57,7 +57,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getDate(){
@@ -66,7 +66,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Date from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -76,7 +76,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Due Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getDueDate(){
@@ -85,7 +85,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Due Date from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -95,7 +95,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get ContactParameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getContact(){
@@ -104,7 +104,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set Contact from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -114,7 +114,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Set AccountingID from Parameter Bag (ContactID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return UpdateInvoiceRequest
      */
@@ -124,7 +124,7 @@ class UpdateInvoiceRequest extends AbstractRequest
 
     /**
      * Get Accounting ID Parameter from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getAccountingID() {

@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use QuickBooksOnline\API\Facades\Customer;
@@ -56,7 +57,6 @@ class DeleteContactRequest extends AbstractRequest
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $updateParams = [];
 
         foreach ($data as $key => $value){
@@ -74,13 +74,6 @@ class DeleteContactRequest extends AbstractRequest
         if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
             $customer = Customer::update(current($targetCustomer),$updateParams);
             $response = $quickbooks->Update($customer);
-            $error = $quickbooks->getLastError();
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         } else {
             return $this->createResponse([
                 'status' => 'error',
@@ -88,6 +81,10 @@ class DeleteContactRequest extends AbstractRequest
             ]);
         }
 
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
 
         return $this->createResponse($response);
     }

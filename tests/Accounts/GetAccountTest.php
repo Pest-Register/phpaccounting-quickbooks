@@ -20,12 +20,11 @@ class GetAccountTest extends BaseTest
     {
         $this->setUp();
         $params = [
-            'accountingID' => 78,
+            'accountingID' => "",
             'page' => 1
         ];
         try {
             $response = $this->gateway->getAccount($params)->send();
-            var_dump($response);
             if ($response->isSuccessful()) {
                 var_dump($response->getAccounts());
             } else {

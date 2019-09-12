@@ -15,7 +15,7 @@ class CreateTaxRateRequest extends AbstractRequest
 {
     /**
      * Get Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @return mixed
      */
     public function getName(){
@@ -24,7 +24,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Set Name Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @param string $value Tax Rate Name
      * @return CreateTaxRateRequest
      */
@@ -34,7 +34,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Get Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @return mixed
      */
     public function getTaxType(){
@@ -43,7 +43,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Set Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @param string $value Tax Rate Tax Type
      * @return CreateTaxRateRequest
      */
@@ -53,7 +53,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Get Tax Components Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @return mixed
      */
     public function getTaxComponents(){
@@ -62,7 +62,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Set Tax Components Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @param string $value Tax Rate Tax Type
      * @return CreateTaxRateRequest
      */
@@ -72,7 +72,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Get Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @return mixed
      */
     public function getStatus(){
@@ -81,7 +81,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Set Tax Components Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @param string $value Status
      * @return CreateTaxRateRequest
      */
@@ -91,7 +91,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Get Report Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @return mixed
      */
     public function getReportTaxType(){
@@ -100,7 +100,7 @@ class CreateTaxRateRequest extends AbstractRequest
 
     /**
      * Set Report Tax Type Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/tax-rates
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/tax-rates
      * @param string $value Report Tax Type
      * @return CreateTaxRateRequest
      */

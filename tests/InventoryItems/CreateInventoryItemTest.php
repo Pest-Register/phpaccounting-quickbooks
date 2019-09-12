@@ -12,20 +12,24 @@ class CreateInventoryItemTest extends BaseTest
         try {
 
             $params = [
-                'name' => 'Development Operations',
-                'description' => 'Development Operations',
+                'name' => 'Development Operations 2',
+                'description' => 'Development Operations 2',
                 'buying_description' => 'Development Operations',
+                'is_tracked' => true,
                 'purchase_details' => [
                     'buying_unit_price' => 100,
-                    'buying_account_code' => 78,
+                    'buying_account_code' => 88,
                     'buying_tax_type_code' => 'OUTPUT'
                 ],
                 'sales_details' => [
                     'selling_unit_price' => 150,
-                    'selling_account_code' => 78,
+                    'selling_account_code' => 81,
                     'selling_tax_type_code' => 'OUTPUT'
                 ],
-                'type' => 'Service',
+                'asset_details' => [
+                  'asset_account_code' => 32
+                ],
+                'type' => 'Inventory',
                 'quantity' => 10
             ];
 

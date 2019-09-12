@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\UpdateAccountResponse;
 use QuickBooksOnline\API\Facades\Account;
@@ -176,7 +177,6 @@ class UpdateAccountRequest extends AbstractRequest
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $updateParams = [];
 
         foreach ($data as $key => $value){
@@ -194,18 +194,16 @@ class UpdateAccountRequest extends AbstractRequest
         if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
             $account = Account::update(current($targetAccount),$updateParams);
             $response = $quickbooks->Update($account);
-            $error = $quickbooks->getLastError();
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         } else {
             return $this->createResponse([
                 'status' => 'error',
                 'detail' => 'Existing Account not Found'
             ]);
+        }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
         }
 
 

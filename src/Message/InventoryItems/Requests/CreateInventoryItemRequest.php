@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\CreateInventoryItemResponse;
@@ -13,6 +14,24 @@ use QuickBooksOnline\API\Facades\Item;
  */
 class CreateInventoryItemRequest extends AbstractRequest
 {
+    /**
+     * Get Quantity Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getQuantity(){
+        return $this->getParameter('quantity');
+    }
+
+    /**
+     * Set Quantity Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param string $value Account Code
+     * @return CreateInventoryItemRequest
+     */
+    public function setQuantity($value){
+        return $this->setParameter('quantity', $value);
+    }
     /**
      * Get Code Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
@@ -69,7 +88,24 @@ class CreateInventoryItemRequest extends AbstractRequest
     public function setName($value) {
         return $this->setParameter('name', $value);
     }
+    /**
+     * Get Is Tracked Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getIsTracked() {
+        return $this->getParameter('is_tracked');
+    }
 
+    /**
+     * Set Is Buying Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param $value
+     * @return mixed
+     */
+    public function setIsTracked($value) {
+        return $this->setParameter('is_tracked', $value);
+    }
     /**
      * Get Is Buying Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
@@ -183,6 +219,24 @@ class CreateInventoryItemRequest extends AbstractRequest
     public function setPurchaseDetails($value) {
         return $this->setParameter('purchase_details', $value);
     }
+    /**
+     * Get Asset Details Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getAssetDetails() {
+        return $this->getParameter('asset_details');
+    }
+
+    /**
+     * Set Asset Details Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param $value
+     * @return mixed
+     */
+    public function setAssetDetails($value) {
+        return $this->setParameter('asset_details', $value);
+    }
 
     /**
      * Get Sales Details Parameter from Parameter Bag
@@ -220,7 +274,8 @@ class CreateInventoryItemRequest extends AbstractRequest
         $this->issetParam('PurchaseDesc', 'buying_description');
         $this->issetParam('UnitPrice', 'selling_unit_price');
         $this->issetParam('Type', 'type');
-//        $this->issetParam('QtyOnHand', 'quantity');
+        $this->issetParam('TrackQtyOnHand', 'is_tracked');
+        $this->issetParam('QtyOnHand', 'quantity');
         if ($this->getInventoryAccountCode()) {
             $this->data['COGSAccountRef'] = [
                 'value' => $this->getInventoryAccountCode()
@@ -246,10 +301,15 @@ class CreateInventoryItemRequest extends AbstractRequest
             ];
         }
 
-//        $this->data['TrackQtyOnHand'] = true;
+        if (array_key_exists('asset_account_code', $this->getAssetDetails())) {
+            $assetDetails = $this->getAssetDetails();
+            $this->data['AssetAccountRef'] = [
+                'value' => $assetDetails['asset_account_code']
+            ];
+        }
+
         $this->data['Active'] = true;
         $this->data['InvStartDate'] = $datetime;
-
         return $this->data;
     }
 
@@ -258,11 +318,11 @@ class CreateInventoryItemRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return CreateInventoryItemResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $createParams = [];
 
         foreach ($data as $key => $value){
@@ -273,10 +333,7 @@ class CreateInventoryItemRequest extends AbstractRequest
         $response = $quickbooks->Add($item);
         $error = $quickbooks->getLastError();
         if ($error) {
-            $response = [
-                'status' => $error->getHttpStatusCode(),
-                'detail' => $error->getResponseBody()
-            ];
+            $response = ErrorParsingHelper::parseError($error);
         }
 
         return $this->createResponse($response);

@@ -23,7 +23,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Amount Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getAmount(){
@@ -32,7 +32,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Amount Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Payment Amount
      * @return UpdatePaymentRequest
      */
@@ -42,7 +42,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Currency Rate Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getCurrencyRate(){
@@ -51,7 +51,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Amount Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Payment Currency Rate
      * @return UpdatePaymentRequest
      */
@@ -61,7 +61,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Currency Rate Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getReferenceID(){
@@ -70,7 +70,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Amount Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Payment Reference ID
      * @return UpdatePaymentRequest
      */
@@ -80,7 +80,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Is Reconciled Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getIsReconciled(){
@@ -89,7 +89,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Is Reconciled Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Payment Is Reconcile
      * @return UpdatePaymentRequest
      */
@@ -99,7 +99,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Invoice Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getInvoice(){
@@ -108,7 +108,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Invoice Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Invoice
      * @return UpdatePaymentRequest
      */
@@ -118,7 +118,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Account Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getAccount(){
@@ -127,7 +127,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Account Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Invoice
      * @return UpdatePaymentRequest
      */
@@ -137,7 +137,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Credit Note Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getCreditNote(){
@@ -146,7 +146,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Credit Note Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value CreditNote
      * @return UpdatePaymentRequest
      */
@@ -156,7 +156,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Prepayment Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getPrepayment(){
@@ -165,7 +165,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Prepayment Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Prepayment
      * @return UpdatePaymentRequest
      */
@@ -175,7 +175,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Get Overpayment Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @return mixed
      */
     public function getOverpayment(){
@@ -184,7 +184,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
     /**
      * Set Overpayment Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/payments
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param string $value Overpayment
      * @return UpdatePaymentRequest
      */

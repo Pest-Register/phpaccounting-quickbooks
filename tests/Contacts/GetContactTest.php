@@ -29,6 +29,8 @@ class GetContactTest extends BaseTest
                 $contacts = $response->getContacts();
                 var_dump($contacts);
                 $this->assertIsArray($contacts);
+            } else {
+                var_dump($response->getErrorMessage());
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());

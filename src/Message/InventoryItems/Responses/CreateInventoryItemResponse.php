@@ -17,9 +17,12 @@ class CreateInventoryItemResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(!is_array($this->data)){
-            return false;
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -28,9 +31,14 @@ class CreateInventoryItemResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if($this->data->status){
-            return $this->data;
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
         }
+
         return null;
     }
 

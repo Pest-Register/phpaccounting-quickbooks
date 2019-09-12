@@ -15,7 +15,7 @@ class GetInvoiceRequest extends AbstractRequest
 
     /**
      * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return GetInvoiceRequest
      */
@@ -25,7 +25,7 @@ class GetInvoiceRequest extends AbstractRequest
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return GetInvoiceRequest
      */

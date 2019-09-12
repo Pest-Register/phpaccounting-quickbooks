@@ -1,6 +1,7 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 
@@ -55,26 +56,24 @@ class GetContactRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
 
         if ($this->getAccountingID()) {
             $accounts = $quickbooks->FindById('customer', $this->getAccountingID());
             $response = $accounts;
         } else {
             $response = $quickbooks->FindAll('customer', $this->getPage(), 500);
-            $error = $quickbooks->getLastError();
-
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
         return $this->createResponse($response);
     }
 

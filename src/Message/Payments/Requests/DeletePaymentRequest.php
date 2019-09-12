@@ -14,7 +14,7 @@ class DeletePaymentRequest extends AbstractRequest
 {
     /**
      * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return DeletePaymentRequest
      */
@@ -24,7 +24,7 @@ class DeletePaymentRequest extends AbstractRequest
 
     /**
      * Get Accounting ID Parameter from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
     public function getAccountingID() {
@@ -33,7 +33,7 @@ class DeletePaymentRequest extends AbstractRequest
 
     /**
      * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param string $value Contact Name
      * @return DeletePaymentRequest
      */

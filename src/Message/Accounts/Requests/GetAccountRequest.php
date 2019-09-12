@@ -2,9 +2,9 @@
 
 namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
-use QuickBooksOnline\API\Data\IPPAccount;
 use QuickBooksOnline\API\Exception\IdsException;
 
 
@@ -58,24 +58,23 @@ class GetAccountRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetAccountResponse
      * @throws IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
 
         if ($this->getAccountingID()) {
-            $response = $quickbooks->FindById('account', $this->getAccountingID());
+            if ($this->getAccountingID() !== "") {
+                $response = $quickbooks->FindById('account', $this->getAccountingID());
+            }
         } else {
             $response = $quickbooks->FindAll('account', $this->getPage(), 500);
-
         }
+
         $error = $quickbooks->getLastError();
         if ($error) {
-            $response = [
-                'status' => $error->getHttpStatusCode(),
-                'detail' => $error->getResponseBody()
-            ];
+            $response = ErrorParsingHelper::parseError($error);
         }
 
         return $this->createResponse($response);

@@ -1,18 +1,23 @@
 <?php
 
-namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\DeleteInventoryItemResponse;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
+use QuickBooksOnline\API\Facades\Item;
 
 /**
- * Delete Inventory Item
- * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
+ * Delete Contact(s)
+ * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
 class DeleteInventoryItemRequest extends AbstractRequest
 {
+
     /**
-     * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param $value
      * @return DeleteInventoryItemRequest
      */
@@ -21,24 +26,13 @@ class DeleteInventoryItemRequest extends AbstractRequest
     }
 
     /**
-     * Get Accounting ID Parameter from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.xero.com/documentation/api/invoices
+     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @return mixed
      */
     public function getAccountingID() {
         return  $this->getParameter('accounting_id');
     }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/invoices
-     * @param string $value Contact Name
-     * @return DeleteInventoryItemRequest
-     */
-    public function setStatus($value) {
-        return  $this->setParameter('status', $value);
-    }
-
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -50,27 +44,60 @@ class DeleteInventoryItemRequest extends AbstractRequest
     public function getData()
     {
         $this->validate('accounting_id');
-        $this->issetParam('InvoiceID', 'accounting_id');
-        $this->issetParam('Status', 'status');
+        $this->issetParam('Id', 'accounting_id');
+        $this->data['Active'] = false;
         return $this->data;
     }
 
     /**
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
+     * @return \Omnipay\Common\Message\ResponseInterface|DeleteInventoryItemResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
+        $quickbooks = $this->createQuickbooksDataService();
+        $updateParams = [];
 
-        return;
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
+        try {
+            $targetItem = $quickbooks->Query("select * from Item where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => $exception->getMessage()
+            ]);
+        }
+        if (!empty($targetItem) && sizeof($targetItem) == 1) {
+            $item = Item::update(current($targetItem),$updateParams);
+            $response = $quickbooks->Update($item);
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Item not Found'
+            ]);
+        }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+        return $this->createResponse($response);
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
+     * @return GetInventoryItemResponse
      */
     public function createResponse($data)
     {
-        return;
+        return $this->response = new GetInventoryItemResponse($this, $data);
     }
 }

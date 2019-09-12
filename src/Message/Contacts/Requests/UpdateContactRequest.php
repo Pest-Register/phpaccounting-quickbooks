@@ -1,6 +1,7 @@
 <?php
 namespace PHPAccounting\Quickbooiks\Message\Contacts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
@@ -103,7 +104,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Get Phones Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getPhones(){
@@ -132,7 +133,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Get ContactGroups Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getContactGroups() {
@@ -141,7 +142,7 @@ class UpdateContactRequest extends AbstractRequest
 
     /**
      * Get Addresses Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getAddresses(){
@@ -318,11 +319,11 @@ class UpdateContactRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|UpdateContactRequest
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $updateParams = [];
 
         foreach ($data as $key => $value){
@@ -341,13 +342,6 @@ class UpdateContactRequest extends AbstractRequest
         if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
             $customer = Customer::update(current($targetCustomer),$updateParams);
             $response = $quickbooks->Update($customer);
-            $error = $quickbooks->getLastError();
-            if ($error) {
-                $response = [
-                    'status' => $error->getHttpStatusCode(),
-                    'detail' => $error->getResponseBody()
-                ];
-            }
         } else {
             return $this->createResponse([
                 'status' => 'error',
@@ -355,7 +349,11 @@ class UpdateContactRequest extends AbstractRequest
             ]);
         }
 
-
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+        
         return $this->createResponse($response);
     }
 

@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
 use QuickBooksOnline\API\Facades\Customer;
@@ -103,7 +104,7 @@ class CreateContactRequest extends AbstractRequest
 
     /**
      * Get Phones Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getPhones(){
@@ -132,7 +133,7 @@ class CreateContactRequest extends AbstractRequest
 
     /**
      * Get ContactGroups Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getContactGroups() {
@@ -141,7 +142,7 @@ class CreateContactRequest extends AbstractRequest
 
     /**
      * Get Addresses Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/contactgroups
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/contactgroups
      * @return mixed
      */
     public function getAddresses(){
@@ -299,7 +300,6 @@ class CreateContactRequest extends AbstractRequest
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
-        $quickbooks->throwExceptionOnError(true);
         $createParams = [];
 
         foreach ($data as $key => $value){
@@ -310,10 +310,7 @@ class CreateContactRequest extends AbstractRequest
         $response = $quickbooks->Add($account);
         $error = $quickbooks->getLastError();
         if ($error) {
-            $response = [
-                'status' => $error->getHttpStatusCode(),
-                'detail' => $error->getResponseBody()
-            ];
+            $response = ErrorParsingHelper::parseError($error);
         }
 
         return $this->createResponse($response);

@@ -18,9 +18,12 @@ class GetAccountResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if($this->data->status){
-            return $this->data->status;
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -29,9 +32,14 @@ class GetAccountResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if($this->data->status){
-            return $this->data;
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
         }
+
         return null;
     }
 
@@ -45,7 +53,7 @@ class GetAccountResponse extends AbstractResponse
             $account = $this->data;
             $newAccount = [];
             $newAccount['accounting_id'] = $account->Id;
-            $newAccount['code'] = $account->AcctNum;
+            $newAccount['code'] = $account->Id;
             $newAccount['name'] = $account->Name;
             $newAccount['description'] = $account->Description;
             $newAccount['type'] = $account->AccountType;
@@ -61,7 +69,7 @@ class GetAccountResponse extends AbstractResponse
             foreach ($this->data as $account) {
                 $newAccount = [];
                 $newAccount['accounting_id'] = $account->Id;
-                $newAccount['code'] = $account->AcctNum;
+                $newAccount['code'] = $account->Id;
                 $newAccount['name'] = $account->Name;
                 $newAccount['description'] = $account->Description;
                 $newAccount['type'] = $account->AccountType;
