@@ -53,6 +53,7 @@ class DeleteContactRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|DeleteContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {

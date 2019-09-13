@@ -2,12 +2,11 @@
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\CreateInvoiceResponse;
-use XeroPHP\Models\Accounting\Contact;
-use XeroPHP\Models\Accounting\Invoice;
-use XeroPHP\Models\Accounting\Invoice\LineItem;
+use QuickBooksOnline\API\Facades\Invoice;
 
 /**
  * Create Invoice
@@ -15,6 +14,25 @@ use XeroPHP\Models\Accounting\Invoice\LineItem;
  */
 class CreateInvoiceRequest extends AbstractRequest
 {
+
+    /**
+     * Get Total Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getTotal(){
+        return $this->getParameter('total');
+    }
+
+    /**
+     * Set Total Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Total
+     * @return CreateInvoiceRequest
+     */
+    public function setTotal($value){
+        return $this->setParameter('total', $value);
+    }
 
     /**
      * Get Type Parameter from Parameter Bag
@@ -74,6 +92,25 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get Email Status Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getEmailStatus(){
+        return $this->getParameter('email_status');
+    }
+
+    /**
+     * Set Email Status Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Invoice Due Date
+     * @return CreateInvoiceRequest
+     */
+    public function setEmailStatus($value){
+        return $this->setParameter('email_status', $value);
+    }
+
+    /**
      * Get Due Date Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -112,17 +149,6 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * Add Contact to Invoice
-     * @param Invoice $invoice Xero Invoice Object
-     * @param string $data Contact ID
-     */
-    private function addContactToInvoice(Invoice $invoice, $data){
-        $contact = new Contact();
-        $contact->setContactID($data);
-        $invoice->setContact($contact);
-    }
-
-    /**
      * Add Line Items to Invoice
      * @param Invoice $invoice Xero Invoice Object
      * @param array $data Array of Line Items
@@ -155,53 +181,53 @@ class CreateInvoiceRequest extends AbstractRequest
     {
         $this->validate('type', 'contact', 'invoice_data');
 
-        $this->issetParam('Type', 'type');
-        $this->issetParam('Date', 'date');
+//        $this->issetParam('Type', 'type');
+        $this->issetParam('TxnDate', 'date');
         $this->issetParam('DueDate', 'due_date');
-        $this->issetParam('Contact', 'contact');
         $this->issetParam('LineItems', 'invoice_data');
-        $this->issetParam('InvoiceNumber', 'invoice_number');
-        $this->issetParam('Reference', 'invoice_reference');
-        $this->issetParam('Status', 'invoice_status');
+        $this->issetParam('DocNumber', 'invoice_number');
+//        $this->issetParam('Reference', 'invoice_reference');
+        $this->issetParam('TotalAmt', 'total');
+
+        if ($this->getContact()) {
+            $this->data['CustomerRef'] = [
+                'value' => $this->getContact()
+            ];
+        }
+
+        if ($this->getEmailStatus()) {
+            if ($this->getEmailStatus() === true) {
+                $this->data['EmailStatus'] = 'EmailSent';
+            } else {
+                $this->data['EmailStatus'] = 'NotSet';
+            }
+        }
         return $this->data;
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|CreateInvoiceResponse
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $createParams = [];
 
-            $invoice = new Invoice($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'LineItems') {
-                    $this->addLineItemsToInvoice($invoice, $value);
-                } elseif ($key === 'Contact') {
-                    $this->addContactToInvoice($invoice, $value);
-                } elseif ($key === 'Date' || $key === 'DueDate') {
-                    $methodName = 'set'. $key;
-                    $date = \DateTime::createFromFormat('Y-m-d', $value);
-                    $invoice->$methodName($date);
-                } else {
-                    $methodName = 'set'. $key;
-                    $invoice->$methodName($value);
-                }
-            }
-            $response = $invoice->save();
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+        foreach ($data as $key => $value){
+            $createParams[$key] = $data[$key];
         }
-        return $this->createResponse($response->getElements());
+
+        $account = Invoice::create($createParams);
+        $response = $quickbooks->Add($account);
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+        return $this->createResponse($response);
     }
 
     /**
