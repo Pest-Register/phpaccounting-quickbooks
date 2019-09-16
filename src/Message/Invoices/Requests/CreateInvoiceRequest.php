@@ -3,7 +3,7 @@
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\CreateInvoiceResponse;
 use QuickBooksOnline\API\Facades\Invoice;
@@ -149,25 +149,73 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * Add Line Items to Invoice
-     * @param Invoice $invoice Xero Invoice Object
-     * @param array $data Array of Line Items
+     * @param $itemID
+     * @return bool
      */
-    private function addLineItemsToInvoice(Invoice $invoice, $data){
-        foreach($data as $lineData) {
-            $lineItem = new LineItem();
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('code', $lineData, $lineItem, 'setAccountCode');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('description', $lineData, $lineItem, 'setDescription');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('discount_rate', $lineData, $lineItem, 'setDiscountRate');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('item_code', $lineData, $lineItem, 'setItemCode');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('accounting_id', $lineData, $lineItem, 'setLineItemID');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('amount', $lineData, $lineItem, 'setLineAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('quantity', $lineData, $lineItem, 'setQuantity');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('unit_amount', $lineData, $lineItem, 'setUnitAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('tax_amount', $lineData, $lineItem, 'setTaxAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('tax_type', $lineData, $lineItem, 'setTaxType');
-            $invoice->addLineItem($lineItem);
+    private function checkIfSalesItem($itemID) {
+        if ($itemID) {
+            if ($itemID !== '') {
+                return true;
+            }
         }
+        return false;
+    }
+
+    /**
+     * Add Line Items to Invoice
+     * @param array $data Array of Line Items
+     * @return array
+     */
+    private function addLineItemsToInvoice($data){
+        $lineItems = [];
+        $counter = 1;
+        foreach($data as $lineData) {
+            $lineItem = [];
+            $lineItem['LineNum'] = $counter;
+            $lineItem['Description'] = IndexSanityCheckHelper::indexSanityCheck('description', $lineData);
+
+
+            if (array_key_exists('item_id', $lineData)) {
+                if ($this->checkIfSalesItem($lineData['item_id'])) {
+                    $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
+                    $lineItem['DetailType'] = 'SalesItemLineDetail';
+                    $lineItem['SalesItemLineDetail'] = [];
+                    $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+                    $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
+                    $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
+                    $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
+                    $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
+                    $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                    $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
+                } else {
+                    $lineItem['DetailType'] = 'DescriptionOnly';
+                    $lineItem['DescriptionLineDetail'] = [];
+                    $lineItem['DescriptionLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
+                    if (array_key_exists('discount_rate', $lineData)) {
+                        $discountRate = (float) IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData) / 100;
+                    } else {
+                        $discountRate = 0.00;
+                    }
+                    if (array_key_exists('amount', $lineData)) {
+                        $lineItem['Amount'] = $lineData['amount'] - ($lineData['amount'] * $discountRate);
+                    }
+                }
+            } else {
+                $lineItem['DetailType'] = 'SubtotalLineDetail';
+                $lineItem['SubtotalLineDetail'] = [];
+                if (array_key_exists('discount_rate', $lineData)) {
+                    $discountRate = (float) IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData) / 100;
+                } else {
+                    $discountRate = 0.00;
+                }
+                if (array_key_exists('amount', $lineData)) {
+                    $lineItem['Amount'] = $lineData['amount'] - ($lineData['amount'] * $discountRate);
+                }
+            }
+
+            array_push($lineItems, $lineItem);
+        }
+        return $lineItems;
     }
 
     /**
@@ -181,13 +229,14 @@ class CreateInvoiceRequest extends AbstractRequest
     {
         $this->validate('type', 'contact', 'invoice_data');
 
-//        $this->issetParam('Type', 'type');
         $this->issetParam('TxnDate', 'date');
         $this->issetParam('DueDate', 'due_date');
-        $this->issetParam('LineItems', 'invoice_data');
         $this->issetParam('DocNumber', 'invoice_number');
-//        $this->issetParam('Reference', 'invoice_reference');
         $this->issetParam('TotalAmt', 'total');
+
+        if ($this->getInvoiceData()) {
+            $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());
+        }
 
         if ($this->getContact()) {
             $this->data['CustomerRef'] = [
@@ -202,6 +251,8 @@ class CreateInvoiceRequest extends AbstractRequest
                 $this->data['EmailStatus'] = 'NotSet';
             }
         }
+        $this->data['ApplyTaxAfterDiscount'] = true;
+        var_dump(json_encode($this->data));
         return $this->data;
     }
 
