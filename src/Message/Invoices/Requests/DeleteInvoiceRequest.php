@@ -74,8 +74,8 @@ class DeleteInvoiceRequest extends AbstractRequest
             ]);
         };
         if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
-            $account = Invoice::update(current($targetAccount),$updateParams);
-            $response = $quickbooks->Update($account);
+            $invoice = Invoice::update(current($targetAccount),$updateParams);
+            $response = $quickbooks->Delete($invoice);
         } else {
             return $this->createResponse([
                 'status' => 'error',
