@@ -15,6 +15,25 @@ use QuickBooksOnline\API\Facades\Customer;
 class UpdateContactRequest extends AbstractRequest
 {
     /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param string $value Account Code
+     * @return UpdateContactRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
+    /**
      * Set Name Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
      * @param string $value Contact Name
@@ -287,6 +306,7 @@ class UpdateContactRequest extends AbstractRequest
 
         $this->issetParam('Id', 'accounting_id');
         $this->issetParam('DisplayName', 'name');
+        $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('GivenName', 'first_name');
         $this->issetParam('FamilyName', 'last_name');
 

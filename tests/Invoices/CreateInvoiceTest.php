@@ -27,7 +27,7 @@ class CreateInvoiceTest extends BaseTest
                         'code' => 200,
                         'tax_id' => 10,
                         'account_id' => 10,
-//                        'item_id' => 15
+                        'item_id' => 15
                     ]
                 ]
             ];

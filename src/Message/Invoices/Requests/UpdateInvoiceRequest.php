@@ -2,13 +2,12 @@
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
-use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
+use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\UpdateInvoiceResponse;
-use PHPAccounting\Quickbooks\Message\Invoices\Responses\UpdatePaymentResponse;
-use XeroPHP\Models\Accounting\Contact;
-use XeroPHP\Models\Accounting\Invoice;
-use XeroPHP\Models\Accounting\Invoice\LineItem;
+use QuickBooksOnline\API\Facades\Invoice;
+
 
 /**
  * Update Invoice(s)
@@ -16,6 +15,25 @@ use XeroPHP\Models\Accounting\Invoice\LineItem;
  */
 class UpdateInvoiceRequest extends AbstractRequest
 {
+
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Account Code
+     * @return UpdateInvoiceRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
 
     /**
      * Get Type Parameter from Parameter Bag
@@ -94,6 +112,25 @@ class UpdateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get EmailStatus from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getEmailStatus(){
+        return $this->getParameter('email_status');
+    }
+
+    /**
+     * Set Contact from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param $value
+     * @return UpdateInvoiceRequest
+     */
+    public function setEmailStatus($value){
+        return $this->setParameter('email_status', $value);
+    }
+
+    /**
      * Get ContactParameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -131,37 +168,36 @@ class UpdateInvoiceRequest extends AbstractRequest
         return  $this->getParameter('accounting_id');
     }
 
-    /**
-     * Add Contact to Invoice
-     * @param Invoice $invoice Xero Invoice Object
-     * @param array $data Array of Contact Objects
-     */
-    private function addContactToInvoice(Invoice $invoice, $data){
-        $contact = new Contact();
-        $contact->setContactID($data);
-        $invoice->setContact($contact);
-    }
 
     /**
-     * Add LineItems to Invoice
-     * @param Invoice $invoice Xero Invoice Object
-     * @param array $data Array of LineItem Object mappings (Array)
+     * Add Line Items to Invoice
+     * @param array $data Array of Line Items
+     * @return array
      */
-    private function addLineItemsToInvoice(Invoice $invoice, $data){
+    private function addLineItemsToInvoice($data){
+        $lineItems = [];
+        $counter = 1;
         foreach($data as $lineData) {
-            $lineItem = new LineItem();
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('code', $lineData, $lineItem, 'setAccountCode');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('description', $lineData, $lineItem, 'setDescription');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('discount_rate', $lineData, $lineItem, 'setDiscountRate');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('item_code', $lineData, $lineItem, 'setItemCode');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('accounting_id', $lineData, $lineItem, 'setLineItemID');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('amount', $lineData, $lineItem, 'setLineAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('quantity', $lineData, $lineItem, 'setQuantity');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('unit_amount', $lineData, $lineItem, 'setUnitAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('tax_amount', $lineData, $lineItem, 'setTaxAmount');
-            $lineItem = IndexSanityInsertionHelper::indexSanityInsert('tax_type', $lineData, $lineItem, 'setTaxType');
-            $invoice->addLineItem($lineItem);
+            $lineItem = [];
+            $lineItem['LineNum'] = $counter;
+            $lineItem['Description'] = IndexSanityCheckHelper::indexSanityCheck('description', $lineData);
+
+            if (array_key_exists('item_id', $lineData)) {
+                $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
+                $lineItem['DetailType'] = 'SalesItemLineDetail';
+                $lineItem['SalesItemLineDetail'] = [];
+                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+                $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
+                $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
+                $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
+                $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
+                $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
+            }
+
+            array_push($lineItems, $lineItem);
         }
+        return $lineItems;
     }
 
     /**
@@ -173,56 +209,77 @@ class UpdateInvoiceRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('type', 'contact', 'invoice_data', 'accounting_id');
+        $this->validate('type', 'contact', 'invoice_data');
 
-        $this->issetParam('InvoiceID', 'accounting_id');
-        $this->issetParam('Type', 'type');
-        $this->issetParam('Date', 'date');
+        $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('TxnDate', 'date');
         $this->issetParam('DueDate', 'due_date');
-        $this->issetParam('Contact', 'contact');
-        $this->issetParam('LineItems', 'invoice_data');
-        $this->issetParam('InvoiceNumber', 'invoice_number');
-        $this->issetParam('Reference', 'invoice_reference');
-        $this->issetParam('Status', 'invoice_status');
+        $this->issetParam('DocNumber', 'invoice_number');
+        $this->issetParam('TotalAmt', 'total');
+        $this->issetParam('SyncToken', 'sync_token');
+
+        if ($this->getInvoiceData()) {
+            $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());
+        }
+
+        if ($this->getContact()) {
+            $this->data['CustomerRef'] = [
+                'value' => $this->getContact()
+            ];
+        }
+
+        if ($this->getEmailStatus()) {
+            if ($this->getEmailStatus() === true) {
+                $this->data['EmailStatus'] = 'EmailSent';
+            } else {
+                $this->data['EmailStatus'] = 'NotSet';
+            }
+        }
+        $this->data['ApplyTaxAfterDiscount'] = true;
         return $this->data;
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|UpdateInvoiceResponse
+     * @return UpdateInvoiceResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $updateParams = [];
 
-            $invoice = new Invoice($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'LineItems') {
-                    $this->addLineItemsToInvoice($invoice, $value);
-                } elseif ($key === 'Contact') {
-                    $this->addContactToInvoice($invoice, $value);
-                } elseif ($key === 'Date' || $key === 'DueDate') {
-                    $methodName = 'set'. $key;
-                    $date = \DateTime::createFromFormat('Y-m-d', $value);
-                    $invoice->$methodName($date);
-                } else {
-                    $methodName = 'set'. $key;
-                    $invoice->$methodName($value);
-                }
-            }
-            $response = $invoice->save();
-        } catch (\Exception $exception){
-            $response = [
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
+        try {
+            $targetItem = $quickbooks->Query("select * from Invoice where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
                 'status' => 'error',
                 'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+            ]);
         }
-        return $this->createResponse($response->getElements());
+
+        if (!empty($targetItem) && sizeof($targetItem) == 1) {
+            $item = Invoice::update(current($targetItem),$updateParams);
+            $response = $quickbooks->Update($item);
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Invoice not Found'
+            ]);
+        }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+        return $this->createResponse($response);
     }
 
     /**

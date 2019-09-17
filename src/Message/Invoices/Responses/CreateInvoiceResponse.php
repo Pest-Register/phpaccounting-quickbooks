@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Invoices\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPInvoice;
 
 /**
  * Create Invoice(s) Response
@@ -45,8 +46,8 @@ class CreateInvoiceResponse extends AbstractResponse
 
     /**
      * Add LineItems to Invoice
-     * @param $data Array of LineItems
-     * @param array $invoice Xero Invoice Object Mapping
+     * @param $data
+     * @param $invoice
      * @return mixed
      */
     private function parseLineItems($data, $invoice) {
@@ -54,15 +55,22 @@ class CreateInvoiceResponse extends AbstractResponse
             $lineItems = [];
             foreach($data as $lineItem) {
                 $newLineItem = [];
-                $newLineItem['description'] = IndexSanityCheckHelper::indexSanityCheck('Description', $lineItem);
-                $newLineItem['unit_amount'] = IndexSanityCheckHelper::indexSanityCheck('UnitAmount', $lineItem);
-                $newLineItem['line_amount'] = IndexSanityCheckHelper::indexSanityCheck('LineAmount', $lineItem);
-                $newLineItem['quantity'] = IndexSanityCheckHelper::indexSanityCheck('Quantity', $lineItem);
-                $newLineItem['discount_rate'] = IndexSanityCheckHelper::indexSanityCheck('DiscountRate', $lineItem);
-                $newLineItem['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('LineItemID', $lineItem);
-                $newLineItem['discount_amount'] = IndexSanityCheckHelper::indexSanityCheck('DiscountAmount', $lineItem);
-                $newLineItem['amount'] = IndexSanityCheckHelper::indexSanityCheck('LineAmount', $lineItem);
-                $newLineItem['code'] = IndexSanityCheckHelper::indexSanityCheck('AccountCode', $lineItem);
+                $newLineItem['description'] = $lineItem->Description;
+                $newLineItem['line_amount'] = $lineItem->Amount;
+                $newLineItem['accounting_id'] = $lineItem->Id;
+                $newLineItem['amount'] = $lineItem->Amount;
+
+                $salesLineDetail = $lineItem->SalesItemLineDetail;
+                if ($salesLineDetail) {
+                    $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                    $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
+                    $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
+                    $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
+                    $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
+                    $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
+                    $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
+                }
+
                 array_push($lineItems, $newLineItem);
             }
 
@@ -74,15 +82,15 @@ class CreateInvoiceResponse extends AbstractResponse
 
     /**
      * Add Contact to Invoice
-     * @param $data Array of single Contact
-     * @param array $invoice Xero Invoice Object Mapping
+     *
+     * @param $data
+     * @param $invoice
      * @return mixed
      */
     private function parseContact($data, $invoice) {
         if ($data) {
             $newContact = [];
-            $newContact['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ContactID',$data);
-            $newContact['name'] = IndexSanityCheckHelper::indexSanityCheck('Name',$data);
+            $newContact['accounting_id'] = $data;
             $invoice['contact'] = $newContact;
         }
 
@@ -95,33 +103,46 @@ class CreateInvoiceResponse extends AbstractResponse
      */
     public function getInvoices(){
         $invoices = [];
-        var_dump($this->data);
-//        foreach ($this->data as $invoice) {
-//            $newInvoice = [];
-//            $newInvoice['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('InvoiceID', $invoice);
-//            $newInvoice['status'] = IndexSanityCheckHelper::indexSanityCheck('Status', $invoice);
-//            $newInvoice['sub_total'] = IndexSanityCheckHelper::indexSanityCheck('SubTotal', $invoice);
-//            $newInvoice['total_tax'] = IndexSanityCheckHelper::indexSanityCheck('TotalTax', $invoice);
-//            $newInvoice['total'] = IndexSanityCheckHelper::indexSanityCheck('Total', $invoice);
-//            $newInvoice['currency'] = IndexSanityCheckHelper::indexSanityCheck('CurrencyCode', $invoice);
-//            $newInvoice['type'] = IndexSanityCheckHelper::indexSanityCheck('Type', $invoice);
-//            $newInvoice['invoice_number'] = IndexSanityCheckHelper::indexSanityCheck('InvoiceNumber', $invoice);
-//            $newInvoice['amount_due'] = IndexSanityCheckHelper::indexSanityCheck('AmountDue', $invoice);
-//            $newInvoice['amount_paid'] = IndexSanityCheckHelper::indexSanityCheck('AmountPaid', $invoice);
-//            $newInvoice['currency_rate'] = IndexSanityCheckHelper::indexSanityCheck('CurrencyRate', $invoice);
-//            $newInvoice['discount_total'] = IndexSanityCheckHelper::indexSanityCheck('TotalDiscount', $invoice);
-//            $newInvoice['date'] = IndexSanityCheckHelper::indexSanityCheck('Date', $invoice);
-//            $newInvoice['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $invoice);
-//
-//            if (IndexSanityCheckHelper::indexSanityCheck('Contact', $invoice)) {
-//                $newInvoice = $this->parseContact($invoice['Contact'], $newInvoice);
-//            }
-//            if (IndexSanityCheckHelper::indexSanityCheck('LineItems', $invoice)) {
-//                $newInvoice = $this->parseLineItems($invoice['LineItems'], $newInvoice);
-//            }
-//
-//            array_push($invoices, $newInvoice);
-//        }
+        if ($this->data instanceof IPPInvoice){
+            $invoice = $this->data;
+            $newInvoice = [];
+            $newInvoice['accounting_id'] = $invoice->Id;
+            $newInvoice['sub_total'] = $invoice->TotalAmt;
+            $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
+            $newInvoice['total'] = $invoice->TotalAmt;
+            $newInvoice['sync_token'] = $invoice->SyncToken;
+            $newInvoice['currency'] = $invoice->CurrencyRef;
+            $newInvoice['invoice_number'] = $invoice->DocNumber;
+            $newInvoice['amount_due'] = $invoice->Balance;
+            $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+            $newInvoice['date'] = $invoice->TxnDate;
+            $newInvoice['due_date'] = $invoice->DueDate;
+            $newInvoice['updated_at'] = $invoice->MetaData['LastUpdatedTime'];
+            $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
+            $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+
+            array_push($invoices, $newInvoice);
+
+        } else {
+            foreach ($this->data as $invoice) {
+                $newInvoice = [];
+                $newInvoice['accounting_id'] = $invoice->Id;
+                $newInvoice['sub_total'] = $invoice->TotalAmt;
+                $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
+                $newInvoice['total'] = $invoice->TotalAmt;
+                $newInvoice['sync_token'] = $invoice->SyncToken;
+                $newInvoice['currency'] = $invoice->CurrencyRef;
+                $newInvoice['invoice_number'] = $invoice->DocNumber;
+                $newInvoice['amount_due'] = $invoice->Balance;
+                $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+                $newInvoice['date'] = $invoice->TxnDate;
+                $newInvoice['due_date'] = $invoice->DueDate;
+                $newInvoice['updated_at'] = $invoice->MetaData->LastUpdatedTime;
+                $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
+                $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+                array_push($invoices, $newInvoice);
+            }
+        }
 
         return $invoices;
     }

@@ -55,6 +55,7 @@ class UpdateInventoryItemResponse extends AbstractResponse
             $newItem['name'] = $item->Name;
             $newItem['description'] = $item->Description;
             $newItem['type'] = $item->Type;
+            $newItem['sync_token'] = $item->SyncToken;
             $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
             $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
             $newItem['is_tracked'] = $item->TrackQtyOnHand;
@@ -82,6 +83,7 @@ class UpdateInventoryItemResponse extends AbstractResponse
                 $newItem['name'] = $item->Name;
                 $newItem['description'] = $item->Description;
                 $newItem['type'] = $item->Type;
+                $newItem['sync_token'] = $item->SyncToken;
                 $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
                 $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
                 $newItem['is_tracked'] = $item->TrackQtyOnHand;

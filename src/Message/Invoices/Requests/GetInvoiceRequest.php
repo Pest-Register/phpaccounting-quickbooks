@@ -1,10 +1,11 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
+use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\GetInvoiceResponse;
-use XeroPHP\Models\Accounting\Invoice;
+use QuickBooksOnline\API\Exception\IdsException;
 
 /**
  * Get Invoice(s)
@@ -14,13 +15,13 @@ class GetInvoiceRequest extends AbstractRequest
 {
 
     /**
-     * Set AccountingID from Parameter Bag (InvoiceID generic interface)
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
      * @return GetInvoiceRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
@@ -34,12 +35,12 @@ class GetInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (ContactGroupIDs)
+     * Accounting ID (AccountID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -49,43 +50,33 @@ class GetInvoiceRequest extends AbstractRequest
      * @return integer
      */
     public function getPage() {
-        if ($this->getParameter('page')) {
-            return $this->getParameter('page');
-        }
-
-        return 1;
+        return $this->getParameter('page');
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
+     * @return \Omnipay\Common\Message\ResponseInterface|GetAccountResponse
+     * @throws IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $invoices = $xero->loadByGUID(Invoice::class, $this->getAccountingIDs());
-                }
-                 else {
-                     $invoices = $xero->loadByGUIDs(Invoice::class, $this->getAccountingIDs());
-                 }
-            } else {
-                $invoices = $xero->load(Invoice::class)->page($this->getPage())->execute();
+        if ($this->getAccountingID()) {
+            if ($this->getAccountingID() !== "") {
+                $response = $quickbooks->FindById('invoice', $this->getAccountingID());
             }
-            $response = $invoices;
-
-        } catch (\Exception $exception) {
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
+        } else {
+            $response = $quickbooks->FindAll('invoice', $this->getPage(), 500);
         }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
         return $this->createResponse($response);
     }
 

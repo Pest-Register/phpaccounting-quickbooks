@@ -57,6 +57,7 @@ class GetAccountResponse extends AbstractResponse
             $newAccount['name'] = $account->Name;
             $newAccount['description'] = $account->Description;
             $newAccount['type'] = $account->AccountType;
+            $newAccount['sync_token'] = $account->SyncToken;
             $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
             $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
             $newAccount['tax_type'] = $account->TaxCodeRef;
@@ -73,6 +74,7 @@ class GetAccountResponse extends AbstractResponse
                 $newAccount['name'] = $account->Name;
                 $newAccount['description'] = $account->Description;
                 $newAccount['type'] = $account->AccountType;
+                $newAccount['sync_token'] = $account->SyncToken;
                 $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
                 $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
                 $newAccount['tax_type'] = $account->TaxCodeRef;

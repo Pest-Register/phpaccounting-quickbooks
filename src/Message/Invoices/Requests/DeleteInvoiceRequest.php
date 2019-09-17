@@ -2,10 +2,12 @@
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\Quickbooks\Message\Invoices\Responses\DeleteInvoiceResponse;
-use PHPAccounting\Quickbooks\Message\Invoices\Responses\DeletePaymentResponse;
-use XeroPHP\Models\Accounting\Invoice;
+use PHPAccounting\Quickbooks\Message\Accounts\Requests\DeleteAccountRequest;
+use PHPAccounting\Quickbooks\Message\Invoices\Responses\GetInvoiceResponse;
+use QuickBooksOnline\API\Facades\Account;
+use QuickBooksOnline\API\Facades\Invoice;
 
 /**
  * Delete Invoice
@@ -14,8 +16,8 @@ use XeroPHP\Models\Accounting\Invoice;
 class DeleteInvoiceRequest extends AbstractRequest
 {
     /**
-     * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param $value
      * @return DeleteInvoiceRequest
      */
@@ -24,24 +26,13 @@ class DeleteInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * Get Accounting ID Parameter from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
     public function getAccountingID() {
         return  $this->getParameter('accounting_id');
     }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
-     * @param string $value Contact Name
-     * @return DeleteInvoiceRequest
-     */
-    public function setStatus($value) {
-        return  $this->setParameter('status', $value);
-    }
-
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -53,49 +44,61 @@ class DeleteInvoiceRequest extends AbstractRequest
     public function getData()
     {
         $this->validate('accounting_id');
-        $this->issetParam('InvoiceID', 'accounting_id');
-        $this->issetParam('Status', 'status');
+        $this->issetParam('Id', 'accounting_id');
+        $this->data['Active'] = false;
         return $this->data;
     }
 
     /**
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|DeleteInvoiceResponse
+     * @return \Omnipay\Common\Message\ResponseInterface|GetInvoiceResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
+        $quickbooks = $this->createQuickbooksDataService();
+        $updateParams = [];
+
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
         try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
-
-            $invoice = new Invoice($xero);
-            foreach ($data as $key => $value){
-                $methodName = 'set'. $key;
-                $invoice->$methodName($value);
-            }
-
-            $response = $invoice->save();
-
-        } catch (\Exception $exception){
-            $response = [
+            $targetAccount = $quickbooks->Query("select * from Invoice where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
                 'status' => 'error',
                 'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+            ]);
+        };
+        if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
+            $account = Invoice::update(current($targetAccount),$updateParams);
+            $response = $quickbooks->Update($account);
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Account not Found'
+            ]);
         }
 
-        return $this->createResponse($response->getElements());
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+
+        return $this->createResponse($response);
     }
 
     /**
      * Create Generic Response from Xero Endpoint
      * @param mixed $data Array Elements or Xero Collection from Response
-     * @return DeleteInvoiceResponse
+     * @return GetInvoiceResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new DeleteInvoiceResponse($this, $data);
+        return $this->response = new GetInvoiceResponse($this, $data);
     }
 }

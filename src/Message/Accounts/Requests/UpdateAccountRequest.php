@@ -14,6 +14,25 @@ use QuickBooksOnline\API\Facades\Account;
 class UpdateAccountRequest extends AbstractRequest
 {
     /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param string $value Account Code
+     * @return UpdateAccountRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
+    /**
      * Get Code Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
@@ -160,6 +179,7 @@ class UpdateAccountRequest extends AbstractRequest
         $this->issetParam('Id', 'accounting_id');
         $this->issetParam('AcctNum', 'code');
         $this->issetParam('Name', 'name');
+        $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('AccountType', 'type');
         $this->issetParam('Description', 'description');
         $this->issetParam('TaxCodeRef', 'tax_type');

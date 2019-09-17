@@ -149,19 +149,6 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * @param $itemID
-     * @return bool
-     */
-    private function checkIfSalesItem($itemID) {
-        if ($itemID) {
-            if ($itemID !== '') {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Add Line Items to Invoice
      * @param array $data Array of Line Items
      * @return array
@@ -174,43 +161,17 @@ class CreateInvoiceRequest extends AbstractRequest
             $lineItem['LineNum'] = $counter;
             $lineItem['Description'] = IndexSanityCheckHelper::indexSanityCheck('description', $lineData);
 
-
             if (array_key_exists('item_id', $lineData)) {
-                if ($this->checkIfSalesItem($lineData['item_id'])) {
-                    $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
-                    $lineItem['DetailType'] = 'SalesItemLineDetail';
-                    $lineItem['SalesItemLineDetail'] = [];
-                    $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
-                    $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
-                    $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
-                    $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
-                    $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
-                    $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
-                    $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
-                } else {
-                    $lineItem['DetailType'] = 'DescriptionOnly';
-                    $lineItem['DescriptionLineDetail'] = [];
-                    $lineItem['DescriptionLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
-                    if (array_key_exists('discount_rate', $lineData)) {
-                        $discountRate = (float) IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData) / 100;
-                    } else {
-                        $discountRate = 0.00;
-                    }
-                    if (array_key_exists('amount', $lineData)) {
-                        $lineItem['Amount'] = $lineData['amount'] - ($lineData['amount'] * $discountRate);
-                    }
-                }
-            } else {
-                $lineItem['DetailType'] = 'SubtotalLineDetail';
-                $lineItem['SubtotalLineDetail'] = [];
-                if (array_key_exists('discount_rate', $lineData)) {
-                    $discountRate = (float) IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData) / 100;
-                } else {
-                    $discountRate = 0.00;
-                }
-                if (array_key_exists('amount', $lineData)) {
-                    $lineItem['Amount'] = $lineData['amount'] - ($lineData['amount'] * $discountRate);
-                }
+                $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
+                $lineItem['DetailType'] = 'SalesItemLineDetail';
+                $lineItem['SalesItemLineDetail'] = [];
+                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+                $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
+                $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
+                $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
+                $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
+                $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
             }
 
             array_push($lineItems, $lineItem);
@@ -252,7 +213,6 @@ class CreateInvoiceRequest extends AbstractRequest
             }
         }
         $this->data['ApplyTaxAfterDiscount'] = true;
-        var_dump(json_encode($this->data));
         return $this->data;
     }
 

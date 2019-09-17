@@ -5,6 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\CreateInventoryItemResponse;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\UpdateInventoryItemResponse;
 use QuickBooksOnline\API\Facades\Item;
@@ -15,6 +16,25 @@ use QuickBooksOnline\API\Facades\Item;
  */
 class UpdateInventoryItemRequest extends AbstractRequest
 {
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param string $value Account Code
+     * @return UpdateInventoryItemRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
     /**
      * Get Quantity Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
@@ -291,6 +311,7 @@ class UpdateInventoryItemRequest extends AbstractRequest
 
         $this->issetParam('Id', 'accounting_id');
         $this->issetParam('Name', 'name');
+        $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('Description', 'description');
         $this->issetParam('PurchaseDesc', 'buying_description');
         $this->issetParam('UnitPrice', 'selling_unit_price');

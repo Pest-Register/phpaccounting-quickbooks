@@ -24,6 +24,7 @@ class GetInvoiceTest extends BaseTest
             ];
 
             $response = $this->gateway->getInvoice($params)->send();
+//            var_dump($response);
             if ($response->isSuccessful()) {
                 var_dump($response->getInvoices());
             } else {
