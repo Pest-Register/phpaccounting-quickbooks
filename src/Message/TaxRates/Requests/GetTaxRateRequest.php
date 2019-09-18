@@ -1,10 +1,11 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\TaxRates\Requests;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Requests\GetInventoryItemRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 use PHPAccounting\Quickbooks\Message\TaxRates\Responses\GetTaxRateResponse;
-use XeroPHP\Models\Accounting\TaxRate;
-use XeroPHP\Models\Accounting\TaxType;
 
 /**
  * Get Tax Rate(s)
@@ -14,18 +15,18 @@ class GetTaxRateRequest extends AbstractRequest
 {
 
     /**
-     * Set AccountingID from Parameter Bag (TaxRateID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * Set AccountingID from Parameter Bag (ID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
      * @param $value
      * @return GetTaxRateRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
      * @param $value
      * @return GetTaxRateRequest
      */
@@ -34,12 +35,12 @@ class GetTaxRateRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (TaxRateIDs)
+     * Inventory Item ID (ID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -49,43 +50,32 @@ class GetTaxRateRequest extends AbstractRequest
      * @return integer
      */
     public function getPage() {
-        if ($this->getParameter('page')) {
-            return $this->getParameter('page');
-        }
-
-        return 1;
+        return $this->getParameter('page');
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetTaxRateResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $accounts = $xero->loadByGUID(TaxRate::class, $this->getAccountingIDs());
-                }
-                else {
-                    $accounts = $xero->loadByGUIDs(TaxRate::class, $this->getAccountingIDs());
-                }
-            } else {
-                $accounts = $xero->load(TaxRate::class)->execute();
-            }
-            $response = $accounts;
-
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
+        if ($this->getAccountingID()) {
+            $items = $quickbooks->FindById('taxcode', $this->getAccountingID());
+            $response = $items;
+        } else {
+            $response = $quickbooks->FindAll('taxcode', $this->getPage(), 500);
         }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
         return $this->createResponse($response);
     }
 

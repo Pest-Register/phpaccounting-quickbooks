@@ -3,7 +3,8 @@
 namespace PHPAccounting\Quickbooks\Message\TaxRates\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
-use XeroPHP\Models\Accounting\TaxRate;
+use QuickBooksOnline\API\Data\IPPTaxCode;
+use QuickBooksOnline\API\Data\IPPTaxRate;
 
 /**
  * Get Tax Rate(s) Response
@@ -17,9 +18,12 @@ class GetTaxRateResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -28,11 +32,17 @@ class GetTaxRateResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
         }
+
         return null;
     }
+
 
     /**
      * Return all Invoices with Generic Schema Variable Assignment
@@ -40,30 +50,34 @@ class GetTaxRateResponse extends AbstractResponse
      */
     public function getTaxRates(){
         $taxRates = [];
-        if ($this->data instanceof TaxRate){
+        var_dump($this->data);
+        if ($this->data instanceof IPPTaxCode){
             $taxRate = $this->data;
             $newTaxRate = [];
-            $newTaxRate['name'] = $taxRate->getName();
-            $newTaxRate['tax_type'] = $taxRate->getTaxType();
-            $newTaxRate['rate'] = $taxRate->getEffectiveRate();
-            $newTaxRate['is_asset'] = $taxRate->getCanApplyToAssets();
-            $newTaxRate['is_equity'] = $taxRate->getCanApplyToEquity();
-            $newTaxRate['is_expense'] = $taxRate->getCanApplyToExpenses();
-            $newTaxRate['is_liability'] = $taxRate->getCanApplyToLiabilities();
-            $newTaxRate['is_revenue'] = $taxRate->getCanApplyToRevenue();
+            $newTaxRate['accounting_id'] = $taxRate->Id;
+            $newTaxRate['name'] = $taxRate->Description;
+            $newTaxRate['tax_type'] = $taxRate->Name;
+            $newTaxRate['sync_token'] = $taxRate->SyncToken;
+            $newTaxRate['rate'] = $taxRate->RateValue;
+            $newTaxRate['is_asset'] = true;
+            $newTaxRate['is_equity'] = true;
+            $newTaxRate['is_expense'] = true;
+            $newTaxRate['is_liability'] = true;
+            $newTaxRate['is_revenue'] = true;
             array_push($taxRates, $newTaxRate);
 
         } else {
             foreach ($this->data as $taxRate) {
                 $newTaxRate = [];
-                $newTaxRate['name'] = $taxRate->getName();
-                $newTaxRate['tax_type'] = $taxRate->getTaxType();
-                $newTaxRate['rate'] = $taxRate->getEffectiveRate();
-                $newTaxRate['is_asset'] = $taxRate->getCanApplyToAssets();
-                $newTaxRate['is_equity'] = $taxRate->getCanApplyToEquity();
-                $newTaxRate['is_expense'] = $taxRate->getCanApplyToExpenses();
-                $newTaxRate['is_liability'] = $taxRate->getCanApplyToLiabilities();
-                $newTaxRate['is_revenue'] = $taxRate->getCanApplyToRevenue();
+                $newTaxRate['accounting_id'] = $taxRate->Id;
+                $newTaxRate['name'] = $taxRate->Description;
+                $newTaxRate['tax_type'] = $taxRate->Name;
+                $newTaxRate['rate'] = $taxRate->RateValue;
+                $newTaxRate['is_asset'] = true;
+                $newTaxRate['is_equity'] = true;
+                $newTaxRate['is_expense'] = true;
+                $newTaxRate['is_liability'] = true;
+                $newTaxRate['is_revenue'] = true;
                 array_push($taxRates, $newTaxRate);
             }
         }
