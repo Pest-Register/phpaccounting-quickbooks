@@ -50,15 +50,14 @@ class GetTaxRateResponse extends AbstractResponse
      */
     public function getTaxRates(){
         $taxRates = [];
-        var_dump($this->data);
         if ($this->data instanceof IPPTaxCode){
             $taxRate = $this->data;
             $newTaxRate = [];
             $newTaxRate['accounting_id'] = $taxRate->Id;
-            $newTaxRate['name'] = $taxRate->Description;
+            $newTaxRate['name'] = $taxRate->Name;
             $newTaxRate['tax_type'] = $taxRate->Name;
             $newTaxRate['sync_token'] = $taxRate->SyncToken;
-            $newTaxRate['rate'] = $taxRate->RateValue;
+//            $newTaxRate['rate'] = $taxRate->RateValue;
             $newTaxRate['is_asset'] = true;
             $newTaxRate['is_equity'] = true;
             $newTaxRate['is_expense'] = true;
@@ -72,7 +71,7 @@ class GetTaxRateResponse extends AbstractResponse
                 $newTaxRate['accounting_id'] = $taxRate->Id;
                 $newTaxRate['name'] = $taxRate->Description;
                 $newTaxRate['tax_type'] = $taxRate->Name;
-                $newTaxRate['rate'] = $taxRate->RateValue;
+//                $newTaxRate['rate'] = $taxRate->RateValue;
                 $newTaxRate['is_asset'] = true;
                 $newTaxRate['is_equity'] = true;
                 $newTaxRate['is_expense'] = true;
