@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPPayment;
 use XeroPHP\Models\Accounting\Invoice;
 use XeroPHP\Models\Accounting\Payment;
 
@@ -13,15 +14,19 @@ use XeroPHP\Models\Accounting\Payment;
  */
 class GetPaymentResponse extends AbstractResponse
 {
+
     /**
      * Check Response for Error or Success
      * @return boolean
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -30,28 +35,30 @@ class GetPaymentResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
         }
+
         return null;
     }
 
     /**
      * Add Invoice to Payment
-     * @param $data Array of single Contact
-     * @param array $payment Xero Invoice Object Mapping
      * @return mixed
      */
     private function parseInvoice($data, $payment) {
         if ($data) {
-            $newInvoice = [];
-            $newInvoice['accounting_id'] = $data->getInvoiceID();
-            $newInvoice['type'] = $data->getType();
-            $newInvoice['invoice_number'] = $data->getInvoiceNumber();
-            $newInvoice['contact'] = [];
-            $newInvoice['contact']['accounting_id'] = $data['Contact']->getContactID();
-            $newInvoice['contact']['name'] = $data['Contact']->getName();
-            $payment['invoice'] = $newInvoice;
+            if ($data->LinkedTxn) {
+                if ($data->LinkedTxn->TxnType === 'Invoice') {
+                    $newInvoice = [];
+                    $newInvoice['accounting_id'] = $data->LinkedTxn->TxnId;
+                    $payment['invoice'] = $newInvoice;
+                }
+            }
         }
 
         return $payment;
@@ -59,15 +66,12 @@ class GetPaymentResponse extends AbstractResponse
 
     /**
      * Add Account to Payment
-     * @param $data Array of single Contact
-     * @param array $payment Xero Invoice Object Mapping
      * @return mixed
      */
     private function parseAccount($data, $payment) {
         if ($data) {
             $newAccount = [];
-            $newAccount['accounting_id'] = $data->getAccountID();
-            $newAccount['code'] = $data->getCode();
+            $newAccount['accounting_id'] = $data->value;
             $payment['account'] = $newAccount;
         }
 
@@ -80,42 +84,39 @@ class GetPaymentResponse extends AbstractResponse
      */
     public function getPayments(){
         $payments = [];
-        if ($this->data instanceof Payment){
+        if ($this->data instanceof IPPPayment){
             $payment = $this->data;
             $newPayment = [];
-            $newPayment['accounting_id'] = $payment->getPaymentID();
-            $newPayment['date'] = $payment->getDate();
-            $newPayment['amount'] = $payment->getAmount();
-            $newPayment['reference_id'] = $payment->getReference();
-            $newPayment['currency_rate'] = $payment->getCurrencyRate();
-            $newPayment['type'] = $payment->getPaymentType();
-            $newPayment['status'] = $payment->getStatus();
-            $newPayment['is_reconciled'] = $payment->getIsReconciled();
-            $newPayment['updated_at'] = $payment->getUpdatedDateUTC();
-            $newPayment = $this->parseAccount($payment->getAccount(), $newPayment);
-            $newPayment = $this->parseInvoice($payment->getInvoice(), $newPayment);
+            $newPayment['accounting_id'] = $payment->Id;
+            $newPayment['date'] = $payment->TxnDate;
+            $newPayment['amount'] = $payment->TotalAmt;
+            $newPayment['reference_id'] = $payment->PaymentRefNum;
+            $newPayment['currency'] = $payment->CurrencyRef;
+            $newPayment['type'] = $payment->PaymentType;
+            $newPayment['status'] = $payment->TxnStatus;
+            $newPayment['updated_at'] = $payment->MetaData->LastUpdatedTime;
+            $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+            $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
             array_push($payments, $newPayment);
 
         } else {
             foreach ($this->data as $payment) {
                 $newPayment = [];
-                $newPayment['accounting_id'] = $payment->getPaymentID();
-                $newPayment['date'] = $payment->getDate();
-                $newPayment['amount'] = $payment->getAmount();
-                $newPayment['reference_id'] = $payment->getReference();
-                $newPayment['currency_rate'] = $payment->getCurrencyRate();
-                $newPayment['type'] = $payment->getPaymentType();
-                $newPayment['status'] = $payment->getStatus();
-                $newPayment['is_reconciled'] = $payment->getIsReconciled();
-                $newPayment['updated_at'] = $payment->getUpdatedDateUTC();
-                $newPayment = $this->parseAccount($payment->getAccount(), $newPayment);
-                $newPayment = $this->parseInvoice($payment->getInvoice(), $newPayment);
+                $newPayment['accounting_id'] = $payment->Id;
+                $newPayment['date'] = $payment->TxnDate;
+                $newPayment['amount'] = $payment->TotalAmt;
+                $newPayment['reference_id'] = $payment->PaymentRefNum;
+                $newPayment['currency'] = $payment->CurrencyRef;
+                $newPayment['type'] = $payment->PaymentType;
+                $newPayment['status'] = $payment->TxnStatus;
+                $newPayment['updated_at'] = $payment->MetaData->LastUpdatedTime;
+                $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+                $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
                 array_push($payments, $newPayment);
             }
         }
-
 
         return $payments;
     }

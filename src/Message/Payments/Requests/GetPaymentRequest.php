@@ -1,9 +1,9 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\GetPaymentResponse;
-use XeroPHP\Models\Accounting\Payment;
 
 /**
  * Get Invoice(s)
@@ -13,18 +13,18 @@ class GetPaymentRequest extends AbstractRequest
 {
 
     /**
-     * Set AccountingID from Parameter Bag (InvoiceID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param $value
      * @return GetPaymentRequest
      */
-    public function setAccountingIDs($value) {
-        return $this->setParameter('accounting_ids', $value);
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
     }
 
     /**
      * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
      * @param $value
      * @return GetPaymentRequest
      */
@@ -33,12 +33,12 @@ class GetPaymentRequest extends AbstractRequest
     }
 
     /**
-     * Return Comma Delimited String of Accounting IDs (ContactGroupIDs)
+     * Accounting ID (AccountID)
      * @return mixed comma-delimited-string
      */
-    public function getAccountingIDs() {
-        if ($this->getParameter('accounting_ids')) {
-            return implode(', ',$this->getParameter('accounting_ids'));
+    public function getAccountingID() {
+        if ($this->getParameter('accounting_id')) {
+            return $this->getParameter('accounting_id');
         }
         return null;
     }
@@ -48,43 +48,33 @@ class GetPaymentRequest extends AbstractRequest
      * @return integer
      */
     public function getPage() {
-        if ($this->getParameter('page')) {
-            return $this->getParameter('page');
-        }
-
-        return 1;
+        return $this->getParameter('page');
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetPaymentResponse
+     * @throws IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
 
-            if ($this->getAccountingIDs()) {
-                if(strpos($this->getAccountingIDs(), ',') === false) {
-                    $accounts = $xero->loadByGUID(Payment::class, $this->getAccountingIDs());
-                }
-                else {
-                    $accounts = $xero->loadByGUIDs(Payment::class, $this->getAccountingIDs());
-                }
-            } else {
-                $accounts = $xero->load(Payment::class)->execute();
+        if ($this->getAccountingID()) {
+            if ($this->getAccountingID() !== "") {
+                $response = $quickbooks->FindById('payment', $this->getAccountingID());
             }
-            $response = $accounts;
-
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
+        } else {
+            $response = $quickbooks->FindAll('payment', $this->getPage(), 500);
         }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
         return $this->createResponse($response);
     }
 

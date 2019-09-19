@@ -12,16 +12,18 @@ class CreatePaymentTest extends BaseTest
         try {
 
             $params = [
+                'currency' => 'AUD',
                 'currency_rate' => 1.0,
-                'amount' => 100.00,
+                'amount' => 7150.00,
                 'reference_id' => 'Test Description',
                 'is_reconciled' => true,
                 'date' => '2019-27-06',
                 'invoice' => [
-                    'accounting_id' => '30a87092-31b5-4a2c-831e-327486533dd2'
+                    'accounting_id' => '127',
+                    'amount' => 7150.00
                 ],
-                'account' => [
-                    'accounting_id' => '13918178-849a-4823-9a31-57b7eac713d7'
+                'contact' => [
+                    'accounting_id' => 3
                 ]
             ];
 

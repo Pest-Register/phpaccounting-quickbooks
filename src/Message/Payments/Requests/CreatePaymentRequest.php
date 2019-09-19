@@ -2,15 +2,10 @@
 
 namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
-use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\CreatePaymentResponse;
-use XeroPHP\Models\Accounting\Account;
-use XeroPHP\Models\Accounting\CreditNote;
-use XeroPHP\Models\Accounting\Invoice;
-use XeroPHP\Models\Accounting\Overpayment;
-use XeroPHP\Models\Accounting\Payment;
-use XeroPHP\Models\Accounting\Prepayment;
+use QuickBooksOnline\API\Facades\Payment;
 
 /**
  * Create Invoice
@@ -18,7 +13,61 @@ use XeroPHP\Models\Accounting\Prepayment;
  */
 class CreatePaymentRequest extends AbstractRequest
 {
+    /**
+     * Get Contact Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @return mixed
+     */
+    public function getContact(){
+        return $this->getParameter('contact');
+    }
 
+    /**
+     * Set Contact Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @param string $value Sync Token
+     * @return CreatePaymentRequest
+     */
+    public function setContact($value){
+        return $this->setParameter('contact', $value);
+    }
+
+    /**
+     * Get Currency Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @return mixed
+     */
+    public function getCurrency(){
+        return $this->getParameter('currency');
+    }
+
+    /**
+     * Set Currency Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @param string $value Sync Token
+     * @return CreatePaymentRequest
+     */
+    public function setCurrency($value){
+        return $this->setParameter('currency', $value);
+    }
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
+     * @param string $value Sync Token
+     * @return CreatePaymentRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
     /**
      * Get Amount Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
@@ -209,6 +258,33 @@ class CreatePaymentRequest extends AbstractRequest
         return $this->setParameter('date', $value);
     }
 
+    private function addCreditNoteToPayment( $payment, $value) {
+        if (array_key_exists('accounting_id', $value)) {
+            $invoice = [
+                'Amount' => $value['amount'],
+                'LinkedTxn' => [
+                    'TxnId' => $value['accounting_id'],
+                    'TxnType' => 'CreditMemo'
+                ]
+            ];
+            array_push($payment['Line'], $invoice);
+        }
+    }
+
+    private function addInvoiceToPayment($payment, $value) {
+        if (array_key_exists('accounting_id', $value)) {
+            $invoice = [
+                'Amount' => $value['amount'],
+                'LinkedTxn' => [
+                    'TxnId' => $value['accounting_id'],
+                    'TxnType' => 'Invoice'
+                ]
+            ];
+            array_push($payment['Line'], $invoice);
+        }
+
+        return $payment;
+    }
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -219,140 +295,61 @@ class CreatePaymentRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('account', 'amount', 'date');
+        $this->validate('amount', 'date');
 
-        $this->issetParam('Account', 'account');
-        $this->issetParam('Invoice', 'invoice');
-        $this->issetParam('CreditNote', 'credit_note');
-        $this->issetParam('Prepayment', 'prepayment');
-        $this->issetParam('Overpayment', 'overpayment');
-        $this->issetParam('Date', 'date');
-        $this->issetParam('CurrencyRate', 'currency_rate');
-        $this->issetParam('Amount', 'amount');
-        $this->issetParam('Reference', 'reference_id');
-        $this->issetParam('IsReconciled', 'is_reconciled');
-        $this->issetParam('Status', 'status');
+        $this->issetParam('TotalAmt', 'amount');
+        $this->issetParam('PaymentRefNum', 'reference_id');
+        $this->issetParam('SyncToken', 'sync_token');
+
+        $this->data['Line'] = [];
+        if ($this->getInvoice()) {
+            $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice());
+        }
+
+        if ($this->getCreditNote()) {
+            $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote());
+        }
+
+        if ($this->getAccount()) {
+            $this->data['ARAccountRef']['value'] = $this->getAccount()['accounting_id'];
+        }
+
+        if ($this->getCurrency()) {
+            $this->data['CurrencyRef']['value'] = $this->getCurrency();
+        }
+
+        if ($this->getContact()) {
+            $this->data['CustomerRef']['value'] = $this->getContact()['accounting_id'];
+        }
+
         return $this->data;
     }
 
     /**
-     * @param Payment $payment
-     * @param $value
-     * @return Payment
-     */
-    private function addOverpaymentToPayment(Payment $payment, $value) {
-        if (array_key_exists('accounting_id', $value)) {
-            $overpayment = new Overpayment();
-            $overpayment->setOverpaymentID($value['accounting_id']);
-            $payment->setOverpayment($overpayment);
-        }
-    }
-    /**
-     * @param Payment $payment
-     * @param $value
-     * @return Payment
-     */
-    private function addCreditNoteToPayment(Payment $payment, $value) {
-        if (array_key_exists('accounting_id', $value)) {
-            $creditNote = new CreditNote();
-            $creditNote->setCreditNoteID($value['accounting_id']);
-            $payment->setCreditNote($creditNote);
-        } elseif (array_key_exists('credit_note_number', $value)) {
-            $creditNote = new CreditNote();
-            $creditNote->setCreditNoteNumber($value['credit_note_number']);
-            $payment->setCreditNote($creditNote);
-        }
-    }
-
-    /**
-     * @param Payment $payment
-     * @param $value
-     * @return Payment
-     */
-    private function addAccountToPayment(Payment $payment, $value) {
-        if (array_key_exists('accounting_id', $value)) {
-            $account = new Account();
-            $account->setAccountID($value['accounting_id']);
-            $payment->setAccount($account);
-        } else if (array_key_exists('code', $value)) {
-            $account = new Account();
-            $account->setCode($value['code']);
-            $payment->setAccount($account);
-        }
-    }
-
-    /**
-     * @param Payment $payment
-     * @param $value
-     * @return Payment
-     */
-    private function addInvoiceToPayment(Payment $payment, $value) {
-        if (array_key_exists('accounting_id', $value)) {
-            $invoice = new Invoice();
-            $invoice->setInvoiceID($value['accounting_id']);
-            $payment->setInvoice($invoice);
-        } else if (array_key_exists('invoice_number', $value)) {
-            $invoice = new Invoice();
-            $invoice->setInvoiceNumber($value['invoice_number']);
-            $payment->setInvoice($invoice);
-        }
-    }
-
-    /**
-     * @param Payment $payment
-     * @param $value
-     * @return Payment
-     */
-    private function addPrepaymentToPayment(Payment $payment, $value) {
-        if (array_key_exists('accounting_id', $value)) {
-            $prepayment = new Prepayment();
-            $prepayment->setPrepaymentID($value['accounting_id']);
-            $payment->setPrepayment($prepayment);
-        }
-    }
-
-    /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|CreateContactResponse
+     * @return \Omnipay\Common\Message\ResponseInterface|CreatePaymentResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
-        try {
-            $xero = $this->createXeroApplication();
-            $xero->getOAuthClient()->setToken($this->getAccessToken());
-            $xero->getOAuthClient()->setTokenSecret($this->getAccessTokenSecret());
+        $quickbooks = $this->createQuickbooksDataService();
+        $createParams = [];
 
-            $payment = new Payment($xero);
-            foreach ($data as $key => $value){
-                if ($key === 'Account') {
-                    $this->addAccountToPayment($payment, $value);
-                } elseif ($key === 'Invoice') {
-                    $this->addInvoiceToPayment($payment, $value);
-                } elseif ($key === 'CreditNote') {
-                    $this->addCreditNoteToPayment($payment, $value);
-                } elseif ($key === 'Prepayment') {
-                    $this->addPrepaymentToPayment($payment, $value);
-                } elseif ($key === 'Overpayment') {
-                    $this->addOverpaymentToPayment($payment, $value);
-                } elseif ($key === 'Date') {
-                    $methodName = 'set'. $key;
-                    $date = \DateTime::createFromFormat('Y-m-d', $value);
-                    $payment->$methodName($date);
-                } else {
-                    $methodName = 'set'. $key;
-                    $payment->$methodName($value);
-                }
-            }
-            $response = $payment->save();
-        } catch (\Exception $exception){
-            $response = [
-                'status' => 'error',
-                'detail' => $exception->getMessage()
-            ];
-            return $this->createResponse($response);
+        foreach ($data as $key => $value){
+            $createParams[$key] = $data[$key];
         }
-        return $this->createResponse($response->getElements());
+
+        $payment = Payment::create($createParams);
+        $response = $quickbooks->Add($payment);
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+        return $this->createResponse($response);
     }
 
     /**
