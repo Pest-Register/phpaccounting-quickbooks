@@ -9,84 +9,57 @@
 namespace PHPAccounting\XERO\Message\ManualJournals\Response;
 
 
+use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\XERO\Message\ManualJournals\Request\GetManualJournalRequest;
 
-class GetManualJournalResponse extends AbstractRequest
+class GetManualJournalResponse extends AbstractResponse
 {
 
     /**
-     * Set AccountingID from Parameter Bag (ID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
-     * @param $value
-     * @return GetManualJournalResponse
+     * Check Response for Error or Success
+     * @return boolean
      */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Set Page Value for Pagination from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
-     * @param $value
-     * @return GetManualJournalResponse
-     */
-    public function setPage($value) {
-        return $this->setParameter('page', $value);
-    }
-
-    /**
-     * Inventory Item ID (ID)
-     * @return mixed comma-delimited-string
-     */
-    public function getAccountingID() {
-        if ($this->getParameter('accounting_id')) {
-            return $this->getParameter('accounting_id');
+    public function isSuccessful()
+    {
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
+        return true;
+    }
+
+    /**
+     * Fetch Error Message from Response
+     * @return string
+     */
+    public function getErrorMessage(){
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
+        }
+
         return null;
     }
 
-    /**
-     * Return Page Value for Pagination
-     * @return integer
-     */
-    public function getPage() {
-        return $this->getParameter('page');
-    }
 
-    /**
-     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
-     * @param mixed $data Parameter Bag Variables After Validation
-     * @return GetTaxRateResponse
-     * @throws \QuickBooksOnline\API\Exception\IdsException
-     * @throws \Exception
-     */
-    public function sendData($data)
-    {
-        $quickbooks = $this->createQuickbooksDataService();
-
-        if ($this->getAccountingID()) {
-            $items = $quickbooks->FindById('taxcode', $this->getAccountingID());
-            $response = $items;
-        } else {
-            $response = $quickbooks->FindAll('taxcode', $this->getPage(), 500);
+    public function getOrganisations(){
+        $organisations = [];
+        if ($this->data instanceof IPPCompanyInfo){
+            $organisation = $this->data;
+            $newOrganisation = [];
+            $newOrganisation['accounting_id'] = $organisation->Id;
+            $newOrganisation['name'] = $organisation->CompanyName;
+            $newOrganisation['country_code'] = $organisation->Country;
+            $newOrganisation['legal_name'] = $organisation->LegalName;
+            array_push($organisations, $newOrganisation);
         }
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
-        }
-
-        return $this->createResponse($response);
-    }
-
-    /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
-     * @return GetTaxRateResponse
-     */
-    public function createResponse($data)
-    {
-        return $this->response = new GetTaxRateResponse($this, $data);
+        return $organisations;
     }
 }
