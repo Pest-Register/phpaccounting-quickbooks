@@ -17,24 +17,6 @@ use QuickBooksOnline\API\Facades\JournalEntry;
 
 class UpdateManualJournalRequest extends AbstractRequest
 {
-    /**
-     * Get Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getNarration(){
-        return $this->getParameter('narration');
-    }
-
-    /**
-     * Set Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Status
-     * @return UpdateManualJournalRequest
-     */
-    public function setNarration($value){
-        return $this->setParameter('narration', $value);
-    }
 
     /**
      * Get Journal Data Parameter from Parameter Bag
@@ -53,44 +35,6 @@ class UpdateManualJournalRequest extends AbstractRequest
      */
     public function setJournalData($value){
         return $this->setParameter('journal_data', $value);
-    }
-
-    /**
-     * Get Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getStatus(){
-        return $this->getParameter('status');
-    }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Status
-     * @return CreateManualJournalRequest
-     */
-    public function setStatus($value){
-        return $this->setParameter('status', $value);
-    }
-
-    /**
-     * Get Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getDate(){
-        return $this->getParameter('date');
-    }
-
-    /**
-     * Set Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Date
-     * @return UpdateManualJournalRequest
-     */
-    public function setDate($value){
-        return $this->setParameter('date', $value);
     }
 
     /**
@@ -142,6 +86,12 @@ class UpdateManualJournalRequest extends AbstractRequest
     {
         $this->validate('journal_data', 'accounting_id');
         $this->issetParam('Line', 'journal_data');
+        $this->issetParam('PrivateNote', 'narration');
+        $this->issetParam('DocNumber', 'reference_id');
+
+        if ($this->getJournalData()) {
+            $this->data['Line'] = $this->addJournalLinesToJournal($this->getJournalData());
+        }
 
         return $this->data;
     }
@@ -155,9 +105,12 @@ class UpdateManualJournalRequest extends AbstractRequest
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
+
         $updateParams = [];
 
-        $updateParams['Line'] = $this->addJournalLinesToJournal($data['Line']);
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
 
         $id = $this->getAccountingID();
         try {
@@ -170,7 +123,7 @@ class UpdateManualJournalRequest extends AbstractRequest
         }
 
         if (!empty($targetItem) && sizeof($targetItem) == 1) {
-            $item = Invoice::update(current($targetItem), $updateParams);
+            $item = JournalEntry::update(current($targetItem), $updateParams);
             $response = $quickbooks->Update($item);
         } else {
             return $this->createResponse([

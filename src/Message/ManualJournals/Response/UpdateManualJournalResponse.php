@@ -10,6 +10,7 @@ namespace PHPAccounting\XERO\Message\ManualJournals\Response;
 
 
 use Omnipay\Common\Message\AbstractResponse;
+use QuickBooksOnline\API\Data\IPPJournalEntry;
 
 class UpdateManualJournalResponse extends AbstractResponse
 {
@@ -45,44 +46,75 @@ class UpdateManualJournalResponse extends AbstractResponse
     }
 
 
-    private function parseJournalLines($data, $journal) {
+    /**
+     * Add LineItems to JournalEntry
+     * @param $data
+     * @param $journal
+     * @return mixed
+     */
+    private function parseJournalItems($data, $journal) {
         if ($data) {
-            $lineItems = [];
-            foreach($data as $lineItem) {
-                $newLineItem = [];
-                $newLineItem['description'] = IndexSanityCheckHelper::indexSanityCheck('Description', $lineItem);
-                $newLineItem['line_amount'] = IndexSanityCheckHelper::indexSanityCheck('LineAmount', $lineItem);
-                $newLineItem['tax_amount'] = IndexSanityCheckHelper::indexSanityCheck('TaxAmount', $lineItem);
-                $newLineItem['account_code'] = IndexSanityCheckHelper::indexSanityCheck('AccountCode', $lineItem);
-                $newLineItem['tax_type'] = IndexSanityCheckHelper::indexSanityCheck('TaxType', $lineItem);
-                array_push($lineItems, $newLineItem);
+            $journalItems = [];
+            foreach($data as $journalItem) {
+                $newJournalItem = [];
+                $newJournalItem['tax_amount'] = 0;
+                $newJournalItem['gross_amount'] = 0;
+                $newJournalItem['net_amount'] = 0;
+                $newJournalItem['accounting_id'] = $journalItem->Id;
+                $newJournalItem['description'] = $journalItem->Description;
+                $newJournalItem['credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit'? true : false;
+                $newJournalItem['gross_amount'] = $journalItem->Amount;
+
+                if(isset($journalItem->journalLineDetail->AccountRef)){
+                    $newJournalItem['account_code'] = $journalItem->journalLineDetail->AccountRef->value;
+                    $newJournalItem['account_name'] = $journalItem->journalLineDetail->AccountRef->name;
+                }
+
+                if(isset($journalItem->journalLineDetail->TaxCodeRef)){
+                    $newJournalItem['tax_type'] = $journalItem->journalLineDetail->TaxCodeRef->value;
+                }
+                if(isset($journalItem->journalLineDetail->TaxAmount)){
+                    $newJournalItem['tax_amount'] = $journalItem->journalLineDetail->TaxAmount;
+                    $newJournalItem['net_amount'] = (float) $newJournalItem['tax_amount'] + (float) $newJournalItem['gross_amount'];
+                }
+
+                array_push($journalItems, $newJournalItem);
             }
 
-            $journal['journal_data'] = $lineItems;
+            $journal['journal_data'] = $journalItems;
         }
-
         return $journal;
     }
+
     /**
-     * Return all Invoices with Generic Schema Variable Assignment
+     * Return all JournalEntries with Generic Schema Variable Assignment
      * @return array
      */
     public function getManualJournals(){
-        $journals = [];
-        foreach ($this->data as $journal) {
-            $newJournal = [];
-            $newJournal['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ManualJournalID', $journal);
-            $newJournal['status'] = IndexSanityCheckHelper::indexSanityCheck('Status', $journal);
-            $newJournal['narration'] = IndexSanityCheckHelper::indexSanityCheck('Narration', $journal);
-            $newJournal['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $journal);
+        $journalEntrys = [];
+        if ($this->data instanceof IPPJournalEntry){
+            $journalEntry = $this->data;
+            $newJournalEntry = [];
+            $newJournalEntry['accounting_id'] = $journalEntry->Id;
+            $newInvoice['sync_token'] = $journalEntry->SyncToken;
+            $newInvoice['date'] = $journalEntry->TxnDate;
+            $newInvoice['updated_at'] = $journalEntry->MetaData['LastUpdatedTime'];
+            $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
 
-            if (IndexSanityCheckHelper::indexSanityCheck('JournalLines', $journal)) {
-                $newJournal = $this->parseJournalLines($journal['JournalLines'], $newJournal);
+            array_push($invoices, $newInvoice);
+
+        } else {
+            foreach ($this->data as $journalEntry) {
+                $newJournalEntry = [];
+                $newJournalEntry['accounting_id'] = $journalEntry->Id;
+                $newInvoice['sync_token'] = $journalEntry->SyncToken;
+                $newInvoice['date'] = $journalEntry->TxnDate;
+                $newInvoice['updated_at'] = $journalEntry->MetaData['LastUpdatedTime'];
+                $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
+                array_push($invoices, $newInvoice);
             }
-
-            array_push($journals, $newJournal);
         }
 
-        return $journals;
+        return $journalEntrys;
     }
 }

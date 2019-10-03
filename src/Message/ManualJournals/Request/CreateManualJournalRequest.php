@@ -18,24 +18,7 @@ use QuickBooksOnline\API\Facades\JournalEntry;
 
 class CreateManualJournalRequest extends AbstractRequest
 {
-    /**
-     * Get Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getNarration(){
-        return $this->getParameter('narration');
-    }
 
-    /**
-     * Set Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Status
-     * @return CreateManualJournalRequest
-     */
-    public function setNarration($value){
-        return $this->setParameter('narration', $value);
-    }
 
     /**
      * Get Journal Data Parameter from Parameter Bag
@@ -56,60 +39,26 @@ class CreateManualJournalRequest extends AbstractRequest
         return $this->setParameter('journal_data', $value);
     }
 
-    /**
-     * Get Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getStatus(){
-        return $this->getParameter('status');
-    }
-
-    /**
-     * Set Status Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Status
-     * @return CreateManualJournalRequest
-     */
-    public function setStatus($value){
-        return $this->setParameter('status', $value);
-    }
-
-    /**
-     * Get Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @return mixed
-     */
-    public function getDate(){
-        return $this->getParameter('date');
-    }
-
-    /**
-     * Set Date Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
-     * @param string $value Date
-     * @return CreateManualJournalRequest
-     */
-    public function setDate($value){
-        return $this->setParameter('date', $value);
-    }
-
     private function addJournalLinesToJournal($data) {
         $lines = [];
         foreach($data as $lineData) {
 
             $lineItem = [];
-            $lineItem['JournalEntryLineDetail'] = [
-                'PostingType' => $lineData['credit'] == true? 'Credit' : 'Debit',
-                'AccountRef' => [
-                    'name' => IndexSanityCheckHelper::indexSanityCheck('account_code',$lineData),
-                    'value' => IndexSanityCheckHelper::indexSanityCheck('account_id',$lineData)
-                ]
-            ];
-
+            $lineItem['JournalEntryLineDetail'] = [];
+            $lineItem['JournalEntryLineDetail']['PostingType'] = $lineData['credit'] == true? 'Credit' : 'Debit';
+            if(array_key_exists('tax_type_id', $lineItem)){
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef'] = [];
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('tax_type',$lineData);
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_type_id',$lineData);
+            }
+            $lineItem['JournalEntryLineDetail']['AccountRef'] = [];
+            $lineItem['JournalEntryLineDetail']['AccountRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('account_code',$lineData);
+            $lineItem['JournalEntryLineDetail']['AccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id',$lineData);
+            $lineItem['Id'] = IndexSanityCheckHelper::indexSanityCheck('accounting_id',$lineData);
             $lineItem["Description"] = IndexSanityCheckHelper::indexSanityCheck('description',$lineData);
             $lineItem["Amount"] = IndexSanityCheckHelper::indexSanityCheck('gross_amount',$lineData);
             $lineItem["DetailType"] = "JournalEntryLineDetail";
+
             array_push($lines, $lineItem);
         }
         return $lines;
@@ -124,9 +73,14 @@ class CreateManualJournalRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('journal_data');
+        $this->validate('journal_data', 'accounting_id');
         $this->issetParam('Line', 'journal_data');
+        $this->issetParam('PrivateNote', 'narration');
+        $this->issetParam('DocNumber', 'reference_id');
 
+        if ($this->getJournalData()) {
+            $this->data['Line'] = $this->addJournalLinesToJournal($this->getJournalData());
+        }
         return $this->data;
     }
 
@@ -139,9 +93,12 @@ class CreateManualJournalRequest extends AbstractRequest
     public function sendData($data)
     {
         $quickbooks = $this->createQuickbooksDataService();
+
         $createParams = [];
 
-        $createParams['Line'] = $this->addJournalLinesToJournal($data['Line']);
+        foreach ($data as $key => $value){
+            $createParams[$key] = $data[$key];
+        }
 
         $manualJournal = JournalEntry::create($createParams);
         $response = $quickbooks->Add($manualJournal);
