@@ -90,7 +90,7 @@ class UpdateManualJournalResponse extends AbstractResponse
      * Return all JournalEntries with Generic Schema Variable Assignment
      * @return array
      */
-    public function getManualJournals(){
+    public function getJournals(){
         $journalEntrys = [];
         if ($this->data instanceof IPPJournalEntry){
             $journalEntry = $this->data;
