@@ -19,7 +19,43 @@ use QuickBooksOnline\API\Facades\JournalEntry;
 class CreateManualJournalRequest extends AbstractRequest
 {
 
+    /**
+     * Get Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @return mixed
+     */
+    public function getNarration(){
+        return $this->getParameter('narration');
+    }
 
+    /**
+     * Set Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @param string $value Status
+     * @return CreateManualJournalRequest
+     */
+    public function setNarration($value){
+        return $this->setParameter('narration', $value);
+    }
+
+    /**
+     * Get Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @return mixed
+     */
+    public function getReferenceId(){
+        return $this->getParameter('reference_id');
+    }
+
+    /**
+     * Set Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @param string $value Status
+     * @return CreateManualJournalRequest
+     */
+    public function setReferenceId($value){
+        return $this->setParameter('reference_id', $value);
+    }
     /**
      * Get Journal Data Parameter from Parameter Bag
      * @see https://developer.xero.com/documentation/api/manual-journals
@@ -73,7 +109,7 @@ class CreateManualJournalRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('journal_data', 'accounting_id');
+        $this->validate('journal_data');
         $this->issetParam('Line', 'journal_data');
         $this->issetParam('PrivateNote', 'narration');
         $this->issetParam('DocNumber', 'reference_id');

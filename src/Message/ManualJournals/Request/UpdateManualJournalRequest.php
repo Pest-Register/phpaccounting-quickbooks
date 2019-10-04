@@ -19,6 +19,44 @@ class UpdateManualJournalRequest extends AbstractRequest
 {
 
     /**
+     * Get Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @return mixed
+     */
+    public function getNarration(){
+        return $this->getParameter('narration');
+    }
+
+    /**
+     * Set Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @param string $value Status
+     * @return UpdateManualJournalRequest
+     */
+    public function setNarration($value){
+        return $this->setParameter('narration', $value);
+    }
+
+    /**
+     * Get Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @return mixed
+     */
+    public function getReferenceId(){
+        return $this->getParameter('reference_id');
+    }
+
+    /**
+     * Set Narration Parameter from Parameter Bag
+     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @param string $value Status
+     * @return UpdateManualJournalRequest
+     */
+    public function setReferenceId($value){
+        return $this->setParameter('reference_id', $value);
+    }
+
+    /**
      * Get Journal Data Parameter from Parameter Bag
      * @see https://developer.xero.com/documentation/api/manual-journals
      * @return mixed
@@ -63,6 +101,11 @@ class UpdateManualJournalRequest extends AbstractRequest
             $lineItem = [];
             $lineItem['JournalEntryLineDetail'] = [];
             $lineItem['JournalEntryLineDetail']['PostingType'] = $lineData['credit'] == true? 'Credit' : 'Debit';
+            if(array_key_exists('tax_type_id', $lineItem)){
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef'] = [];
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('tax_type',$lineData);
+                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_type_id',$lineData);
+            }
             $lineItem['JournalEntryLineDetail']['AccountRef'] = [];
             $lineItem['JournalEntryLineDetail']['AccountRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('account_code',$lineData);
             $lineItem['JournalEntryLineDetail']['AccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id',$lineData);
