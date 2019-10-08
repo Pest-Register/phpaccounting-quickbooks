@@ -12,7 +12,7 @@ namespace PHPAccounting\XERO\Message\ManualJournals\Response;
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\XERO\Message\ManualJournals\Request\GetManualJournalRequest;
+use PHPAccounting\XERO\Message\ManualJournals\Requests\GetManualJournalRequest;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 use QuickBooksOnline\API\Data\IPPQueryResponse;
 

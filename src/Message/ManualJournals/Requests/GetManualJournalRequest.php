@@ -6,7 +6,7 @@
  * Time: 3:10 PM
  */
 
-namespace PHPAccounting\XERO\Message\ManualJournals\Request;
+namespace PHPAccounting\XERO\Message\ManualJournals\Requests;
 
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
