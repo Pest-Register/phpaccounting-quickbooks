@@ -2,18 +2,18 @@
 /**
  * Created by IntelliJ IDEA.
  * User: Dylan
- * Date: 3/10/2019
- * Time: 9:35 AM
+ * Date: 8/10/2019
+ * Time: 2:24 PM
  */
 
-namespace Tests\Journals;
+namespace Tests\ManualJournals;
 
 
 use Tests\BaseTest;
 
-class GetJournalTest extends BaseTest
+class GetManualJournalTest extends BaseTest
 {
-    public function testGetJournals()
+    public function testGetManualJournals()
     {
         $this->setUp();
         $params = [
@@ -21,7 +21,7 @@ class GetJournalTest extends BaseTest
             'page' => 1
         ];
         try {
-            $response = $this->gateway->getJournal($params)->send();
+            $response = $this->gateway->getManualJournal($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getJournals());
             } else {

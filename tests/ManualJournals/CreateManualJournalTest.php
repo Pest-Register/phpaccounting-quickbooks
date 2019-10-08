@@ -17,30 +17,22 @@ class CreateManualJournalTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                "Line" => [
+                "narration" => 'a manual journal entry',
+                "reference_id" => "298u3nd",
+                "journal_data" => [
                     [
-                        "Description" => "nov portion of rider insurance",
-                        "Amount" => 100.0,
-                        "DetailType" => "JournalEntryLineDetail",
-                        "JournalEntryLineDetail" => [
-                            "PostingType" => "Debit",
-                            "AccountRef" => [
-                                "value" => "39",
-                                "name" => "Opening Bal Equity"
-                            ]
-                        ]
+                        "credit" => true,
+                        "gross_amount" => 100.0,
+                        "account_code" => 999,
+                        "account_id" => 1,
+                        "description" => "test transaction"
                     ],
                     [
-                        "Description" => "nov portion of rider insurance",
-                        "Amount" => 100.0,
-                        "DetailType" => "JournalEntryLineDetail",
-                        "JournalEntryLineDetail" => [
-                            "PostingType" => "Credit",
-                            "AccountRef" => [
-                                "value" => "44",
-                                "name" => "Notes Payable"
-                            ]
-                        ]
+                        "credit" => false,
+                        "gross_amount" => 100.0,
+                        "account_code" => 998,
+                        "account_id" => 2,
+                        "description" => "test transaction",
                     ]
                 ]
             ];
@@ -48,7 +40,7 @@ class CreateManualJournalTest extends BaseTest
             $response = $this->gateway->createManualJournal($params)->send();
             if ($response->isSuccessful()) {
                 $this->assertIsArray($response->getData());
-                var_dump($response->getManualJournals());
+                var_dump($response->getJournals());
             }
             var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {

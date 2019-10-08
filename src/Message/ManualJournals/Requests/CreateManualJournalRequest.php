@@ -90,7 +90,6 @@ class CreateManualJournalRequest extends AbstractRequest
             $lineItem['JournalEntryLineDetail']['AccountRef'] = [];
             $lineItem['JournalEntryLineDetail']['AccountRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('account_code',$lineData);
             $lineItem['JournalEntryLineDetail']['AccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id',$lineData);
-            $lineItem['Id'] = IndexSanityCheckHelper::indexSanityCheck('accounting_id',$lineData);
             $lineItem["Description"] = IndexSanityCheckHelper::indexSanityCheck('description',$lineData);
             $lineItem["Amount"] = IndexSanityCheckHelper::indexSanityCheck('gross_amount',$lineData);
             $lineItem["DetailType"] = "JournalEntryLineDetail";
