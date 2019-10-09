@@ -43,4 +43,12 @@ class DeleteManualJournalResponse extends AbstractResponse
 
         return null;
     }
+
+    /**
+     * Return all JournalEntries with Generic Schema Variable Assignment
+     * @return array
+     */
+    public function getManualJournals(){
+        return [];
+    }
 }
