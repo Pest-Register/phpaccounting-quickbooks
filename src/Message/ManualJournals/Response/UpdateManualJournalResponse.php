@@ -6,7 +6,7 @@
  * Time: 3:59 PM
  */
 
-namespace PHPAccounting\XERO\Message\ManualJournals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
 
 
 use Omnipay\Common\Message\AbstractResponse;

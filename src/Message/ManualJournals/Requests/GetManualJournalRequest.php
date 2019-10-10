@@ -6,13 +6,13 @@
  * Time: 3:10 PM
  */
 
-namespace PHPAccounting\XERO\Message\ManualJournals\Requests;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\XERO\Message\ManualJournals\Response\GetManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Response\GetManualJournalResponse;
 
 class GetManualJournalRequest extends AbstractRequest
 {

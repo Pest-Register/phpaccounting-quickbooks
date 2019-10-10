@@ -6,12 +6,12 @@
  * Time: 3:02 PM
  */
 
-namespace PHPAccounting\XERO\Message\Journals\Request;
+namespace PHPAccounting\Quickbooks\Message\Journals\Request;
 
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\XERO\Message\Journals\Response\GetJournalResponse;
+use PHPAccounting\Quickbooks\Message\Journals\Response\GetJournalResponse;
 
 class GetJournalRequest extends AbstractRequest
 {

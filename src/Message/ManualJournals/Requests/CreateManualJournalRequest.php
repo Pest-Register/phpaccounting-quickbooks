@@ -6,14 +6,14 @@
  * Time: 11:40 AM
  */
 
-namespace PHPAccounting\XERO\Message\ManualJournals\Requests;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\XERO\Message\ManualJournals\Response\CreateManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Response\CreateManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
 class CreateManualJournalRequest extends AbstractRequest

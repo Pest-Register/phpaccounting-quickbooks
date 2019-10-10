@@ -6,13 +6,13 @@
  * Time: 3:10 PM
  */
 
-namespace PHPAccounting\XERO\Message\ManualJournals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
 
 
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\XERO\Message\ManualJournals\Requests\GetManualJournalRequest;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Requests\GetManualJournalRequest;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 use QuickBooksOnline\API\Data\IPPQueryResponse;
 

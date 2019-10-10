@@ -6,7 +6,7 @@
  * Time: 3:02 PM
  */
 
-namespace PHPAccounting\XERO\Message\Journals\Response;
+namespace PHPAccounting\Quickbooks\Message\Journals\Response;
 
 
 use PHPAccounting\Quickbooks\Message\Response;
