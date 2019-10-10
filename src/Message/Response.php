@@ -15,7 +15,7 @@ class Response extends \Omnipay\Common\Message\AbstractResponse
 {
 
     /**
-     * Request id
+     * Requests id
      *
      * @var string URL
      */
