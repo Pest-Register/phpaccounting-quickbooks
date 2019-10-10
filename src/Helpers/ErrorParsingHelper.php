@@ -12,8 +12,16 @@ class ErrorParsingHelper
     public static function parseError($error) {
         $errorObj = new \SimpleXMLElement($error->getResponseBody());
         $errorObj = json_decode( json_encode($errorObj) , true);
-        $message = $errorObj['Fault']['Error']['Message'];
-        $detail = $errorObj['Fault']['Error']['Detail'];
+        $message = '';
+        $detail = '';
+        if (array_key_exists('Message', $errorObj['Fault']['Error'])) {
+            $message = $errorObj['Fault']['Error']['Message'];
+        }
+
+        if (array_key_exists('Detail', $errorObj['Fault']['Error'])) {
+            $message = $errorObj['Fault']['Error']['Detail'];
+        }
+
         return [
             'error' => [
                 'status' => $error->getHttpStatusCode(),
