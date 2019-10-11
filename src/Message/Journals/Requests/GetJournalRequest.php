@@ -63,8 +63,6 @@ class GetJournalRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('accounting_id');
-
         return $this->data;
     }
 
