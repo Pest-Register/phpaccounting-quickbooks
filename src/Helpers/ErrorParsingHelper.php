@@ -19,7 +19,7 @@ class ErrorParsingHelper
         }
 
         if (array_key_exists('Detail', $errorObj['Fault']['Error'])) {
-            $message = $errorObj['Fault']['Error']['Detail'];
+            $detail = $errorObj['Fault']['Error']['Detail'];
         }
 
         return [
