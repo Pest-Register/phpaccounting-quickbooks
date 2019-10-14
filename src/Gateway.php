@@ -287,6 +287,14 @@ class Gateway extends AbstractGateway
     }
 
     /**
+     * @param array $parameters
+     * @return \Omnipay\Common\Message\AbstractRequest
+     */
+    public function getTaxRateValue(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\TaxRateValues\Requests\GetTaxRateValuesRequest', $parameters);
+    }
+
+    /**
      * Journal Requests
      * @param array $parameters
      * @return \Omnipay\Common\Message\AbstractRequest

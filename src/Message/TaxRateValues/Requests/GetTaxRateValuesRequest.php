@@ -1,25 +1,22 @@
 <?php
 
-namespace PHPAccounting\Quickbooks\Message\TaxRates\Requests;
+namespace PHPAccounting\Quickbooks\Message\TaxRateValues\Requests;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\Quickbooks\Message\InventoryItems\Requests\GetInventoryItemRequest;
-use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
-use PHPAccounting\Quickbooks\Message\TaxRates\Responses\GetTaxRateResponse;
-use PHPAccounting\Quickbooks\Message\TaxRates\Responses\GetTaxRateValuesResponse;
+use PHPAccounting\Quickbooks\Message\TaxRateValues\Responses\GetTaxRateValuesResponse;
 
 /**
  * Get Tax Rate(s)
  * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
-class GetTaxRateRequest extends AbstractRequest
+class GetTaxRateValuesRequest extends AbstractRequest
 {
 
     /**
      * Set AccountingID from Parameter Bag (ID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
      * @param $value
-     * @return GetTaxRateRequest
+     * @return GetTaxRateValuesRequest
      */
     public function setAccountingID($value) {
         return $this->setParameter('accounting_id', $value);
@@ -29,7 +26,7 @@ class GetTaxRateRequest extends AbstractRequest
      * Set Page Value for Pagination from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/taxrate
      * @param $value
-     * @return GetTaxRateRequest
+     * @return GetTaxRateValuesRequest
      */
     public function setPage($value) {
         return $this->setParameter('page', $value);
@@ -57,7 +54,7 @@ class GetTaxRateRequest extends AbstractRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return GetTaxRateResponse
+     * @return GetTaxRateValuesResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
@@ -66,10 +63,10 @@ class GetTaxRateRequest extends AbstractRequest
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
-            $items = $quickbooks->FindById('taxcode', $this->getAccountingID());
+            $items = $quickbooks->FindById('taxrate', $this->getAccountingID());
             $response = $items;
         } else {
-            $response = $quickbooks->FindAll('taxcode', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('taxrate', $this->getPage(), 500);
         }
 
 
@@ -84,10 +81,10 @@ class GetTaxRateRequest extends AbstractRequest
     /**
      * Create Generic Response from Xero Endpoint
      * @param mixed $data Array Elements or Xero Collection from Response
-     * @return GetTaxRateResponse
+     * @return GetTaxRateValuesResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new GetTaxRateResponse($this, $data);
+        return $this->response = new GetTaxRateValuesResponse($this, $data);
     }
 }

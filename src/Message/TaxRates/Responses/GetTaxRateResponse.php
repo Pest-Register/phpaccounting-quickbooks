@@ -50,7 +50,7 @@ class GetTaxRateResponse extends AbstractResponse
      */
     public function getTaxRates(){
         $taxRates = [];
-        if ($this->data instanceof IPPTaxRate){
+        if ($this->data instanceof IPPTaxCode){
             $taxRate = $this->data;
             $newTaxRate = [];
             $newTaxRate['accounting_id'] = $taxRate->Id;
@@ -58,7 +58,7 @@ class GetTaxRateResponse extends AbstractResponse
             $newTaxRate['description'] = $taxRate->Description;
             $newTaxRate['tax_type'] = $taxRate->Name;
             $newTaxRate['sync_token'] = $taxRate->SyncToken;
-            $newTaxRate['rate'] = $taxRate->RateValue;
+            $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
             $newTaxRate['is_asset'] = true;
             $newTaxRate['is_equity'] = true;
             $newTaxRate['is_expense'] = true;
@@ -73,7 +73,12 @@ class GetTaxRateResponse extends AbstractResponse
                 $newTaxRate['description'] = $taxRate->Description;
                 $newTaxRate['name'] = $taxRate->Name;
                 $newTaxRate['tax_type'] = $taxRate->Name;
-                $newTaxRate['rate'] = $taxRate->RateValue;
+                if ($taxRate->SalesTaxRateList) {
+                    $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
+                } elseif ($taxRate->PurchaseTaxRateList) {
+                    $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
+                }
+
                 $newTaxRate['is_asset'] = true;
                 $newTaxRate['is_equity'] = true;
                 $newTaxRate['is_expense'] = true;
