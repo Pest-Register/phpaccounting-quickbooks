@@ -1,5 +1,5 @@
 <?php
-namespace PHPAccounting\Quickbooiks\Message\Contacts\Requests;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
