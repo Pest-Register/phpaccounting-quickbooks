@@ -58,12 +58,16 @@ class GetAccountResponse extends AbstractResponse
             $newAccount['description'] = $account->Description;
             $newAccount['type'] = $account->AccountType;
             $newAccount['sync_token'] = $account->SyncToken;
-            $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+            $newAccount['is_bank_account'] = false;
             $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
             $newAccount['tax_type'] = $account->TaxCodeRef;
             $newAccount['bank_account_number'] = $account->BankNum;
             $newAccount['currency_code'] = $account->CurrencyRef;
             $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
+
+            if ($account->AccountType === 'Bank') {
+                $newAccount['is_bank_account'] = true;
+            }
             array_push($accounts, $newAccount);
         }
         else {
@@ -75,12 +79,16 @@ class GetAccountResponse extends AbstractResponse
                 $newAccount['description'] = $account->Description;
                 $newAccount['type'] = $account->AccountType;
                 $newAccount['sync_token'] = $account->SyncToken;
-                $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
+                $newAccount['is_bank_account'] = false;
                 $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
                 $newAccount['tax_type'] = $account->TaxCodeRef;
                 $newAccount['bank_account_number'] = $account->BankNum;
                 $newAccount['currency_code'] = $account->CurrencyRef;
                 $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
+
+                if ($account->AccountType === 'Bank') {
+                    $newAccount['is_bank_account'] = true;
+                }
                 array_push($accounts, $newAccount);
             }
         }
