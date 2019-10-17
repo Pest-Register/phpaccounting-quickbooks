@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Accounts\Responses;
 
+use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use QuickBooksOnline\API\Data\IPPAccount;
 
@@ -63,7 +64,7 @@ class GetAccountResponse extends AbstractResponse
             $newAccount['tax_type'] = $account->TaxCodeRef;
             $newAccount['bank_account_number'] = $account->BankNum;
             $newAccount['currency_code'] = $account->CurrencyRef;
-            $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
+            $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime);
 
             if ($account->AccountType === 'Bank') {
                 $newAccount['is_bank_account'] = true;
@@ -84,7 +85,7 @@ class GetAccountResponse extends AbstractResponse
                 $newAccount['tax_type'] = $account->TaxCodeRef;
                 $newAccount['bank_account_number'] = $account->BankNum;
                 $newAccount['currency_code'] = $account->CurrencyRef;
-                $newAccount['updated_at'] = $account->MetaData->LastUpdatedTime;
+                $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime);
 
                 if ($account->AccountType === 'Bank') {
                     $newAccount['is_bank_account'] = true;

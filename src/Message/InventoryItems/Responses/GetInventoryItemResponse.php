@@ -63,7 +63,7 @@ class GetInventoryItemResponse extends AbstractResponse
             $newItem['selling_description'] = $item->Description;
             $newItem['quantity'] = $item->QtyOnHand;
             $newItem['cost_pool'] = $item->AvgCost;
-            $newItem['updated_at'] = $item->MetaData->LastUpdatedTime;
+            $newItem['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $item->MetaData->LastUpdatedTime);
             if ($item->TrackQtyOnHand) {
                 $item['buying_account_code'] = $item->COGSAccountRef;
             } else {
@@ -91,7 +91,7 @@ class GetInventoryItemResponse extends AbstractResponse
                 $newItem['selling_description'] = $item->Description;
                 $newItem['quantity'] = $item->QtyOnHand;
                 $newItem['cost_pool'] = $item->AvgCost;
-                $newItem['updated_at'] = $item->MetaData->LastUpdatedTime;
+                $newItem['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $item->MetaData->LastUpdatedTime);
                 if ($item->TrackQtyOnHand) {
                     $newItem['buying_account_code'] = $item->COGSAccountRef;
                 } else {

@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
+use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use QuickBooksOnline\API\Data\IPPCustomer;
 
@@ -63,7 +64,7 @@ class CreateContactResponse extends AbstractResponse
             $newContact['is_individual'] = ($contact->CompanyName ? true : false);
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
-            $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+            $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime);
             if ($contact->ShipAddr) {
                 array_push($newContact['addresses'], [
                     'address_type' =>  'STREET',
@@ -134,7 +135,7 @@ class CreateContactResponse extends AbstractResponse
                 $newContact['is_individual'] = ($contact->CompanyName ? true : false);
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
-                $newContact['updated_at'] = $contact->MetaData->LastUpdatedTime;
+                $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime);
                 if ($contact->ShipAddr) {
                     array_push($newContact['addresses'], [
                         'address_type' =>  'STREET',
