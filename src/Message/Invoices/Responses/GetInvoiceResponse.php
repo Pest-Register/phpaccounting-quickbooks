@@ -58,7 +58,7 @@ class GetInvoiceResponse extends AbstractResponse
                 $newLineItem['line_amount'] = $lineItem->Amount;
                 $newLineItem['accounting_id'] = $lineItem->Id;
                 $newLineItem['amount'] = $lineItem->Amount;
-
+                $newLineItem['quantity'] = 0;
                 $salesLineDetail = $lineItem->SalesItemLineDetail;
                 if ($salesLineDetail) {
                     $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
@@ -67,7 +67,6 @@ class GetInvoiceResponse extends AbstractResponse
                     } else {
                         $newLineItem['quantity'] = 0;
                     }
-
                     $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                     $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                     $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
