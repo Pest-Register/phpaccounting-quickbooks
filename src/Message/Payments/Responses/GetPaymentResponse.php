@@ -93,7 +93,7 @@ class GetPaymentResponse extends AbstractResponse
             $newPayment['amount'] = $payment->TotalAmt;
             $newPayment['reference_id'] = $payment->PaymentRefNum;
             $newPayment['currency'] = $payment->CurrencyRef;
-            $newPayment['type'] = $payment->PaymentType;
+            $newPayment['type'] = 'ACCRECPAYMENT';
             $newPayment['status'] = $payment->TxnStatus;
             $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
             $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
@@ -109,7 +109,7 @@ class GetPaymentResponse extends AbstractResponse
                 $newPayment['amount'] = $payment->TotalAmt;
                 $newPayment['reference_id'] = $payment->PaymentRefNum;
                 $newPayment['currency'] = $payment->CurrencyRef;
-                $newPayment['type'] = $payment->PaymentType;
+                $newPayment['type'] = 'ACCRECPAYMENT';
                 $newPayment['status'] = $payment->TxnStatus;
                 $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
