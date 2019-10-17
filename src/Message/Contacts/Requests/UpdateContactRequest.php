@@ -277,7 +277,7 @@ class UpdateContactRequest extends AbstractRequest
                         ];
                     break;
                 default:
-                    if (!$contact['AlternatePhone']) {
+                    if (!array_key_exists('AlternatePhone',$contact)) {
                         $contact['AlternatePhone'] =
                             [
                                 'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
