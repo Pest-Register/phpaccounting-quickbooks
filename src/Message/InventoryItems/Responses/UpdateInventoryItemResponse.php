@@ -53,6 +53,7 @@ class UpdateInventoryItemResponse extends AbstractResponse
             $newItem = [];
             $newItem['accounting_id'] = $item->Id;
             $newItem['name'] = $item->Name;
+            $newItem['code'] = $item->Name;
             $newItem['description'] = $item->Description;
             $newItem['type'] = $item->Type;
             $newItem['sync_token'] = $item->SyncToken;
@@ -81,6 +82,7 @@ class UpdateInventoryItemResponse extends AbstractResponse
                 $newItem = [];
                 $newItem['accounting_id'] = $item->Id;
                 $newItem['name'] = $item->Name;
+                $newItem['code'] = $item->Name;
                 $newItem['description'] = $item->Description;
                 $newItem['type'] = $item->Type;
                 $newItem['sync_token'] = $item->SyncToken;
