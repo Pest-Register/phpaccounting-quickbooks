@@ -23,7 +23,7 @@ class GetManualJournalTest extends BaseTest
         try {
             $response = $this->gateway->getManualJournal($params)->send();
             if ($response->isSuccessful()) {
-                var_dump($response->getJournals());
+                var_dump($response->getManualJournals());
             } else {
                 var_dump($response->getErrorMessage());
             }

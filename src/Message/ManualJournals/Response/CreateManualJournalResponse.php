@@ -94,30 +94,30 @@ class CreateManualJournalResponse extends AbstractResponse
      * @return array
      */
     public function getManualJournals(){
-        $journalEntrys = [];
+        $journalEntries = [];
         if ($this->data instanceof IPPJournalEntry){
             $journalEntry = $this->data;
             $newJournalEntry = [];
             $newJournalEntry['accounting_id'] = $journalEntry->Id;
-            $newInvoice['sync_token'] = $journalEntry->SyncToken;
-            $newInvoice['date'] = $journalEntry->TxnDate;
-            $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
-            $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
+            $newJournalEntry['sync_token'] = $journalEntry->SyncToken;
+            $newJournalEntry['date'] = $journalEntry->TxnDate;
+            $newJournalEntry['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
+            $newJournalEntry = $this->parseJournalItems($journalEntry->Line, $newJournalEntry);
 
-            array_push($invoices, $newInvoice);
+            array_push($journalEntries, $newJournalEntry);
 
         } else {
             foreach ($this->data as $journalEntry) {
                 $newJournalEntry = [];
                 $newJournalEntry['accounting_id'] = $journalEntry->Id;
-                $newInvoice['sync_token'] = $journalEntry->SyncToken;
-                $newInvoice['date'] = $journalEntry->TxnDate;
-                $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
-                $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
-                array_push($invoices, $newInvoice);
+                $newJournalEntry['sync_token'] = $journalEntry->SyncToken;
+                $newJournalEntry['date'] = $journalEntry->TxnDate;
+                $newJournalEntry['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
+                $newJournalEntry = $this->parseJournalItems($journalEntry->Line, $newJournalEntry);
+                array_push($journalEntries, $newJournalEntry);
             }
         }
 
-        return $journalEntrys;
+        return $journalEntries;
     }
 }
