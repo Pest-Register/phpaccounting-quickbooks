@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Responses;
 
+use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use QuickBooksOnline\API\Data\IPPItem;
 
