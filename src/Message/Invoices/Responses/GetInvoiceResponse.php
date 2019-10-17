@@ -53,33 +53,33 @@ class GetInvoiceResponse extends AbstractResponse
         if ($data) {
             $lineItems = [];
             foreach($data as $lineItem) {
-                $newLineItem = [];
-                $newLineItem['description'] = $lineItem->Description;
-                $newLineItem['line_amount'] = $lineItem->Amount;
-                $newLineItem['accounting_id'] = $lineItem->Id;
-                $newLineItem['amount'] = $lineItem->Amount;
-                $newLineItem['quantity'] = 0;
-                $newLineItem['unit_amount'] = 0;
-                $salesLineDetail = $lineItem->SalesItemLineDetail;
-                if ($salesLineDetail) {
-                    if ($lineItem->SalesItemLineDetail->UnitPrice) {
-                        $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                if ($lineItem->Id) {
+                    $newLineItem = [];
+                    $newLineItem['description'] = $lineItem->Description;
+                    $newLineItem['line_amount'] = $lineItem->Amount;
+                    $newLineItem['accounting_id'] = $lineItem->Id;
+                    $newLineItem['amount'] = $lineItem->Amount;
+                    $newLineItem['quantity'] = 0;
+                    $newLineItem['unit_amount'] = 0;
+                    $salesLineDetail = $lineItem->SalesItemLineDetail;
+                    if ($salesLineDetail) {
+                        if ($lineItem->SalesItemLineDetail->UnitPrice) {
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                        }
+                        if ($lineItem->SalesItemLineDetail->Qty) {
+                            $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
+                        } else {
+                            $newLineItem['quantity'] = 0;
+                        }
+                        $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
+                        $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
+                        $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
+                        $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
+                        $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
-                    if ($lineItem->SalesItemLineDetail->Qty) {
-                        $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
-                    } else {
-                        $newLineItem['quantity'] = 0;
-                    }
-                    $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
-                    $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
-                    $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                    $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
-                    $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
+                    array_push($lineItems, $newLineItem);
                 }
-
-                array_push($lineItems, $newLineItem);
             }
-
             $invoice['invoice_data'] = $lineItems;
         }
 
