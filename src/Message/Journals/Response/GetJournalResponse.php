@@ -100,7 +100,7 @@ class GetJournalResponse extends Response
             $newJournalEntry['accounting_id'] = $journalEntry->Id;
             $newInvoice['sync_token'] = $journalEntry->SyncToken;
             $newInvoice['date'] = $journalEntry->TxnDate;
-            $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime);
+            $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
             $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
 
             array_push($invoices, $newInvoice);
@@ -111,7 +111,7 @@ class GetJournalResponse extends Response
                 $newJournalEntry['accounting_id'] = $journalEntry->Id;
                 $newInvoice['sync_token'] = $journalEntry->SyncToken;
                 $newInvoice['date'] = $journalEntry->TxnDate;
-                $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime);
+                $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newInvoice = $this->parseJournalItems($journalEntry->Line, $newInvoice);
                 array_push($invoices, $newInvoice);
             }

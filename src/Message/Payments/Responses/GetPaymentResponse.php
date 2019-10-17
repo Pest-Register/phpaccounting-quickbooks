@@ -95,7 +95,7 @@ class GetPaymentResponse extends AbstractResponse
             $newPayment['currency'] = $payment->CurrencyRef;
             $newPayment['type'] = $payment->PaymentType;
             $newPayment['status'] = $payment->TxnStatus;
-            $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime);
+            $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
             $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
             $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
@@ -111,7 +111,7 @@ class GetPaymentResponse extends AbstractResponse
                 $newPayment['currency'] = $payment->CurrencyRef;
                 $newPayment['type'] = $payment->PaymentType;
                 $newPayment['status'] = $payment->TxnStatus;
-                $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime);
+                $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
                 $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
