@@ -99,6 +99,7 @@ class GetJournalResponse extends AbstractResponse
             $journalEntry = $this->data;
             $newJournalEntry = [];
             $newJournalEntry['accounting_id'] = $journalEntry->Id;
+            $newJournalEntry['reference_id'] = $journalEntry->DocNumber;
             $newJournalEntry['sync_token'] = $journalEntry->SyncToken;
             $newJournalEntry['date'] = $journalEntry->TxnDate;
             $newJournalEntry['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
@@ -110,6 +111,7 @@ class GetJournalResponse extends AbstractResponse
             foreach ($this->data as $journalEntry) {
                 $newJournalEntry = [];
                 $newJournalEntry['accounting_id'] = $journalEntry->Id;
+                $newJournalEntry['reference_id'] = $journalEntry->DocNumber;
                 $newJournalEntry['sync_token'] = $journalEntry->SyncToken;
                 $newJournalEntry['date'] = $journalEntry->TxnDate;
                 $newJournalEntry['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
