@@ -66,16 +66,15 @@ class UpdateManualJournalResponse extends AbstractResponse
                 $newJournalItem['credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit'? true : false;
                 $newJournalItem['gross_amount'] = $journalItem->Amount;
 
-                if(isset($journalItem->journalLineDetail->AccountRef)){
-                    $newJournalItem['account_code'] = $journalItem->journalLineDetail->AccountRef->value;
-                    $newJournalItem['account_name'] = $journalItem->journalLineDetail->AccountRef->name;
+                if(isset($journalItem->JournalEntryLineDetail->AccountRef)){
+                    $newJournalItem['account_code'] = $journalItem->JournalEntryLineDetail->AccountRef;
                 }
 
-                if(isset($journalItem->journalLineDetail->TaxCodeRef)){
-                    $newJournalItem['tax_type'] = $journalItem->journalLineDetail->TaxCodeRef->value;
+                if(isset($journalItem->JournalEntryLineDetail->TaxCodeRef)){
+                    $newJournalItem['tax_type'] = $journalItem->JournalEntryLineDetail->TaxCodeRef;
                 }
-                if(isset($journalItem->journalLineDetail->TaxAmount)){
-                    $newJournalItem['tax_amount'] = $journalItem->journalLineDetail->TaxAmount;
+                if(isset($journalItem->JournalEntryLineDetail->TaxAmount)){
+                    $newJournalItem['tax_amount'] = $journalItem->JournalEntryLineDetail->TaxAmount;
                     $newJournalItem['net_amount'] = (float) $newJournalItem['tax_amount'] + (float) $newJournalItem['gross_amount'];
                 }
 
