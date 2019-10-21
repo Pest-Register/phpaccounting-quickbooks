@@ -56,20 +56,6 @@ class GetManualJournalRequest extends AbstractRequest
     }
 
     /**
-     * Get the raw data array for this message. The format of this varies from gateway to
-     * gateway, but will usually be either an associative array, or a SimpleXMLElement.
-     *
-     * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
-     */
-    public function getData()
-    {
-        $this->validate('accounting_id');
-
-        return $this->data;
-    }
-
-    /**
      * Send Data to Xero Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetManualJournalResponse
@@ -80,8 +66,9 @@ class GetManualJournalRequest extends AbstractRequest
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
-            $accounts = $quickbooks->FindById('journalentry', $this->getAccountingID());
-            $response = $accounts;
+            if ($this->getAccountingID() !== "") {
+                $response = $quickbooks->FindById('journalentry', $this->getAccountingID());
+            }
         } else {
             $response = $quickbooks->FindAll('journalentry', $this->getPage(), 500);
         }

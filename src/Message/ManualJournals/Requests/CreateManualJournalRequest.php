@@ -124,6 +124,7 @@ class CreateManualJournalRequest extends AbstractRequest
      * @param mixed $data Parameter Bag Variables After Validation
      * @return CreateManualJournalResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
      */
     public function sendData($data)
     {
