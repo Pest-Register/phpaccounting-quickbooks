@@ -282,31 +282,38 @@ class CreateInventoryItemRequest extends AbstractRequest
             ];
         }
         $purchaseDetails = $this->getPurchaseDetails();
-        if (array_key_exists('tracked_buying_account_code',$this->getPurchaseDetails())) {
-            $purchaseDetails = $this->getPurchaseDetails();
-            $this->data['COGSAccountCode'] = [
-                'value' => $purchaseDetails['tracked_buying_account_code']
-            ];
-        } else {
-            $this->data['ExpenseAccountRef'] = [
-                'value' => $purchaseDetails['buying_account_code']
-            ];
-        }
-        $this->data['PurchaseCost'] = $purchaseDetails['buying_unit_price'];
+        $salesDetails = $this->getSalesDetails();
+        $assetDetails = $this->getAssetDetails();
 
-        if (array_key_exists('selling_account_code',$this->getSalesDetails())) {
-            $salesDetails = $this->getSalesDetails();
-            $this->data['IncomeAccountRef'] = [
-                'value' => $salesDetails['selling_account_code']
-            ];
+        if ($purchaseDetails) {
+            if (array_key_exists('tracked_buying_account_code',$purchaseDetails)) {
+                $this->data['COGSAccountCode'] = [
+                    'value' => $purchaseDetails['tracked_buying_account_code']
+                ];
+            } else {
+                $this->data['ExpenseAccountRef'] = [
+                    'value' => $purchaseDetails['buying_account_code']
+                ];
+            }
+            $this->data['PurchaseCost'] = $purchaseDetails['buying_unit_price'];
         }
 
-        if (array_key_exists('asset_account_code', $this->getAssetDetails())) {
-            $assetDetails = $this->getAssetDetails();
-            $this->data['AssetAccountRef'] = [
-                'value' => $assetDetails['asset_account_code']
-            ];
+        if ($salesDetails) {
+            if (array_key_exists('selling_account_code',$salesDetails)) {
+                $this->data['IncomeAccountRef'] = [
+                    'value' => $salesDetails['selling_account_code']
+                ];
+            }
         }
+
+        if ($assetDetails) {
+            if (array_key_exists('asset_account_code', $assetDetails)) {
+                $this->data['AssetAccountRef'] = [
+                    'value' => $assetDetails['asset_account_code']
+                ];
+            }
+        }
+
 
         $this->data['Active'] = true;
         $this->data['InvStartDate'] = $datetime;
