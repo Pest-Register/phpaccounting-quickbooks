@@ -19,7 +19,7 @@ class DeleteManualJournalRequest extends AbstractRequest
 
     /**
      * Get Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @return mixed
      */
     public function getJournalData(){
@@ -28,7 +28,7 @@ class DeleteManualJournalRequest extends AbstractRequest
 
     /**
      * Set Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @param string $value Status
      * @return DeleteManualJournalRequest
      */
@@ -38,7 +38,7 @@ class DeleteManualJournalRequest extends AbstractRequest
 
     /**
      * Set Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @param string $value Status
      * @return DeleteManualJournalRequest
      */
@@ -48,7 +48,7 @@ class DeleteManualJournalRequest extends AbstractRequest
 
     /**
      * Get Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @return mixed
      */
     public function getSyncToken(){

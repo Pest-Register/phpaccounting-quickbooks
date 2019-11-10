@@ -20,7 +20,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Get Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @return mixed
      */
     public function getNarration(){
@@ -29,7 +29,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Set Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @param string $value Status
      * @return UpdateManualJournalRequest
      */
@@ -39,7 +39,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Get Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @return mixed
      */
     public function getReferenceId(){
@@ -48,7 +48,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Set Narration Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @param string $value Status
      * @return UpdateManualJournalRequest
      */
@@ -58,7 +58,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Get Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @return mixed
      */
     public function getJournalData(){
@@ -67,7 +67,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
     /**
      * Set Journal Data Parameter from Parameter Bag
-     * @see https://developer.xero.com/documentation/api/manual-journals
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
      * @param string $value Status
      * @return UpdateManualJournalRequest
      */
