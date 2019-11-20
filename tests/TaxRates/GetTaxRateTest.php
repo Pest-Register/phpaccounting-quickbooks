@@ -19,7 +19,7 @@ class GetTaxRateTest extends BaseTest
 
             $response = $this->gateway->getTaxRate($params)->send();
             if ($response->isSuccessful()) {
-                var_dump(json_encode($response->getTaxRates()));
+                var_dump($response->getTaxRates());
             } else {
                 var_dump($response->getErrorMessage());
             }
