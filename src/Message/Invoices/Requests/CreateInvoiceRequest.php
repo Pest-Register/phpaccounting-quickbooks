@@ -14,6 +14,24 @@ use QuickBooksOnline\API\Facades\Invoice;
  */
 class CreateInvoiceRequest extends AbstractRequest
 {
+    /**
+     * Get GST Inclusive Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getGSTInclusive(){
+        return $this->getParameter('gst_inclusive');
+    }
+
+    /**
+     * Set GST Inclusive Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value GST Inclusive
+     * @return CreateInvoiceRequest
+     */
+    public function setGSTInclusive($value){
+        return $this->setParameter('gst_inclusive', $value);
+    }
 
     /**
      * Get Total Parameter from Parameter Bag
@@ -203,6 +221,18 @@ class CreateInvoiceRequest extends AbstractRequest
             $this->data['CustomerRef'] = [
                 'value' => $this->getContact()
             ];
+        }
+
+        if ($this->getGSTInclusive()) {
+            if ($this->getGSTInclusive() === 'EXCLUSIVE') {
+                $this->data['GlobalTaxCalculation'] = 'TaxExcluded';
+            }
+            if ($this->getGSTInclusive() === 'INCLUSIVE') {
+                $this->data['GlobalTaxCalculation'] = 'TaxInclusive';
+            }
+            if ($this->getGSTInclusive() === 'NONE') {
+                $this->data['GlobalTaxCalculation'] = 'NotApplicable';
+            }
         }
 
         if ($this->getEmailStatus()) {

@@ -15,6 +15,24 @@ use QuickBooksOnline\API\Facades\Invoice;
  */
 class UpdateInvoiceRequest extends AbstractRequest
 {
+    /**
+     * Get GST Inclusive Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getGSTInclusive(){
+        return $this->getParameter('gst_inclusive');
+    }
+
+    /**
+     * Set GST Inclusive Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value GST Inclusive
+     * @return UpdateInvoiceRequest
+     */
+    public function setGSTInclusive($value){
+        return $this->setParameter('gst_inclusive', $value);
+    }
 
     /**
      * Get Sync Token Parameter from Parameter Bag
@@ -235,6 +253,19 @@ class UpdateInvoiceRequest extends AbstractRequest
                 $this->data['EmailStatus'] = 'NotSet';
             }
         }
+
+        if ($this->getGSTInclusive()) {
+            if ($this->getGSTInclusive() === 'EXCLUSIVE') {
+                $this->data['GlobalTaxCalculation'] = 'TaxExcluded';
+            }
+            if ($this->getGSTInclusive() === 'INCLUSIVE') {
+                $this->data['GlobalTaxCalculation'] = 'TaxInclusive';
+            }
+            if ($this->getGSTInclusive() === 'NONE') {
+                $this->data['GlobalTaxCalculation'] = 'NotApplicable';
+            }
+        }
+
         $this->data['ApplyTaxAfterDiscount'] = true;
         return $this->data;
     }
