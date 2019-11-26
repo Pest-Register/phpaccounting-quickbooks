@@ -13,7 +13,8 @@ class CreateAccountTest extends BaseTest
                 'code' => 999,
                 'name' => 'Test',
                 'type' => 'Accounts Receivable',
-                'tax_type' => 'INPUT'
+                'tax_type' => 'INPUT',
+                'tax_type_id' => 1,
             ];
 
             $response = $this->gateway->createAccount($params)->send();

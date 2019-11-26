@@ -17,6 +17,7 @@ class UpdateAccountTest extends BaseTest
                 'name' => 'Test 1',
                 'type' => 'Accounts Receivable',
                 'tax_type' => 'INPUT',
+                'tax_type_id' => 1,
                 'description' => 'Test Description 5'
             ];
 

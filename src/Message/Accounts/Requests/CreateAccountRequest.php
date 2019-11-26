@@ -77,8 +77,8 @@ class CreateAccountRequest extends AbstractRequest
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
-    public function getTaxType(){
-        return $this->getParameter('tax_type');
+    public function getTaxTypeID(){
+        return $this->getParameter('tax_type_id');
     }
 
     /**
@@ -87,8 +87,8 @@ class CreateAccountRequest extends AbstractRequest
      * @param string $value Account Tax Type
      * @return CreateAccountRequest
      */
-    public function setTaxType($value){
-        return $this->setParameter('tax_type', $value);
+    public function setTaxTypeID($value){
+        return $this->setParameter('tax_type_id', $value);
     }
 
 
@@ -106,7 +106,7 @@ class CreateAccountRequest extends AbstractRequest
         $this->issetParam('AcctNum', 'code');
         $this->issetParam('Name', 'name');
         $this->issetParam('AccountType', 'type');
-        $this->issetParam('TaxCodeRef', 'tax_type');
+        $this->issetParam('TaxCodeRef', 'tax_type_id');
         return $this->data;
     }
 

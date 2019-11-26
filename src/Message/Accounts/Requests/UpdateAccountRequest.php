@@ -113,8 +113,8 @@ class UpdateAccountRequest extends AbstractRequest
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @return mixed
      */
-    public function getTaxType(){
-        return $this->getParameter('tax_type');
+    public function getTaxTypeID(){
+        return $this->getParameter('tax_type_id');
     }
 
     /**
@@ -123,8 +123,8 @@ class UpdateAccountRequest extends AbstractRequest
      * @param string $value Account Tax Type
      * @return UpdateAccountRequest
      */
-    public function setTaxType($value){
-        return $this->setParameter('tax_type', $value);
+    public function setTaxTypeID($value){
+        return $this->setParameter('tax_type_id', $value);
     }
 
     /**
@@ -182,7 +182,7 @@ class UpdateAccountRequest extends AbstractRequest
         $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('AccountType', 'type');
         $this->issetParam('Description', 'description');
-        $this->issetParam('TaxCodeRef', 'tax_type');
+        $this->issetParam('TaxCodeRef', 'tax_type_id');
         $this->issetParam('CurrencyRef', 'currency_code');
         $this->data['sparse'] = true;
         return $this->data;
