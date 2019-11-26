@@ -106,7 +106,11 @@ class CreateAccountRequest extends AbstractRequest
         $this->issetParam('AcctNum', 'code');
         $this->issetParam('Name', 'name');
         $this->issetParam('AccountType', 'type');
-        $this->issetParam('TaxCodeRef', 'tax_type_id');
+        if ($this->getTaxTypeID()) {
+            $this->data['TaxCodeRef'] = [
+                'value' => $this->getTaxTypeID()
+            ];
+        }
         return $this->data;
     }
 
