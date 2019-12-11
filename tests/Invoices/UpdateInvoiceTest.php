@@ -36,7 +36,7 @@ class UpdateInvoiceTest extends BaseTest
 
             $response = $this->gateway->updateInvoice($params)->send();
             if ($response->isSuccessful()) {
-                $invoices = $response->getInvoice();
+                $invoices = $response->getInvoices();
                 $this->assertIsArray($invoices);
             }
         } catch (\Exception $exception) {
