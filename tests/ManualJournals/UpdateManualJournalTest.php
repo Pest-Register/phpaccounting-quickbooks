@@ -22,7 +22,7 @@ class UpdateManualJournalTest extends BaseTest
                 "reference_id" => "298u3nd",
                 "journal_data" => [
                     [
-                        "credit" => true,
+                        "is_credit" => true,
                         "gross_amount" => 100.0,
                         "account_code" => 999,
                         "account_id" => 1,
@@ -30,7 +30,7 @@ class UpdateManualJournalTest extends BaseTest
                         "description" => "test transaction"
                     ],
                     [
-                        "credit" => false,
+                        "is_credit" => false,
                         "gross_amount" => 100.0,
                         "account_code" => 998,
                         "account_id" => 2,
@@ -44,8 +44,10 @@ class UpdateManualJournalTest extends BaseTest
             if ($response->isSuccessful()) {
                 $this->assertIsArray($response->getData());
                 var_dump($response->getManualJournals());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
+
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }
