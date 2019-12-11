@@ -63,7 +63,7 @@ class UpdateManualJournalResponse extends AbstractResponse
                 $newJournalItem['net_amount'] = 0;
                 $newJournalItem['accounting_id'] = $journalItem->Id;
                 $newJournalItem['description'] = $journalItem->Description;
-                $newJournalItem['credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit'? true : false;
+                $newJournalItem['is_credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit' ? true : false;
                 $newJournalItem['gross_amount'] = $journalItem->Amount;
 
                 if(isset($journalItem->JournalEntryLineDetail->AccountRef)){

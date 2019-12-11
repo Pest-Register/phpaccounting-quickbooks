@@ -100,7 +100,7 @@ class UpdateManualJournalRequest extends AbstractRequest
 
             $lineItem = [];
             $lineItem['JournalEntryLineDetail'] = [];
-            $lineItem['JournalEntryLineDetail']['PostingType'] = $lineData['credit'] == true? 'Credit' : 'Debit';
+            $lineItem['JournalEntryLineDetail']['PostingType'] = $lineData['is_credit'] == true ? 'Credit' : 'Debit';
             if(array_key_exists('tax_type_id', $lineItem)){
                 $lineItem['JournalEntryLineDetail']['TaxCodeRef'] = [];
                 $lineItem['JournalEntryLineDetail']['TaxCodeRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('tax_type',$lineData);
