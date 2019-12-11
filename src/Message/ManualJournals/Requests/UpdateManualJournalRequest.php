@@ -171,7 +171,7 @@ class UpdateManualJournalRequest extends AbstractRequest
         } else {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => 'Existing Invoice not Found'
+                'detail' => 'Existing Journal Entry not Found'
             ]);
         }
 
