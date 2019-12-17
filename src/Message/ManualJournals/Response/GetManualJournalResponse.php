@@ -81,6 +81,8 @@ class GetManualJournalResponse extends AbstractResponse
                 if(isset($journalItem->JournalEntryLineDetail->TaxAmount)){
                     $newJournalItem['tax_amount'] = $journalItem->JournalEntryLineDetail->TaxAmount;
                     $newJournalItem['net_amount'] = (float) $newJournalItem['tax_amount'] + (float) $newJournalItem['gross_amount'];
+                } else {
+                    $newJournalItem['net_amount'] = $newJournalItem['gross_amount'];
                 }
 
                 array_push($journalItems, $newJournalItem);
