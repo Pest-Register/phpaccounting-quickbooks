@@ -123,6 +123,11 @@ class CreateInvoiceResponse extends AbstractResponse
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
 
+            if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
+                $newInvoice['status'] = 'PAID';
+            } else {
+                $newInvoice['status'] = 'AUTHORISED';
+            }
             array_push($invoices, $newInvoice);
 
         } else {
@@ -143,6 +148,11 @@ class CreateInvoiceResponse extends AbstractResponse
                 $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+                if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
+                    $newInvoice['status'] = 'PAID';
+                } else {
+                    $newInvoice['status'] = 'AUTHORISED';
+                }
                 array_push($invoices, $newInvoice);
             }
         }
