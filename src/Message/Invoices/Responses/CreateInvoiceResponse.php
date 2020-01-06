@@ -126,7 +126,10 @@ class CreateInvoiceResponse extends AbstractResponse
             if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
                 $newInvoice['status'] = 'PAID';
             } else {
-                $newInvoice['status'] = 'AUTHORISED';
+                $newInvoice['status'] = 'SUBMITTED';
+            }
+            if ($newInvoice['amount_paid'] > 0 && $newInvoice['amount_paid'] !== (float) $newInvoice['total']) {
+                $newInvoice['status'] = 'PARTIAL';
             }
             array_push($invoices, $newInvoice);
 
@@ -151,7 +154,10 @@ class CreateInvoiceResponse extends AbstractResponse
                 if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
                     $newInvoice['status'] = 'PAID';
                 } else {
-                    $newInvoice['status'] = 'AUTHORISED';
+                    $newInvoice['status'] = 'SUBMITTED';
+                }
+                if ($newInvoice['amount_paid'] > 0 && $newInvoice['amount_paid'] !== (float) $newInvoice['total']) {
+                    $newInvoice['status'] = 'PARTIAL';
                 }
                 array_push($invoices, $newInvoice);
             }
