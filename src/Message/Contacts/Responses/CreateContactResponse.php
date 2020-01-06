@@ -187,7 +187,7 @@ class CreateContactResponse extends AbstractResponse
                         'type' =>  'OTHER',
                         'area_code' => '',
                         'country_code' => '',
-                        'phone_number' => $contact->Mobile->FreeFormNumber
+                        'phone_number' => $contact->AlternatePhone->FreeFormNumber
                     ]);
                 }
                 array_push($contacts, $newContact);
