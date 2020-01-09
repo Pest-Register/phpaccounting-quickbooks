@@ -253,7 +253,7 @@ class UpdateContactRequest extends AbstractRequest
     /**
      * Get Phones Array with Phone Details for Contact
      * @access public
-     * @param array $data Array of Xero Phones
+     * @param array $data Array of Quickbooks Phones
      * @param $contact
      * @return array
      */
@@ -378,8 +378,8 @@ class UpdateContactRequest extends AbstractRequest
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return CreateContactResponse
      */
     public function createResponse($data)

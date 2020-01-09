@@ -50,7 +50,7 @@ class DeleteInventoryItemRequest extends AbstractRequest
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|DeleteInventoryItemResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException

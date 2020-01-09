@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdocumentor>
-    <title>PHPAccounting-Xero Documentation</title>
+    <title>PHPAccounting-Quickbooks Documentation</title>
     <parser>
         <target>output</target>
         <encoding>utf8</encoding>

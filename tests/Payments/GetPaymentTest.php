@@ -6,7 +6,7 @@
  * Time: 5:42 PM
  */
 
-namespace Tests\Invoices;
+namespace Tests\Payments;
 
 use Tests\BaseTest;
 

@@ -353,8 +353,8 @@ class CreatePaymentRequest extends AbstractRequest
     }
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return CreatePaymentResponse
      */
     public function createResponse($data)

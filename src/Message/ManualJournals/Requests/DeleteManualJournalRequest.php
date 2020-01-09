@@ -89,7 +89,7 @@ class DeleteManualJournalRequest extends AbstractRequest
     }
 
     /**
-     * Send Data to Xero Endpoint and Retrieve Response via Response Interface
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return DeleteManualJournalResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
@@ -109,8 +109,8 @@ class DeleteManualJournalRequest extends AbstractRequest
 
 
     /**
-     * Create Generic Response from Xero Endpoint
-     * @param mixed $data Array Elements or Xero Collection from Response
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
      * @return DeleteManualJournalResponse
      */
     public function createResponse($data)

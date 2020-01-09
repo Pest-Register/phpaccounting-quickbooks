@@ -116,7 +116,7 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     /**
      * Check if key exists in param bag and add it to array
-     * @param $XeroKey
+     * @param $QuickbooksKey
      * @param $localKey
      */
     public function issetParam($quickbooksKey, $localKey){

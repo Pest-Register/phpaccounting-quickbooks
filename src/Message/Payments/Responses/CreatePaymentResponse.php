@@ -2,8 +2,10 @@
 
 namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
+use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
+use QuickBooksOnline\API\Data\IPPPayment;
 
 /**
  * Create Invoice(s) Response
@@ -17,9 +19,12 @@ class CreatePaymentResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if(array_key_exists('status', $this->data)){
-            return !$this->data['status'] == 'error';
+        if (array_key_exists('error', $this->data)) {
+            if ($this->data['error']['status']){
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -28,30 +33,30 @@ class CreatePaymentResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if(array_key_exists('status', $this->data)){
-            return $this->data['detail'];
+        if ($this->data['error']['status']){
+            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                return 'The access token has expired';
+            } else {
+                return $this->data['error']['detail'];
+            }
         }
+
         return null;
     }
 
     /**
      * Add Invoice to Payment
-     * @param $data Array of single Payment
-     * @param array $payment Xero Payment Object Mapping
      * @return mixed
      */
     private function parseInvoice($data, $payment) {
         if ($data) {
-            $newInvoice = [];
-            $newInvoice['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('AccountID',$data);
-            $newInvoice['type'] = IndexSanityCheckHelper::indexSanityCheck('Type',$data);
-            $newInvoice['invoice_number'] = IndexSanityCheckHelper::indexSanityCheck('InvoiceNumber', $data);
-            if (IndexSanityCheckHelper::indexSanityCheck('Contact', $data)) {
-                $newInvoice['contact'] = [];
-                $newInvoice['contact']['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('ContactID', $data['Contact']);
-                $newInvoice['contact']['name'] = IndexSanityCheckHelper::indexSanityCheck('Name', $data['Contact']);
+            if ($data->LinkedTxn) {
+                if ($data->LinkedTxn->TxnType === 'Invoice') {
+                    $newInvoice = [];
+                    $newInvoice['accounting_id'] = $data->LinkedTxn->TxnId;
+                    $payment['invoice'] = $newInvoice;
+                }
             }
-            $payment['invoice'] = $newInvoice;
         }
 
         return $payment;
@@ -59,15 +64,12 @@ class CreatePaymentResponse extends AbstractResponse
 
     /**
      * Add Account to Payment
-     * @param $data Array of single Payment
-     * @param array $payment Xero Payment Object Mapping
      * @return mixed
      */
     private function parseAccount($data, $payment) {
         if ($data) {
             $newAccount = [];
-            $newAccount['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('AccountID',$data);
-            $newAccount['code'] = IndexSanityCheckHelper::indexSanityCheck('Code',$data);
+            $newAccount['accounting_id'] = $data->value;
             $payment['account'] = $newAccount;
         }
 
@@ -80,28 +82,38 @@ class CreatePaymentResponse extends AbstractResponse
      */
     public function getPayments(){
         $payments = [];
-        foreach ($this->data as $payment) {
+        if ($this->data instanceof IPPPayment){
+            $payment = $this->data;
             $newPayment = [];
-            $newPayment['accounting_id'] = IndexSanityCheckHelper::indexSanityCheck('PaymentID', $payment);
-            $newPayment['date'] = IndexSanityCheckHelper::indexSanityCheck('Date', $payment);
-            $newPayment['bank_amount'] = IndexSanityCheckHelper::indexSanityCheck('BankAmount', $payment);
-            $newPayment['amount'] = IndexSanityCheckHelper::indexSanityCheck('Amount', $payment);
-            $newPayment['reference_id'] = IndexSanityCheckHelper::indexSanityCheck('Reference', $payment);
-            $newPayment['currency_rate'] = IndexSanityCheckHelper::indexSanityCheck('CurrencyRate', $payment);
-            $newPayment['type'] = IndexSanityCheckHelper::indexSanityCheck('PaymentType', $payment);
-            $newPayment['status'] = IndexSanityCheckHelper::indexSanityCheck('Status', $payment);
-            $newPayment['has_account'] = IndexSanityCheckHelper::indexSanityCheck('HasAccount', $payment);
-            $newPayment['is_reconciled'] = IndexSanityCheckHelper::indexSanityCheck('IsReconciled', $payment);
-            $newPayment['updated_at'] = IndexSanityCheckHelper::indexSanityCheck('UpdatedDateUTC', $payment);
-
-            if (IndexSanityCheckHelper::indexSanityCheck('Account', $payment)) {
-                $newPayment = $this->parseAccount($payment['Account'], $newPayment);
-            }
-            if (IndexSanityCheckHelper::indexSanityCheck('Invoice', $payment)) {
-                $newPayment = $this->parseInvoice($payment['Invoice'], $newPayment);
-            }
+            $newPayment['accounting_id'] = $payment->Id;
+            $newPayment['date'] = $payment->TxnDate;
+            $newPayment['amount'] = $payment->TotalAmt;
+            $newPayment['reference_id'] = $payment->PaymentRefNum;
+            $newPayment['currency'] = $payment->CurrencyRef;
+            $newPayment['type'] = 'ACCRECPAYMENT';
+            $newPayment['status'] = $payment->TxnStatus;
+            $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
+            $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+            $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
             array_push($payments, $newPayment);
+
+        } else {
+            foreach ($this->data as $payment) {
+                $newPayment = [];
+                $newPayment['accounting_id'] = $payment->Id;
+                $newPayment['date'] = $payment->TxnDate;
+                $newPayment['amount'] = $payment->TotalAmt;
+                $newPayment['reference_id'] = $payment->PaymentRefNum;
+                $newPayment['currency'] = $payment->CurrencyRef;
+                $newPayment['type'] = 'ACCRECPAYMENT';
+                $newPayment['status'] = $payment->TxnStatus;
+                $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
+                $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+                $newPayment = $this->parseInvoice($payment->Line, $newPayment);
+
+                array_push($payments, $newPayment);
+            }
         }
 
         return $payments;

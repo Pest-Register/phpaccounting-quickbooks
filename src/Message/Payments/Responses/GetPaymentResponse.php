@@ -4,13 +4,10 @@ namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use QuickBooksOnline\API\Data\IPPPayment;
-use XeroPHP\Models\Accounting\Invoice;
-use XeroPHP\Models\Accounting\Payment;
 
 /**
- * Get Invoice(s) Response
+ * Get Payment(s) Response
  * @package PHPAccounting\Quickbooks\Message\Invoices\Responses
  */
 class GetPaymentResponse extends AbstractResponse
