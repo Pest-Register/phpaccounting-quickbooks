@@ -15,10 +15,14 @@ class UpdateAccountResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        if (array_key_exists('error', $this->data)) {
-            if ($this->data['error']['status']){
-                return false;
+        if ($this->data) {
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return false;
+                }
             }
+        } else {
+            return false;
         }
 
         return true;
@@ -29,17 +33,20 @@ class UpdateAccountResponse extends AbstractResponse
      * @return string
      */
     public function getErrorMessage(){
-        if ($this->data['error']['status']){
-            if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
-                return 'The access token has expired';
-            } else {
-                return $this->data['error']['detail'];
+        if ($this->data) {
+            if ($this->data['error']['status']){
+                if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                    return 'The access token has expired';
+                } else {
+                    return $this->data['error']['detail'];
+                }
             }
+        } else {
+            return 'NULL Returned from API';
         }
 
         return null;
     }
-
     /**
      * Return all Invoices with Generic Schema Variable Assignment
      * @return array
