@@ -70,7 +70,7 @@ class GetManualJournalRequest extends AbstractRequest
                 $response = $quickbooks->FindById('journalentry', $this->getAccountingID());
             }
         } else {
-            $response = $quickbooks->FindAll('journalentry', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('journalentry', $this->getPage(), 100);
         }
 
         $error = $quickbooks->getLastError();

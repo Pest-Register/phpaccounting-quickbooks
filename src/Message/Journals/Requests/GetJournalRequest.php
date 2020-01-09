@@ -80,7 +80,7 @@ class GetJournalRequest extends AbstractRequest
             $accounts = $quickbooks->FindById('journalentry', $this->getAccountingID());
             $response = $accounts;
         } else {
-            $response = $quickbooks->FindAll('journalentry', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('journalentry', $this->getPage(), 100);
         }
 
         $error = $quickbooks->getLastError();

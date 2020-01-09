@@ -69,7 +69,7 @@ class GetInvoiceRequest extends AbstractRequest
                 $response = $quickbooks->FindById('invoice', $this->getAccountingID());
             }
         } else {
-            $response = $quickbooks->FindAll('invoice', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('invoice', $this->getPage(), 100);
         }
 
         $error = $quickbooks->getLastError();

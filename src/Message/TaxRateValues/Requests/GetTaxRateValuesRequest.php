@@ -66,7 +66,7 @@ class GetTaxRateValuesRequest extends AbstractRequest
             $items = $quickbooks->FindById('taxrate', $this->getAccountingID());
             $response = $items;
         } else {
-            $response = $quickbooks->FindAll('taxrate', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('taxrate', $this->getPage(), 100);
         }
 
 

@@ -66,7 +66,7 @@ class GetContactRequest extends AbstractRequest
             $accounts = $quickbooks->FindById('customer', $this->getAccountingID());
             $response = $accounts;
         } else {
-            $response = $quickbooks->FindAll('customer', $this->getPage(), 500);
+            $response = $quickbooks->FindAll('customer', $this->getPage(), 100);
         }
 
         $error = $quickbooks->getLastError();
