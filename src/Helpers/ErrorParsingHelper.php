@@ -13,20 +13,23 @@ class ErrorParsingHelper
         $errorObj = new \SimpleXMLElement($error->getResponseBody());
         $errorObj = json_decode( json_encode($errorObj) , true);
         $message = '';
-        $detail = '';
         if (array_key_exists('Message', $errorObj['Fault']['Error'])) {
-            $message = $errorObj['Fault']['Error']['Message'];
+            $messageExploded = explode(';', $errorObj['Fault']['Error']['Message']);
+            $message = substr($messageExploded[0], strpos($messageExploded[0], "=") + 1);
+            $errorCode = substr($messageExploded[1], strpos($messageExploded[1], '=') + 1);
+            $statusCode = substr($messageExploded[2], strpos($messageExploded[2], '=') + 1);
+            $message = "Message: ".$message. "\nError Code: ". $errorCode. "\nStatus Code: ".$statusCode;
+            if (array_key_exists('Detail', $errorObj['Fault']['Error'])) {
+                $detail = $errorObj['Fault']['Error']['Detail'];
+                $message = $message . "\nDetail: ".$detail;
+            }
         }
 
-        if (array_key_exists('Detail', $errorObj['Fault']['Error'])) {
-            $detail = $errorObj['Fault']['Error']['Detail'];
-        }
 
         return [
             'error' => [
                 'status' => $error->getHttpStatusCode(),
-                'message' => $message,
-                'detail' => $detail
+                'message' => $message
             ]
         ];
     }

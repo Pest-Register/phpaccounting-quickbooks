@@ -11,7 +11,7 @@ namespace Tests\TaxRateValues;
 
 use Tests\BaseTest;
 
-class GetTaxRateValue extends BaseTest
+class GetTaxRateValueTest extends BaseTest
 {
 
     public function testGetTaxRateValues()
@@ -19,7 +19,7 @@ class GetTaxRateValue extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_id' => 10,
+                'accounting_id' => '',
                 'page' => 1
             ];
 

@@ -38,10 +38,10 @@ class GetInventoryItemResponse extends AbstractResponse
     public function getErrorMessage(){
         if ($this->data) {
             if ($this->data['error']['status']){
-                if (strpos($this->data['error']['detail'], 'Token expired') !== false) {
+                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
                     return 'The access token has expired';
                 } else {
-                    return $this->data['error']['detail'];
+                    return $this->data['error']['message'];
                 }
             }
         } else {

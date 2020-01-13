@@ -72,7 +72,6 @@ class GetTaxRateRequest extends AbstractRequest
             $response = $quickbooks->FindAll('taxcode', $this->getPage(), 100);
         }
 
-
         $error = $quickbooks->getLastError();
         if ($error) {
             $response = ErrorParsingHelper::parseError($error);
