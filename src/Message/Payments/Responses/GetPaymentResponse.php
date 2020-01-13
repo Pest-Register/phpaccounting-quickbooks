@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
+use QuickBooksOnline\API\Data\IPPLine;
 use QuickBooksOnline\API\Data\IPPPayment;
 
 /**
@@ -58,15 +59,27 @@ class GetPaymentResponse extends AbstractResponse
      */
     private function parseInvoice($data, $payment) {
         if ($data) {
-            if ($data->LinkedTxn) {
-                if ($data->LinkedTxn->TxnType === 'Invoice') {
-                    $newInvoice = [];
-                    $newInvoice['accounting_id'] = $data->LinkedTxn->TxnId;
-                    $payment['invoice'] = $newInvoice;
+            if ($data instanceof IPPLine) {
+                if ($data->LinkedTxn) {
+                    if ($data->LinkedTxn->TxnType === 'Invoice') {
+                        $newInvoice = [];
+                        $newInvoice['accounting_id'] = $data->LinkedTxn->TxnId;
+                        $payment['invoice'] = $newInvoice;
+                    }
+                }
+            } else {
+                foreach($data as $transaction) {
+                    if ($transaction->LinkedTxn) {
+                        if ($transaction->LinkedTxn->TxnType === 'Invoice') {
+                            $newInvoice = [];
+                            $newInvoice['accounting_id'] = $transaction->LinkedTxn->TxnId;
+                            $payment['invoice'] = $newInvoice;
+                        }
+                    }
                 }
             }
-        }
 
+        }
         return $payment;
     }
 
