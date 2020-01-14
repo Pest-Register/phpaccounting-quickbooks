@@ -50,7 +50,7 @@ class CreateManualJournalResponse extends AbstractResponse
                 }
             }
         } else {
-            return 'NULL Returned from API';
+            return 'NULL Returned from API or End of Pagination';
         }
 
         return null;
