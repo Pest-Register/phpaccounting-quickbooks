@@ -69,7 +69,7 @@ class GetAccountRequest extends AbstractRequest
                 $response = $quickbooks->FindById('account', $this->getAccountingID());
             }
         } else {
-            $response = $quickbooks->FindAll('account', $this->getPage(), 100);
+            $response = $quickbooks->FindAll('account', $this->getPage(), 500);
         }
 
         $error = $quickbooks->getLastError();

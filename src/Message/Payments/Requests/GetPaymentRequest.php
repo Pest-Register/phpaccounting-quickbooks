@@ -67,7 +67,7 @@ class GetPaymentRequest extends AbstractRequest
                 $response = $quickbooks->FindById('payment', $this->getAccountingID());
             }
         } else {
-            $response = $quickbooks->FindAll('payment', $this->getPage(), 100);
+            $response = $quickbooks->FindAll('payment', $this->getPage(), 500);
         }
 
         $error = $quickbooks->getLastError();

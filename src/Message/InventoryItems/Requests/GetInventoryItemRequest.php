@@ -67,7 +67,7 @@ class GetInventoryItemRequest extends AbstractRequest
             $items = $quickbooks->FindById('item', $this->getAccountingID());
             $response = $items;
         } else {
-            $response = $quickbooks->FindAll('item', $this->getPage(), 100);
+            $response = $quickbooks->FindAll('item', $this->getPage(), 500);
         }
 
         $error = $quickbooks->getLastError();
