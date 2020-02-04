@@ -10,7 +10,7 @@ class CreateAccountTest extends BaseTest
         try {
 
             $params = [
-                'code' => 999,
+                'code' => 92,
                 'name' => 'Test',
                 'type' => 'Accounts Receivable',
                 'tax_type' => 'INPUT',

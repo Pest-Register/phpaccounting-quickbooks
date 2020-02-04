@@ -5,6 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\Accounts\Responses;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPAccount;
 
 class UpdateAccountResponse extends AbstractResponse
@@ -18,6 +19,10 @@ class UpdateAccountResponse extends AbstractResponse
         if ($this->data) {
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
+                    return false;
+                }
+            } elseif (array_key_exists('status', $this->data)) {
+                if ($this->data['status'] === 'error'){
                     return false;
                 }
             }
@@ -34,12 +39,12 @@ class UpdateAccountResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if ($this->data['error']['status']){
-                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
-                    return 'The access token has expired';
-                } else {
-                    return $this->data['error']['message'];
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Account');
                 }
+            } elseif (array_key_exists('status', $this->data)) {
+                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Account');
             }
         } else {
             return 'NULL Returned from API or End of Pagination';

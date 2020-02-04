@@ -27,7 +27,8 @@
         "omnipay/common": "^3.0",
         "fzaninotto/faker": "^1.8",
         "quickbooks/v3-php-sdk": "^5.0",
-        "nesbot/carbon": "^2.25"
+        "nesbot/carbon": "^2.25",
+      "ext-simplexml": "*"
     },
     "scripts": {
         "docs": "swagger src/"

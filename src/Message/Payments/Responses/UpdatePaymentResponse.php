@@ -6,6 +6,7 @@ namespace PHPAccounting\Quickbooks\Message\Payments\Responses;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPLine;
 use QuickBooksOnline\API\Data\IPPPayment;
 
@@ -36,12 +37,12 @@ class UpdatePaymentResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if ($this->data['error']['status']){
-                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
-                    return 'The access token has expired';
-                } else {
-                    return $this->data['error']['message'];
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Payment');
                 }
+            } elseif (array_key_exists('status', $this->data)) {
+                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Payment');
             }
         } else {
             return 'NULL Returned from API or End of Pagination';

@@ -3,6 +3,7 @@
 namespace PHPAccounting\Quickbooks\Message\TaxRates\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPTaxCode;
 use QuickBooksOnline\API\Data\IPPTaxRate;
 
@@ -37,12 +38,12 @@ class GetTaxRateResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if ($this->data['error']['status']){
-                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
-                    return 'The access token has expired';
-                } else {
-                    return $this->data['error']['message'];
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Tax Rate');
                 }
+            } elseif (array_key_exists('status', $this->data)) {
+                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Tax Rate');
             }
         } else {
             return 'NULL Returned from API or End of Pagination';

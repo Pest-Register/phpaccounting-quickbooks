@@ -11,6 +11,7 @@ namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 
 class UpdateManualJournalResponse extends AbstractResponse
@@ -40,12 +41,12 @@ class UpdateManualJournalResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if ($this->data['error']['status']){
-                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
-                    return 'The access token has expired';
-                } else {
-                    return $this->data['error']['message'];
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Manual Journal');
                 }
+            } elseif (array_key_exists('status', $this->data)) {
+                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Manual Journal');
             }
         } else {
             return 'NULL Returned from API or End of Pagination';

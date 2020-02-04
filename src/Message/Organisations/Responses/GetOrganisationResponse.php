@@ -9,6 +9,7 @@
 namespace PHPAccounting\Quickbooks\Message\Organisations\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPAccount;
 use QuickBooksOnline\API\Data\IPPCompanyAccountingPrefs;
 use QuickBooksOnline\API\Data\IPPCompanyInfo;
@@ -42,12 +43,12 @@ class GetOrganisationResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if ($this->data['error']['status']){
-                if (strpos($this->data['error']['message'], 'Token expired') !== false || strpos($this->data['error']['message'], 'AuthenticationFailed') !== false) {
-                    return 'The access token has expired';
-                } else {
-                    return $this->data['error']['message'];
+            if (array_key_exists('error', $this->data)) {
+                if ($this->data['error']['status']){
+                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message']);
                 }
+            } elseif (array_key_exists('status', $this->data)) {
+                return ErrorResponseHelper::parseErrorResponse($this->data['detail']);
             }
         } else {
             return 'NULL Returned from API or End of Pagination';
