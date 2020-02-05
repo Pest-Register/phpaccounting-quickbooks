@@ -54,7 +54,7 @@ class GetManualJournalResponse extends AbstractResponse
                 return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Manual Journal');
             }
         } else {
-            return 'NULL Returned from API or End of Pagination or End of Pagination';
+            return 'NULL Returned from API or End of Pagination';
         }
 
         return null;
