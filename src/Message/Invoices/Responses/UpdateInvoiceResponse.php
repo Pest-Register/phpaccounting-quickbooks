@@ -132,13 +132,12 @@ class UpdateInvoiceResponse extends AbstractResponse
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
 
-            if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
+            if ($newInvoice['amount_due'] == 0) {
                 $newInvoice['status'] = 'PAID';
+            } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
+                $newInvoice['status'] = 'PARTIAL';
             } else {
                 $newInvoice['status'] = 'SUBMITTED';
-            }
-            if ($newInvoice['amount_paid'] > 0 && $newInvoice['amount_paid'] !== (float) $newInvoice['total']) {
-                $newInvoice['status'] = 'PARTIAL';
             }
 
             array_push($invoices, $newInvoice);
@@ -162,13 +161,12 @@ class UpdateInvoiceResponse extends AbstractResponse
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
 
-                if ($newInvoice['amount_paid'] === (float) $newInvoice['total']) {
+                if ($newInvoice['amount_due'] == 0) {
                     $newInvoice['status'] = 'PAID';
+                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
+                    $newInvoice['status'] = 'PARTIAL';
                 } else {
                     $newInvoice['status'] = 'SUBMITTED';
-                }
-                if ($newInvoice['amount_paid'] > 0 && $newInvoice['amount_paid'] !== (float) $newInvoice['total']) {
-                    $newInvoice['status'] = 'PARTIAL';
                 }
                 array_push($invoices, $newInvoice);
             }
