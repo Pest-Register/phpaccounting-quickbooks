@@ -43,7 +43,7 @@ class DeleteManualJournalRequest extends AbstractRequest
      * @return DeleteManualJournalRequest
      */
     public function setSyncToken($value){
-        return $this->setParameter('journal_data', $value);
+        return $this->setParameter('sync_token', $value);
     }
 
     /**
@@ -52,7 +52,7 @@ class DeleteManualJournalRequest extends AbstractRequest
      * @return mixed
      */
     public function getSyncToken(){
-        return $this->getParameter('journal_data');
+        return $this->getParameter('sync_token');
     }
 
     /**
@@ -83,7 +83,7 @@ class DeleteManualJournalRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('Id', 'syncToken');
+        $this->validate('accounting_id', 'syncToken');
 
         return $this->data;
     }

@@ -114,6 +114,7 @@ class CreatePaymentResponse extends AbstractResponse
             $newPayment['reference_id'] = $payment->PaymentRefNum;
             $newPayment['currency'] = $payment->CurrencyRef;
             $newPayment['type'] = 'ACCRECPAYMENT';
+            $newPayment['sync_token'] = $payment->SyncToken;
             $newPayment['status'] = $payment->TxnStatus;
             $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
             $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
@@ -130,6 +131,7 @@ class CreatePaymentResponse extends AbstractResponse
                 $newPayment['reference_id'] = $payment->PaymentRefNum;
                 $newPayment['currency'] = $payment->CurrencyRef;
                 $newPayment['type'] = 'ACCRECPAYMENT';
+                $newPayment['sync_token'] = $payment->SyncToken;
                 $newPayment['status'] = $payment->TxnStatus;
                 $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
