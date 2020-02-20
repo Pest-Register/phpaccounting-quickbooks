@@ -17,14 +17,19 @@ class UpdateAccountResponse extends AbstractResponse
     public function isSuccessful()
     {
         if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    return false;
+            if (is_array($this->data)) {
+                if (array_key_exists('error', $this->data)) {
+                    if ($this->data['error']['status']){
+                        return false;
+                    }
+                } elseif (array_key_exists('status', $this->data)) {
+                    if ($this->data['status'] === 'error'){
+                        return false;
+                    }
                 }
-            } elseif (array_key_exists('status', $this->data)) {
-                if ($this->data['status'] === 'error'){
-                    return false;
-                }
+            }
+            else {
+                return false;
             }
         } else {
             return false;
@@ -39,13 +44,18 @@ class UpdateAccountResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Account');
+            if (is_array($this->data)) {
+                if (array_key_exists('error', $this->data)) {
+                    if ($this->data['error']['status']){
+                        return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Account');
+                    }
+                } elseif (array_key_exists('status', $this->data)) {
+                    return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Account');
                 }
-            } elseif (array_key_exists('status', $this->data)) {
-                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Account');
+            } else {
+                return 'NULL Returned';
             }
+
         } else {
             return 'NULL Returned from API or End of Pagination';
         }

@@ -12,7 +12,7 @@ class UpdateAccountTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => 'avbbhreas',
+                'accounting_id' => '92',
                 'code' => 999,
                 'name' => 'Test 1',
                 'type' => 'Accounts Receivable',
