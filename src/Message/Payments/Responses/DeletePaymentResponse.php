@@ -17,6 +17,17 @@ class DeletePaymentResponse extends AbstractResponse
     public function isSuccessful()
     {
         if ($this->data) {
+            if (array_key_exists('status', $this->data)) {
+                if (is_array($this->data)) {
+                    if ($this->data['status'] == 'error') {
+                        return false;
+                    }
+                } else {
+                    if ($this->data->status == 'error') {
+                        return false;
+                    }
+                }
+            }
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
                     return false;

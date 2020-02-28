@@ -31,6 +31,8 @@ class DeleteInvoiceTest extends BaseTest
                 $invoices = $response->getInvoices();
                 var_dump($invoices);
                 $this->assertIsArray($invoices);
+            } else {
+                var_dump($response->getErrorMessage());
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());

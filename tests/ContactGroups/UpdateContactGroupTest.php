@@ -50,6 +50,8 @@ class UpdateContactGroupTest extends BaseTest
                 $contactGroups = $response->getContactGroups();
                 var_dump($contactGroups);
                 $this->assertIsArray($contactGroups);
+            } else {
+                var_dump($response->getErrorMessage());
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());

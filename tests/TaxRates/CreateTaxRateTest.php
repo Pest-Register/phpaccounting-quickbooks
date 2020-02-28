@@ -27,8 +27,9 @@ class CreateTaxRateTest extends BaseTest
             if ($response->isSuccessful()) {
                 $this->assertIsArray($response->getData());
                 var_dump($response->getTaxRates());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getTrace());
         }

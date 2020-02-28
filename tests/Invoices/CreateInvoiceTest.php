@@ -35,8 +35,9 @@ class CreateInvoiceTest extends BaseTest
             $response = $this->gateway->createInvoice($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getInvoices());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }

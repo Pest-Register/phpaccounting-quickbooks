@@ -16,8 +16,9 @@ class DeleteAccountTest extends BaseTest
             $response = $this->gateway->deleteAccount($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getAccounts());
+            }else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }

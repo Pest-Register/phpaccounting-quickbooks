@@ -36,8 +36,9 @@ class CreateInventoryItemTest extends BaseTest
             $response = $this->gateway->createInventoryItem($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getInventoryItems());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
             var_dump($exception->getTrace());

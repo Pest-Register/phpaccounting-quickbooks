@@ -15,13 +15,20 @@ use QuickBooksOnline\API\Data\IPPInvoice;
 class UpdateInvoiceResponse extends AbstractResponse
 {
 
-    /**
-     * Check Response for Error or Success
-     * @return boolean
-     */
     public function isSuccessful()
     {
         if ($this->data) {
+            if (array_key_exists('status', $this->data)) {
+                if (is_array($this->data)) {
+                    if ($this->data['status'] == 'error') {
+                        return false;
+                    }
+                } else {
+                    if ($this->data->status == 'error') {
+                        return false;
+                    }
+                }
+            }
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
                     return false;
@@ -113,6 +120,7 @@ class UpdateInvoiceResponse extends AbstractResponse
      */
     public function getInvoices(){
         $invoices = [];
+        var_dump($this->data);
         if ($this->data instanceof IPPInvoice){
             $invoice = $this->data;
             $newInvoice = [];

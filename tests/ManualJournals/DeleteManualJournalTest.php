@@ -19,14 +19,16 @@ class DeleteManualJournalTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                "accounting_id" => "1"
+                "accounting_id" => "1",
+                "sync_token" => 0
             ];
 
             $response = $this->gateway->deleteManualJournal($params)->send();
             if ($response->isSuccessful()) {
                 $this->assertTrue($response->isSuccessful());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }

@@ -19,7 +19,7 @@ class GetPaymentTest extends BaseTest
         try {
             $params = [
                 'accounting_ids' => [""],
-                'page' => 1
+                'page' => 11
             ];
 
             $response = $this->gateway->getPayment($params)->send();

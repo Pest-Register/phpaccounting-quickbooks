@@ -24,8 +24,9 @@ class UpdateAccountTest extends BaseTest
             $response = $this->gateway->updateAccount($params)->send();
             if ($response->isSuccessful()) {
                 var_dump($response->getAccounts());
+            } else {
+                var_dump($response->getErrorMessage());
             }
-            var_dump($response->getErrorMessage());
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
         }

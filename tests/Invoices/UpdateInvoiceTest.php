@@ -38,6 +38,8 @@ class UpdateInvoiceTest extends BaseTest
             if ($response->isSuccessful()) {
                 $invoices = $response->getInvoices();
                 $this->assertIsArray($invoices);
+            } else {
+                var_dump($response->getErrorMessage());
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());

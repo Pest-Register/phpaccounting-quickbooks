@@ -28,6 +28,8 @@ class DeleteContactTest extends BaseTest
             if ($response->isSuccessful()) {
                 $contacts = $response->getContacts();
                 $this->assertIsArray($contacts);
+            } else {
+                var_dump($response->getErrorMessage());
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
