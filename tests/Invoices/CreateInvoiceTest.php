@@ -13,10 +13,12 @@ class CreateInvoiceTest extends BaseTest
 
             $params = [
                 'type' => 'ACCREC',
-                'date' => '2019-01-27',
-                'due_date' => '2019-01-28',
+                'date' => '2020-03-03',
+                'due_date' => '2020-03-03',
                 'contact' => '23',
-                'invoice_reference' => '1234',
+                'invoice_reference' => '678745983232',
+                'discount_amount' => 100,
+                'deposit' => 100,
                 'invoice_data' => [
                     [
                         'description' => 'Consulting services as agreed (20% off standard rate)',

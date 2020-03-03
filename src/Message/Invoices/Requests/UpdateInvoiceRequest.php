@@ -16,6 +16,44 @@ use QuickBooksOnline\API\Facades\Invoice;
 class UpdateInvoiceRequest extends AbstractRequest
 {
     /**
+     * Get Deposit Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getDepositAmount(){
+        return $this->getParameter('deposit_amount');
+    }
+
+    /**
+     * Set Deposit Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Deposit Amount
+     * @return UpdateInvoiceRequest
+     */
+    public function setDepositAmount($value){
+        return $this->setParameter('deposit_amount', $value);
+    }
+
+    /**
+     * Get Deposit Account Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getDepositAccount(){
+        return $this->getParameter('deposit_account');
+    }
+
+    /**
+     * Set Deposit Account Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Deposit Account
+     * @return UpdateInvoiceRequest
+     */
+    public function setDepositAccount($value){
+        return $this->setParameter('deposit_account', $value);
+    }
+
+    /**
      * Get Discount Amount Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -251,6 +289,15 @@ class UpdateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
             }
 
+            if (array_key_exists('discount_amount', $lineData)) {
+                $discountLineItem = [];
+                $discountLineItem['LineNum'] = $counter + 1;
+                $discountLineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('discount_amount', $lineData);
+                $discountLineItem['DetailType'] = 'DiscountLineDetail';
+                $discountLineItem['DiscountLineDetail'] = [];
+                array_push($lineItems, $discountLineItem);
+            }
+
             array_push($lineItems, $lineItem);
         }
         return $lineItems;
@@ -273,12 +320,24 @@ class UpdateInvoiceRequest extends AbstractRequest
         $this->issetParam('DocNumber', 'invoice_number');
         $this->issetParam('TotalAmt', 'total');
         $this->issetParam('SyncToken', 'sync_token');
-        $this->issetParam('DiscountAmount', 'discount_amount');
-        $this->issetParam('DiscountRate', 'discount_rate');
         $this->issetParam('Deposit', 'deposit_amount');
 
         if ($this->getInvoiceData()) {
             $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());
+        }
+
+        if ($this->getDepositAccount()) {
+            $this->data['DepositToAccountRef']['value'] = $this->getDepositAccount();
+        }
+
+        if ($this->getDiscountAmount()) {
+            $discountLineItem = [];
+            $discountLineItem['LineNum'] = 1;
+            $discountLineItem['Description'] = '';
+            $discountLineItem['Amount'] = $this->getDiscountAmount();
+            $discountLineItem['DetailType'] = 'DiscountLineDetail';
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+            array_push($this->data['Line'], $discountLineItem);
         }
 
         if ($this->getContact()) {

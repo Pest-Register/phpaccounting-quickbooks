@@ -80,6 +80,7 @@ class GetInvoiceResponse extends AbstractResponse
                     $newLineItem['line_amount'] = $lineItem->Amount;
                     $newLineItem['accounting_id'] = $lineItem->Id;
                     $newLineItem['amount'] = $lineItem->Amount;
+
                     $newLineItem['quantity'] = 0;
                     $newLineItem['unit_amount'] = 0;
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
@@ -92,6 +93,7 @@ class GetInvoiceResponse extends AbstractResponse
                         } else {
                             $newLineItem['quantity'] = 0;
                         }
+                        $newLineItem['service_date'] = $lineItem->SalesItemLineDetail->ServiceDate;
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
@@ -99,6 +101,10 @@ class GetInvoiceResponse extends AbstractResponse
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
                     array_push($lineItems, $newLineItem);
+                } else {
+                    if ($lineItem->DiscountLineDetail) {
+                        $invoice['discount_amount'] = $lineItem->Amount;
+                    }
                 }
             }
             $invoice['invoice_data'] = $lineItems;
@@ -141,9 +147,8 @@ class GetInvoiceResponse extends AbstractResponse
             $newInvoice['invoice_number'] = $invoice->DocNumber;
             $newInvoice['amount_due'] = $invoice->Balance;
             $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
-            $newInvoice['discount_amount'] = $invoice->DiscountAmt;
-            $newInvoice['discount_rate'] = $invoice->DiscountRate;
             $newInvoice['deposit_amount'] = $invoice->Deposit;
+            $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
             $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
             $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
             $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;
@@ -172,9 +177,8 @@ class GetInvoiceResponse extends AbstractResponse
                 $newInvoice['invoice_number'] = $invoice->DocNumber;
                 $newInvoice['amount_due'] = $invoice->Balance;
                 $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
-                $newInvoice['discount_amount'] = $invoice->DiscountAmt;
-                $newInvoice['discount_rate'] = $invoice->DiscountRate;
                 $newInvoice['deposit_amount'] = $invoice->Deposit;
+                $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
                 $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
                 $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
                 $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;
