@@ -29,6 +29,7 @@ class UpdateInvoiceTest extends BaseTest
                 'discount_amount' => 100,
                 'deposit_amount' => 200,
                 'deposit_account' => 13,
+                'sync_token' => 17,
                 'invoice_data' => [
                     [
                         'description' => 'Consulting services as agreed (20% off standard rate)',

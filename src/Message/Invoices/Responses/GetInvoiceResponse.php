@@ -151,6 +151,7 @@ class GetInvoiceResponse extends AbstractResponse
             $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
             $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
             $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
+            $newInvoice['sync_token'] = $invoice->SyncToken;
             $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;
             $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
@@ -181,6 +182,7 @@ class GetInvoiceResponse extends AbstractResponse
                 $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
                 $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
                 $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
+                $newInvoice['sync_token'] = $invoice->SyncToken;
                 $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;
                 $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);

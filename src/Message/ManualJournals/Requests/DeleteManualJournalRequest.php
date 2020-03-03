@@ -84,6 +84,7 @@ class DeleteManualJournalRequest extends AbstractRequest
     public function getData()
     {
         $this->validate('accounting_id', 'sync_token');
+        $this->issetParam('SyncToken', 'sync_token');
 
         return $this->data;
     }

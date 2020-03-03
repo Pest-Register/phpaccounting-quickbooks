@@ -14,6 +14,24 @@ use QuickBooksOnline\API\Facades\Item;
  */
 class DeleteInventoryItemRequest extends AbstractRequest
 {
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
+     * @param string $value Account Code
+     * @return DeleteInventoryItemRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
 
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
@@ -45,6 +63,7 @@ class DeleteInventoryItemRequest extends AbstractRequest
     {
         $this->validate('accounting_id');
         $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('SyncToken', 'sync_token');
         $this->data['Active'] = false;
         return $this->data;
     }

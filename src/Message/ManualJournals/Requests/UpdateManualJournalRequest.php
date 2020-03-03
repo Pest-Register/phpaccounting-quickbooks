@@ -17,7 +17,24 @@ use QuickBooksOnline\API\Facades\JournalEntry;
 
 class UpdateManualJournalRequest extends AbstractRequest
 {
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
 
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
+     * @param string $value Account Code
+     * @return UpdateManualJournalRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
     /**
      * Get Narration Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
@@ -131,6 +148,7 @@ class UpdateManualJournalRequest extends AbstractRequest
         $this->issetParam('Line', 'journal_data');
         $this->issetParam('PrivateNote', 'narration');
         $this->issetParam('DocNumber', 'reference_id');
+        $this->issetParam('SyncToken', 'sync_token');
 
         $this->data['sparse'] = true;
 

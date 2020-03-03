@@ -322,7 +322,7 @@ class UpdateInvoiceRequest extends AbstractRequest
         $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('Deposit', 'deposit_amount');
 
-        $this->data['sparse'] = true;
+        $this->data['sparse'] = True;
 
         if ($this->getInvoiceData()) {
             $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());

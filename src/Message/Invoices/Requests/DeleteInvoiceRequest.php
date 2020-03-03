@@ -16,6 +16,25 @@ use QuickBooksOnline\API\Facades\Invoice;
 class DeleteInvoiceRequest extends AbstractRequest
 {
     /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getSynToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Deposit Amount
+     * @return DeleteInvoiceRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
+    /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
      * @param $value
@@ -45,6 +64,8 @@ class DeleteInvoiceRequest extends AbstractRequest
     {
         $this->validate('accounting_id');
         $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('SyncToken', 'sync_token');
+
         $this->data['Active'] = false;
         return $this->data;
     }

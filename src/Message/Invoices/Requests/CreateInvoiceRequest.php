@@ -15,6 +15,25 @@ use QuickBooksOnline\API\Facades\Invoice;
 class CreateInvoiceRequest extends AbstractRequest
 {
     /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getSynToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Deposit Amount
+     * @return CreateInvoiceRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
+    /**
      * Get Deposit Amount Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -289,6 +308,7 @@ class CreateInvoiceRequest extends AbstractRequest
         $this->issetParam('DocNumber', 'invoice_number');
         $this->issetParam('TotalAmt', 'total');
         $this->issetParam('Deposit', 'deposit_amount');
+        $this->issetParam('SyncToken', 'sync_token');
 
         if ($this->getInvoiceData()) {
             $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());

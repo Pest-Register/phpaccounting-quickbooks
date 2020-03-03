@@ -13,7 +13,6 @@ use QuickBooksOnline\API\Exception\IdsException;
  */
 class GetInvoiceRequest extends AbstractRequest
 {
-
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
