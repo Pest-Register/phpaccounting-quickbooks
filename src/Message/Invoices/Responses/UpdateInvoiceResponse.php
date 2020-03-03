@@ -133,6 +133,9 @@ class UpdateInvoiceResponse extends AbstractResponse
             $newInvoice['invoice_number'] = $invoice->DocNumber;
             $newInvoice['amount_due'] = $invoice->Balance;
             $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+            $newInvoice['discount_amount'] = $invoice->DiscountAmt;
+            $newInvoice['discount_rate'] = $invoice->DiscountRate;
+            $newInvoice['deposit_amount'] = $invoice->Deposit;
             $newInvoice['date'] = $invoice->TxnDate;
             $newInvoice['due_date'] = $invoice->DueDate;
             $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;
@@ -162,6 +165,9 @@ class UpdateInvoiceResponse extends AbstractResponse
                 $newInvoice['invoice_number'] = $invoice->DocNumber;
                 $newInvoice['amount_due'] = $invoice->Balance;
                 $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+                $newInvoice['discount_amount'] = $invoice->DiscountAmt;
+                $newInvoice['discount_rate'] = $invoice->DiscountRate;
+                $newInvoice['deposit_amount'] = $invoice->Deposit;
                 $newInvoice['date'] = $invoice->TxnDate;
                 $newInvoice['due_date'] = $invoice->DueDate;
                 $newInvoice['gst_inclusive'] = $invoice->GlobalTaxCalculation;

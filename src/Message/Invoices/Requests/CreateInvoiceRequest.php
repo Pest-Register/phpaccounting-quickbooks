@@ -15,6 +15,44 @@ use QuickBooksOnline\API\Facades\Invoice;
 class CreateInvoiceRequest extends AbstractRequest
 {
     /**
+     * Get Discount Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getDiscountAmount(){
+        return $this->getParameter('discount_amount');
+    }
+
+    /**
+     * Set Discount Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Discount Amount
+     * @return CreateInvoiceRequest
+     */
+    public function setDiscountAmount($value){
+        return $this->setParameter('discount_amount', $value);
+    }
+
+    /**
+     * Get Discount Rate Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getDiscountRate(){
+        return $this->getParameter('discount_rate');
+    }
+
+    /**
+     * Set Discount Rate Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Discount Rate
+     * @return CreateInvoiceRequest
+     */
+    public function setDiscountRate($value){
+        return $this->setParameter('discount_rate', $value);
+    }
+
+    /**
      * Get GST Inclusive Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -212,6 +250,9 @@ class CreateInvoiceRequest extends AbstractRequest
         $this->issetParam('DueDate', 'due_date');
         $this->issetParam('DocNumber', 'invoice_number');
         $this->issetParam('TotalAmt', 'total');
+        $this->issetParam('DiscountAmount', 'discount_amount');
+        $this->issetParam('DiscountRate', 'discount_rate');
+        $this->issetParam('Deposit', 'deposit_amount');
 
         if ($this->getInvoiceData()) {
             $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());
