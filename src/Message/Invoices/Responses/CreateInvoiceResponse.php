@@ -75,26 +75,27 @@ class CreateInvoiceResponse extends AbstractResponse
         if ($data) {
             $lineItems = [];
             foreach($data as $lineItem) {
-                $newLineItem = [];
-                $newLineItem['description'] = $lineItem->Description;
-                $newLineItem['line_amount'] = $lineItem->Amount;
-                $newLineItem['accounting_id'] = $lineItem->Id;
-                $newLineItem['amount'] = $lineItem->Amount;
+                if ($lineItem->Id) {
+                    $newLineItem = [];
+                    $newLineItem['description'] = $lineItem->Description;
+                    $newLineItem['line_amount'] = $lineItem->Amount;
+                    $newLineItem['accounting_id'] = $lineItem->Id;
+                    $newLineItem['amount'] = $lineItem->Amount;
 
-                $salesLineDetail = $lineItem->SalesItemLineDetail;
-                if ($salesLineDetail) {
-                    $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
-                    $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
-                    $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
-                    $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
-                    $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                    $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
-                    $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
-                }
-
-                $discountLine = $lineItem->DiscountLineDetail;
-                if ($discountLine) {
-                    $invoice['discount_amount'] = $discountLine->Amount;
+                    $salesLineDetail = $lineItem->SalesItemLineDetail;
+                    if ($salesLineDetail) {
+                        $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                        $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
+                        $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
+                        $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
+                        $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
+                        $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
+                        $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
+                    }
+                } else {
+                    if ($lineItem->DiscountLineDetail) {
+                        $invoice['discount_amount'] = $lineItem->Amount;
+                    }
                 }
 
                 array_push($lineItems, $newLineItem);

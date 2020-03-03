@@ -318,6 +318,9 @@ class UpdateInventoryItemRequest extends AbstractRequest
         $this->issetParam('Type', 'type');
         $this->issetParam('TrackQtyOnHand', 'is_tracked');
         $this->issetParam('QtyOnHand', 'quantity');
+
+        $this->data['sparse'] = true;
+
         if ($this->getInventoryAccountCode()) {
             $this->data['COGSAccountRef'] = [
                 'value' => $this->getInventoryAccountCode()

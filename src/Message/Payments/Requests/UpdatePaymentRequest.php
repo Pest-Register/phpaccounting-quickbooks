@@ -320,6 +320,8 @@ class UpdatePaymentRequest extends AbstractRequest
         $this->issetParam('PaymentRefNum', 'reference_id');
         $this->issetParam('SyncToken', 'sync_token');
 
+        $this->data['sparse'] = true;
+
         $this->data['Line'] = [];
         if ($this->getInvoice()) {
             $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice());

@@ -310,6 +310,8 @@ class UpdateContactRequest extends AbstractRequest
         $this->issetParam('GivenName', 'first_name');
         $this->issetParam('FamilyName', 'last_name');
 
+        $this->data['sparse'] = true;
+
         if ($this->getEmailAddress()) {
             $this->data['PrimaryEmailAddr'] = [
                 'Address' => $this->getEmailAddress()

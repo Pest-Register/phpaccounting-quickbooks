@@ -132,6 +132,8 @@ class UpdateManualJournalRequest extends AbstractRequest
         $this->issetParam('PrivateNote', 'narration');
         $this->issetParam('DocNumber', 'reference_id');
 
+        $this->data['sparse'] = true;
+
         if ($this->getJournalData()) {
             $this->data['Line'] = $this->addJournalLinesToJournal($this->getJournalData());
         }

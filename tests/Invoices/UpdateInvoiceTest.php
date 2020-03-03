@@ -20,24 +20,33 @@ class UpdateInvoiceTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => 'fc714cd8-98b6-44b9-90a4-55189d56872d',
+                'accounting_id' => '245',
                 'type' => 'ACCREC',
-                'contact' => 'd6a384fb-f46f-41a3-8ac7-b7bc9e0b5efa',
+                'date' => '2020-03-03',
+                'due_date' => '2020-03-03',
+                'contact' => '23',
+                'invoice_reference' => '678745983232',
+                'discount_amount' => 100,
+                'deposit_amount' => 200,
+                'deposit_account' => 13,
                 'invoice_data' => [
                     [
-                        'description' => $faker->sentence,
-                        'quantity' => '20',
+                        'description' => 'Consulting services as agreed (20% off standard rate)',
+                        'quantity' => '10',
                         'unit_amount' => '100.00',
-                        'discount_rate' => '10',
-                        'code' => 200
+                        'discount_rate' => '20',
+                        'amount' => 1000,
+                        'code' => 200,
+                        'tax_id' => 10,
+                        'account_id' => 10,
+                        'item_id' => 15
                     ]
                 ]
             ];
 
             $response = $this->gateway->updateInvoice($params)->send();
             if ($response->isSuccessful()) {
-                $invoices = $response->getInvoices();
-                $this->assertIsArray($invoices);
+                var_dump($response->getInvoices());
             } else {
                 var_dump($response->getErrorMessage());
             }

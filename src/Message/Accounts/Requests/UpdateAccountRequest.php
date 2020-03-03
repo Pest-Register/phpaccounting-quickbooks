@@ -183,6 +183,9 @@ class UpdateAccountRequest extends AbstractRequest
         $this->issetParam('AccountType', 'type');
         $this->issetParam('Description', 'description');
         $this->issetParam('CurrencyRef', 'currency_code');
+
+        $this->data['sparse'] = true;
+
         if ($this->getTaxTypeID()) {
             $this->data['TaxCodeRef'] = [
                 'value' => $this->getTaxTypeID()
