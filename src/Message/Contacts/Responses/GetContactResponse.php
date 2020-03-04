@@ -132,7 +132,7 @@ class GetContactResponse extends AbstractResponse
             }
             if ($contact->AlternatePhone) {
                 array_push($newContact['phones'], [
-                    'type' =>  'OTHER',
+                    'type' =>  'EXTRA',
                     'area_code' => '',
                     'country_code' => '',
                     'phone_number' => $contact->Mobile->FreeFormNumber
@@ -203,7 +203,7 @@ class GetContactResponse extends AbstractResponse
                 }
                 if ($contact->AlternatePhone) {
                     array_push($newContact['phones'], [
-                        'type' =>  'OTHER',
+                        'type' =>  'EXTRA',
                         'area_code' => '',
                         'country_code' => '',
                         'phone_number' => $contact->AlternatePhone->FreeFormNumber

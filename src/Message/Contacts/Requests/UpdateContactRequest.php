@@ -332,7 +332,6 @@ class UpdateContactRequest extends AbstractRequest
             $this->data = $this->getAddressData($this->getAddresses(), $this->data);
         }
 
-        $this->data['sparse'] = true;
         return $this->data;
     }
 
