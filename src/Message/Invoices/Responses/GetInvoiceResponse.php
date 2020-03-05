@@ -101,10 +101,11 @@ class GetInvoiceResponse extends AbstractResponse
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
                     array_push($lineItems, $newLineItem);
-                } else {
-                    if ($lineItem->DiscountLineDetail) {
-                        $invoice['discount_amount'] = $lineItem->Amount;
-                    }
+                } elseif ($lineItem->DiscountLineDetail) {
+                    $invoice['discount_amount'] = $lineItem->Amount;
+
+                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
+                    $invoice['subtotal'] = $lineItem->Amount;
                 }
             }
             $invoice['invoice_data'] = $lineItems;
@@ -140,7 +141,6 @@ class GetInvoiceResponse extends AbstractResponse
             $invoice = $this->data;
             $newInvoice = [];
             $newInvoice['accounting_id'] = $invoice->Id;
-            $newInvoice['sub_total'] = $invoice->TotalAmt;
             $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
             $newInvoice['total'] = $invoice->TotalAmt;
             $newInvoice['currency'] = $invoice->CurrencyRef;
