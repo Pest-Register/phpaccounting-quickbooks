@@ -157,7 +157,7 @@ class GetContactResponse extends AbstractResponse
                 $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
                 if ($contact->ShipAddr) {
                     array_push($newContact['addresses'], [
-                        'address_type' =>  'STREET',
+                        'address_type' =>  'EXTRA',
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
                         'postal_code' => $contact->ShipAddr->PostalCode,
@@ -166,7 +166,7 @@ class GetContactResponse extends AbstractResponse
                 }
                 if ($contact->BillAddr) {
                     array_push($newContact['addresses'], [
-                        'address_type' =>  'POBOX',
+                        'address_type' =>  'BILLING',
                         'address_line_1' => $contact->BillAddr->Line1,
                         'city' => $contact->BillAddr->City,
                         'postal_code' => $contact->BillAddr->PostalCode,
