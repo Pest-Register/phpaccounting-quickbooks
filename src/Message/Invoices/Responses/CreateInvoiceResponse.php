@@ -95,6 +95,8 @@ class CreateInvoiceResponse extends AbstractResponse
                 } else {
                     if ($lineItem->DiscountLineDetail) {
                         $invoice['discount_amount'] = $lineItem->Amount;
+                    } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
+                        $invoice['sub_total'] = $lineItem->Amount;
                     }
                 }
 
@@ -134,7 +136,6 @@ class CreateInvoiceResponse extends AbstractResponse
             $invoice = $this->data;
             $newInvoice = [];
             $newInvoice['accounting_id'] = $invoice->Id;
-            $newInvoice['sub_total'] = $invoice->TotalAmt;
             $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
             $newInvoice['total'] = $invoice->TotalAmt;
             $newInvoice['sync_token'] = $invoice->SyncToken;
@@ -165,7 +166,6 @@ class CreateInvoiceResponse extends AbstractResponse
             foreach ($this->data as $invoice) {
                 $newInvoice = [];
                 $newInvoice['accounting_id'] = $invoice->Id;
-                $newInvoice['sub_total'] = $invoice->TotalAmt;
                 $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
                 $newInvoice['total'] = $invoice->TotalAmt;
                 $newInvoice['sync_token'] = $invoice->SyncToken;

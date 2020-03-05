@@ -105,7 +105,7 @@ class GetInvoiceResponse extends AbstractResponse
                     $invoice['discount_amount'] = $lineItem->Amount;
 
                 } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-                    $invoice['subtotal'] = $lineItem->Amount;
+                    $invoice['sub_total'] = $lineItem->Amount;
                 }
             }
             $invoice['invoice_data'] = $lineItems;
@@ -171,7 +171,6 @@ class GetInvoiceResponse extends AbstractResponse
             foreach ($this->data as $invoice) {
                 $newInvoice = [];
                 $newInvoice['accounting_id'] = $invoice->Id;
-                $newInvoice['sub_total'] = $invoice->TotalAmt;
                 $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
                 $newInvoice['total'] = $invoice->TotalAmt;
                 $newInvoice['currency'] = $invoice->CurrencyRef;
