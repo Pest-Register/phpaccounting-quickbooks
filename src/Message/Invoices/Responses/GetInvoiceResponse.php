@@ -190,7 +190,7 @@ class GetInvoiceResponse extends AbstractResponse
 
                 if ($newInvoice['amount_due'] == 0) {
                     $newInvoice['status'] = 'PAID';
-                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
+                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] != $newInvoice['total']) {
                     $newInvoice['status'] = 'PARTIAL';
                 } else {
                     $newInvoice['status'] = 'SUBMITTED';
