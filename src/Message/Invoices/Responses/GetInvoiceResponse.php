@@ -141,7 +141,6 @@ class GetInvoiceResponse extends AbstractResponse
             $invoice = $this->data;
             $newInvoice = [];
             $newInvoice['address'] = [];
-            $newInvoice['billing_address'] = [];
             $newInvoice['accounting_id'] = $invoice->Id;
             $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
             $newInvoice['total'] = $invoice->TotalAmt;

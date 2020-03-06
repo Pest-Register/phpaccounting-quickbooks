@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/PHPAccounting-XERO.iml" filepath="$PROJECT_DIR$/.idea/PHPAccounting-XERO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/phpaccounting-quickbooks.iml" filepath="$PROJECT_DIR$/.idea/phpaccounting-quickbooks.iml" />
     </modules>
   </component>
 </project>
