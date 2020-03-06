@@ -260,6 +260,21 @@ class CreateInvoiceRequest extends AbstractRequest
     public function setContact($value){
         return $this->setParameter('contact', $value);
     }
+    
+    /**
+     * @return mixed
+     */
+    public function getAddress() {
+        return $this->getParameter('address');
+    }
+
+    /**
+     * @param $value
+     * @return CreateInvoiceRequest
+     */
+    public function setAddress($value) {
+        return $this->setParameter('address', $value);
+    }
 
     /**
      * Add Line Items to Invoice
@@ -353,6 +368,18 @@ class CreateInvoiceRequest extends AbstractRequest
                 $this->data['EmailStatus'] = 'NotSet';
             }
         }
+
+        if ($this->getAddress()) {
+            $address = $this->getAddress();
+            $this->data['BillAddr'] =
+                [
+                    'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
+                    'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
+                    'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                    'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
+                ];
+        }
+
         $this->data['ApplyTaxAfterDiscount'] = true;
         return $this->data;
     }

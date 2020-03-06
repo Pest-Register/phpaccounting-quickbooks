@@ -131,6 +131,7 @@ class UpdateInvoiceResponse extends AbstractResponse
         if ($this->data instanceof IPPInvoice){
             $invoice = $this->data;
             $newInvoice = [];
+            $newInvoice['address'] = [];
             $newInvoice['accounting_id'] = $invoice->Id;
             $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
             $newInvoice['total'] = $invoice->TotalAmt;
@@ -148,7 +149,15 @@ class UpdateInvoiceResponse extends AbstractResponse
             $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
-
+            if ($invoice->BillAddr) {
+                $newInvoice['address'] = [
+                    'address_type' =>  'BILLING',
+                    'address_line_1' => $invoice->BillAddr->Line1,
+                    'city' => $invoice->BillAddr->City,
+                    'postal_code' => $invoice->BillAddr->PostalCode,
+                    'country' => $invoice->BillAddr->Country
+                ];
+            }
             if ($newInvoice['amount_due'] == 0) {
                 $newInvoice['status'] = 'PAID';
             } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
@@ -162,6 +171,7 @@ class UpdateInvoiceResponse extends AbstractResponse
         } else {
             foreach ($this->data as $invoice) {
                 $newInvoice = [];
+                $newInvoice['address'] = [];
                 $newInvoice['accounting_id'] = $invoice->Id;
                 $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
                 $newInvoice['total'] = $invoice->TotalAmt;
@@ -179,7 +189,15 @@ class UpdateInvoiceResponse extends AbstractResponse
                 $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
-
+                if ($invoice->BillAddr) {
+                    $newInvoice['address'] = [
+                        'address_type' =>  'BILLING',
+                        'address_line_1' => $invoice->BillAddr->Line1,
+                        'city' => $invoice->BillAddr->City,
+                        'postal_code' => $invoice->BillAddr->PostalCode,
+                        'country' => $invoice->BillAddr->Country
+                    ];
+                }
                 if ($newInvoice['amount_due'] == 0) {
                     $newInvoice['status'] = 'PAID';
                 } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {

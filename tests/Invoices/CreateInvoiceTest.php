@@ -2,7 +2,7 @@
 
 namespace Tests\Invoices;
 
-
+use Faker;
 use Tests\BaseTest;
 
 class CreateInvoiceTest extends BaseTest
@@ -10,7 +10,7 @@ class CreateInvoiceTest extends BaseTest
     public function testCreateInvoice(){
         $this->setUp();
         try {
-
+            $faker = Faker\Factory::create();
             $params = [
                 'type' => 'ACCREC',
                 'date' => '2020-03-03',
@@ -31,6 +31,13 @@ class CreateInvoiceTest extends BaseTest
                         'account_id' => 10,
                         'item_id' => 15
                     ]
+                ],
+                'address' => [
+                    'type' => 'BILLING',
+                    'address_line_1' => $faker->streetAddress,
+                    'city' => $faker->city,
+                    'postal_code' => $faker->postcode,
+                    'country' => $faker->country
                 ]
             ];
 

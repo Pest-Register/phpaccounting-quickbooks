@@ -42,6 +42,13 @@ class UpdateInvoiceTest extends BaseTest
                         'account_id' => 10,
                         'item_id' => 15
                     ]
+                ],
+                'address' => [
+                    'type' => 'BILLING',
+                    'address_line_1' => $faker->streetAddress,
+                    'city' => $faker->city,
+                    'postal_code' => $faker->postcode,
+                    'country' => $faker->country
                 ]
             ];
 

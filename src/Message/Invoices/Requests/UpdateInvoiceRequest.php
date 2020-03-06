@@ -262,6 +262,21 @@ class UpdateInvoiceRequest extends AbstractRequest
         return  $this->getParameter('accounting_id');
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAddress() {
+        return $this->getParameter('address');
+    }
+
+    /**
+     * @param $value
+     * @return UpdateInvoiceRequest
+     */
+    public function setAddress($value) {
+        return $this->setParameter('address', $value);
+    }
+
 
     /**
      * Add Line Items to Invoice
@@ -366,6 +381,17 @@ class UpdateInvoiceRequest extends AbstractRequest
             if ($this->getGSTInclusive() === 'NONE') {
                 $this->data['GlobalTaxCalculation'] = 'NotApplicable';
             }
+        }
+
+        if ($this->getAddress()) {
+            $address = $this->getAddress();
+            $this->data['BillAddr'] =
+                [
+                    'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
+                    'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
+                    'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                    'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
+                ];
         }
 
         $this->data['ApplyTaxAfterDiscount'] = true;
