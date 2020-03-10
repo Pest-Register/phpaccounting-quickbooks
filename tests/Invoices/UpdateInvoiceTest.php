@@ -20,7 +20,7 @@ class UpdateInvoiceTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => '245',
+                'accounting_id' => '192',
                 'type' => 'ACCREC',
                 'date' => '2020-03-03',
                 'due_date' => '2020-03-03',
@@ -29,7 +29,7 @@ class UpdateInvoiceTest extends BaseTest
                 'discount_amount' => 100,
                 'deposit_amount' => 200,
                 'deposit_account' => 13,
-                'sync_token' => 17,
+                'sync_token' => 23,
                 'invoice_data' => [
                     [
                         'description' => 'Consulting services as agreed (20% off standard rate)',
