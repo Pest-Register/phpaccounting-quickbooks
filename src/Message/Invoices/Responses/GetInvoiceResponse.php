@@ -135,7 +135,7 @@ class GetInvoiceResponse extends AbstractResponse
         if ($data) {
             switch($data) {
                 case 'TaxExcluded':
-                    return 'EXCLUDED';
+                    return 'EXCLUSIVE';
                 case 'TaxInclusive':
                     return 'INCLUSIVE';
                 case 'NotApplicable':
