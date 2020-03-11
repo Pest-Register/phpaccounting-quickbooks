@@ -17,7 +17,7 @@ class CreateContactTest extends BaseTest
                 'email_address' => $faker->email,
                 'addresses' => [
                     [
-                        'type' => 'STREET',
+                        'type' => 'BILLING',
                         'address_line_1' => $faker->streetAddress,
                         'city' => $faker->city,
                         'postal_code' => $faker->postcode,

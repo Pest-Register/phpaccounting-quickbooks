@@ -198,7 +198,7 @@ class CreateContactRequest extends AbstractRequest
                         ];
                     break;
                 default:
-                    $contact['OtherAdr'] =
+                    $contact['OtherAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),

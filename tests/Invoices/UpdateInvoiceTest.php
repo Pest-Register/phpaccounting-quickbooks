@@ -20,35 +20,27 @@ class UpdateInvoiceTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => '192',
+
+                'accounting_id' => 128,
+                'sync_token' => 2,
+                'status' => 'PAID',
                 'type' => 'ACCREC',
-                'date' => '2020-03-03',
-                'due_date' => '2020-03-03',
-                'contact' => '23',
-                'invoice_reference' => '678745983232',
-                'discount_amount' => 100,
-                'deposit_amount' => 200,
-                'deposit_account' => 13,
-                'sync_token' => 23,
+                'contact' => [
+                    'accounting_id' => 3
+                ],
                 'invoice_data' => [
                     [
-                        'description' => 'Consulting services as agreed (20% off standard rate)',
-                        'quantity' => '10',
-                        'unit_amount' => '100.00',
-                        'discount_rate' => '20',
-                        'amount' => 1000,
-                        'code' => 200,
-                        'tax_id' => 10,
-                        'account_id' => 10,
-                        'item_id' => 15
+                        'description' => 'consulting for upcoming company event',
+                        'line_amount' => 800,
+                        'accounting_id' => 1,
+                        'amount' => 800,
+                        'quantity' => 4,
+                        'unit_amount' => 200,
+                        'account_id' => 1,
+                        'item_id' => 1,
+                        'tax_amount' => 800,
+                        'tax_type' => 10
                     ]
-                ],
-                'address' => [
-                    'type' => 'BILLING',
-                    'address_line_1' => $faker->streetAddress,
-                    'city' => $faker->city,
-                    'postal_code' => $faker->postcode,
-                    'country' => $faker->country
                 ]
             ];
 
