@@ -84,9 +84,12 @@ class GetContactResponse extends AbstractResponse
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
             $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($contact->WebAddr) {
+                $newContact['website'] = $contact->WebAddr->URI;
+            }
             if ($contact->ShipAddr) {
                 array_push($newContact['addresses'], [
-                    'address_type' =>  'EXTRA',
+                    'address_type' =>  'STRUCTURE',
                     'address_line_1' => $contact->ShipAddr->Line1,
                     'city' => $contact->ShipAddr->City,
                     'postal_code' => $contact->ShipAddr->PostalCode,
@@ -155,9 +158,12 @@ class GetContactResponse extends AbstractResponse
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
                 $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($contact->WebAddr) {
+                    $newContact['website'] = $contact->WebAddr->URI;
+                }
                 if ($contact->ShipAddr) {
                     array_push($newContact['addresses'], [
-                        'address_type' =>  'EXTRA',
+                        'address_type' =>  'STRUCTURE',
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
                         'postal_code' => $contact->ShipAddr->PostalCode,

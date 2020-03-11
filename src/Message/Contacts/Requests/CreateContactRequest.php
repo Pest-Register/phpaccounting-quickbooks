@@ -179,7 +179,7 @@ class CreateContactRequest extends AbstractRequest
     public function getAddressData($data, $contact) {
         foreach($data as $address) {
             switch ($address['type']) {
-                case 'STREET':
+                case 'STRUCTURE':
                     $contact['ShipAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
@@ -188,7 +188,7 @@ class CreateContactRequest extends AbstractRequest
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
-                case 'POBOX':
+                case 'BILLING':
                     $contact['BillAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
