@@ -205,22 +205,22 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
-     * Get Email Status Parameter from Parameter Bag
+     * Get Status Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
-    public function getEmailStatus(){
-        return $this->getParameter('email_status');
+    public function getStatus(){
+        return $this->getParameter('status');
     }
 
     /**
-     * Set Email Status Parameter from Parameter Bag
+     * Set Status Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param string $value Invoice Due Date
      * @return CreateInvoiceRequest
      */
-    public function setEmailStatus($value){
-        return $this->setParameter('email_status', $value);
+    public function setStatus($value){
+        return $this->setParameter('status', $value);
     }
 
     /**
@@ -361,8 +361,8 @@ class CreateInvoiceRequest extends AbstractRequest
             }
         }
 
-        if ($this->getEmailStatus()) {
-            if ($this->getEmailStatus() === true) {
+        if ($this->getStatus()) {
+            if ($this->getStatus() === 'OPEN') {
                 $this->data['EmailStatus'] = 'EmailSent';
             } else {
                 $this->data['EmailStatus'] = 'NotSet';
