@@ -84,6 +84,13 @@ class GetContactResponse extends AbstractResponse
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
             $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($contact->Active) {
+                if ($contact->Active == true) {
+                    $newContact['status'] = 'ACTIVE';
+                } else {
+                    $newContact['status'] = 'INACTIVE';
+                }
+            }
             if ($contact->WebAddr) {
                 $newContact['website'] = $contact->WebAddr->URI;
             }
@@ -158,6 +165,13 @@ class GetContactResponse extends AbstractResponse
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
                 $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($contact->Active) {
+                    if ($contact->Active == true) {
+                        $newContact['status'] = 'ACTIVE';
+                    } else {
+                        $newContact['status'] = 'INACTIVE';
+                    }
+                }
                 if ($contact->WebAddr) {
                     $newContact['website'] = $contact->WebAddr->URI;
                 }

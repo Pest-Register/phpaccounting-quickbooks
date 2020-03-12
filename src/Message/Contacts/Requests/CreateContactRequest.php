@@ -269,6 +269,14 @@ class CreateContactRequest extends AbstractRequest
         $this->issetParam('GivenName', 'first_name');
         $this->issetParam('FamilyName', 'last_name');
 
+        if ($this->getStatus()) {
+            if ($this->getStatus() == 'ACTIVE') {
+                $this->data['Active'] = true;
+            } elseif ($this->getStatus() == 'INACTIVE') {
+                $this->data['Active'] = false;
+            }
+        }
+
         if ($this->getEmailAddress()) {
             $this->data['PrimaryEmailAddr'] = [
                 'Address' => $this->getEmailAddress()

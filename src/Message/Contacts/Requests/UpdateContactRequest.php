@@ -312,6 +312,13 @@ class UpdateContactRequest extends AbstractRequest
 
         $this->data['sparse'] = true;
 
+        if ($this->getStatus()) {
+           if ($this->getStatus() == 'ACTIVE') {
+               $this->data['Active'] = true;
+           } elseif ($this->getStatus() == 'INACTIVE') {
+               $this->data['Active'] = false;
+           }
+        }
         if ($this->getEmailAddress()) {
             $this->data['PrimaryEmailAddr'] = [
                 'Address' => $this->getEmailAddress()
@@ -352,7 +359,10 @@ class UpdateContactRequest extends AbstractRequest
         }
         $id = $this->getAccountingID();
         try {
-            $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
+            $targetCustomer = $quickbooks->Query("select * from Customer where Active = false and Id='".$id."'");
+            if (!$targetCustomer) {
+                $targetCustomer = $quickbooks->Query("select * from Customer where Active in (true,false) and Id='".$id."'");
+            }
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',

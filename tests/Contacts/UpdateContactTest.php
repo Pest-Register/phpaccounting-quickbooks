@@ -17,7 +17,17 @@ class UpdateContactTest extends BaseTest
                 'accounting_id' => '72',
                 'name' => 'Bob Down',
                 'website' => 'https://www.bobdown.com',
-                'sync_token' => 3
+                'sync_token' => 6,
+                'addresses' => [
+                    [
+                        'type' => 'PRIMARY',
+                        'address_line_1' => '454 Collins Street',
+                        'city' => 'Melbourne',
+                        'postal_code' => '3000',
+                        'state' => 'Victoria',
+                        'country' => 'Australia'
+                    ]
+                ]
             ];
 
             $response = $this->gateway->updateContact($params)->send();

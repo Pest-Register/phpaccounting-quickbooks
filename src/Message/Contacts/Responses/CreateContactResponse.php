@@ -82,6 +82,13 @@ class CreateContactResponse extends AbstractResponse
             $newContact['currency_code'] = $contact->CurrencyRef;
             $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
 
+            if ($contact->Active) {
+                if ($contact->Active == true) {
+                    $newContact['status'] = 'ACTIVE';
+                } else {
+                    $newContact['status'] = 'INACTIVE';
+                }
+            }
             if ($contact->WebAddr) {
                 $newContact['website'] = $contact->WebAddr->URI;
             }
@@ -157,6 +164,14 @@ class CreateContactResponse extends AbstractResponse
                 $newContact['currency_code'] = $contact->CurrencyRef;
                 $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
 
+                if ($contact->Active) {
+                    if ($contact->Active == true) {
+                        $newContact['status'] = 'ACTIVE';
+                    } else {
+                        $newContact['status'] = 'INACTIVE';
+                    }
+                }
+                
                 if ($contact->WebAddr) {
                     $newContact['website'] = $contact->WebAddr->URI;
                 }
