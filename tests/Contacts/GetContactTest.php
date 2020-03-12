@@ -21,7 +21,7 @@ class GetContactTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_id' => '72',
+                'accounting_id' => '1',
                 'page' => 1
             ];
 

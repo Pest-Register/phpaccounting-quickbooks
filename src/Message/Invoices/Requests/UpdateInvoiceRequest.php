@@ -427,10 +427,16 @@ class UpdateInvoiceRequest extends AbstractRequest
             $item = Invoice::update(current($targetItem),$updateParams);
             $response = $quickbooks->Update($item);
         } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'detail' => 'Existing Invoice not Found'
-            ]);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'detail' => 'Existing Invoice not Found'
+                ]);
+            }
+
         }
 
         $error = $quickbooks->getLastError();

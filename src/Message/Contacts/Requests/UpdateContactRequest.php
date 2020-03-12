@@ -317,7 +317,7 @@ class UpdateContactRequest extends AbstractRequest
                 'Address' => $this->getEmailAddress()
             ];
         }
-        
+
         if ($this->getWebsite()) {
             $this->data['WebAddr'] = [
                 'URI' => $this->getWebsite()
@@ -359,15 +359,20 @@ class UpdateContactRequest extends AbstractRequest
                 'detail' => $exception->getMessage()
             ]);
         }
-
+        
         if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
             $customer = Customer::update(current($targetCustomer),$updateParams);
             $response = $quickbooks->Update($customer);
         } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'detail' => 'Existing Customer not Found'
-            ]);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'detail' => 'Existing Customer not Found'
+                ]);
+            }
         }
 
         $error = $quickbooks->getLastError();

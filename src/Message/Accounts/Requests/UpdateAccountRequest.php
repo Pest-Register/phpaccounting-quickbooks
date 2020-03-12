@@ -223,10 +223,16 @@ class UpdateAccountRequest extends AbstractRequest
             $account = Account::update(current($targetAccount),$updateParams);
             $response = $quickbooks->Update($account);
         } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'detail' => 'Existing Account not Found'
-            ]);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'detail' => 'Existing Account not Found'
+                ]);
+            }
+
         }
 
         $error = $quickbooks->getLastError();
