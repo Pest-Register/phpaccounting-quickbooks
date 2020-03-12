@@ -222,7 +222,7 @@ class CreateContactRequest extends AbstractRequest
     public function getPhoneData($data, $contact) {
         foreach($data as $phone) {
             switch ($phone['type']) {
-                case 'BUSINESS':
+                case 'DEFAULT':
                     $contact['PrimaryPhone'] =
                         [
                             'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
@@ -276,9 +276,7 @@ class CreateContactRequest extends AbstractRequest
         }
 
         if ($this->getWebsite()) {
-            $this->data['WebAddr'] = [
-                'URI' => $this->getWebsite()
-            ];
+            $this->data['WebAddr'] = $this->getWebsite();
         }
 
         if ($this->getPhones()) {
