@@ -208,8 +208,8 @@ class UpdateInventoryItemRequest extends AbstractRequest
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
      * @return mixed
      */
-    public function getPurchaseDetails() {
-        return $this->getParameter('purchase_details');
+    public function getBuyingDetails() {
+        return $this->getParameter('buying_details');
     }
 
     /**
@@ -237,8 +237,8 @@ class UpdateInventoryItemRequest extends AbstractRequest
      * @param $value
      * @return mixed
      */
-    public function setPurchaseDetails($value) {
-        return $this->setParameter('purchase_details', $value);
+    public function setBuyingDetails($value) {
+        return $this->setParameter('buying_details', $value);
     }
     /**
      * Get Asset Details Parameter from Parameter Bag
@@ -307,41 +307,36 @@ class UpdateInventoryItemRequest extends AbstractRequest
     public function getData()
     {
         $datetime = new \DateTime('NOW');
-        $this->validate('name', 'accounting_id');
+        $this->validate('name');
 
-        $this->issetParam('Id', 'accounting_id');
         $this->issetParam('Name', 'name');
-        $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('Description', 'description');
         $this->issetParam('PurchaseDesc', 'buying_description');
-        $this->issetParam('UnitPrice', 'selling_unit_price');
         $this->issetParam('Type', 'type');
         $this->issetParam('TrackQtyOnHand', 'is_tracked');
         $this->issetParam('QtyOnHand', 'quantity');
-
-        $this->data['sparse'] = true;
-
         if ($this->getInventoryAccountCode()) {
             $this->data['COGSAccountRef'] = [
                 'value' => $this->getInventoryAccountCode()
             ];
         }
-
-        $purchaseDetails = $this->getPurchaseDetails();
+        $buyingDetails = $this->getBuyingDetails();
         $salesDetails = $this->getSalesDetails();
         $assetDetails = $this->getAssetDetails();
 
-        if ($purchaseDetails) {
-            if (array_key_exists('tracked_buying_account_code',$purchaseDetails)) {
+        if ($buyingDetails) {
+            if (array_key_exists('tracked_buying_account_code',$buyingDetails)) {
                 $this->data['COGSAccountCode'] = [
-                    'value' => $purchaseDetails['tracked_buying_account_code']
+                    'value' => $buyingDetails['tracked_buying_account_code']
                 ];
             } else {
                 $this->data['ExpenseAccountRef'] = [
-                    'value' => $purchaseDetails['buying_account_code']
+                    'value' => $buyingDetails['buying_account_code']
                 ];
             }
-            $this->data['PurchaseCost'] = $purchaseDetails['buying_unit_price'];
+            if (array_key_exists('buying_unit_price', $buyingDetails)) {
+                $this->data['PurchaseCost'] = $buyingDetails['buying_unit_price'];
+            }
         }
 
         if ($salesDetails) {
@@ -349,6 +344,9 @@ class UpdateInventoryItemRequest extends AbstractRequest
                 $this->data['IncomeAccountRef'] = [
                     'value' => $salesDetails['selling_account_code']
                 ];
+            }
+            if (array_key_exists('selling_unit_price', $salesDetails)) {
+                $this->data['UnitPrice'] = $salesDetails['selling_unit_price'];
             }
         }
 
@@ -359,6 +357,7 @@ class UpdateInventoryItemRequest extends AbstractRequest
                 ];
             }
         }
+
 
         $this->data['Active'] = true;
         $this->data['InvStartDate'] = $datetime;
