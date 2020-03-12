@@ -217,7 +217,7 @@ class UpdateContactRequest extends AbstractRequest
     public function getAddressData($data, $contact) {
         foreach($data as $address) {
             switch ($address['type']) {
-                case 'STRUCTURE':
+                case 'PRIMARY':
                     $contact['ShipAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
@@ -359,7 +359,7 @@ class UpdateContactRequest extends AbstractRequest
                 'detail' => $exception->getMessage()
             ]);
         }
-        
+
         if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
             $customer = Customer::update(current($targetCustomer),$updateParams);
             $response = $quickbooks->Update($customer);

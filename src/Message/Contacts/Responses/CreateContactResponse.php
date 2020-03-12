@@ -87,7 +87,7 @@ class CreateContactResponse extends AbstractResponse
             }
             if ($contact->ShipAddr) {
                 array_push($newContact['addresses'], [
-                    'address_type' =>  'STRUCTURE',
+                    'address_type' =>  'PRIMARY',
                     'address_line_1' => $contact->ShipAddr->Line1,
                     'city' => $contact->ShipAddr->City,
                     'postal_code' => $contact->ShipAddr->PostalCode,
@@ -162,7 +162,7 @@ class CreateContactResponse extends AbstractResponse
                 }
                 if ($contact->ShipAddr) {
                     array_push($newContact['addresses'], [
-                        'address_type' =>  'STRUCTURE',
+                        'address_type' =>  'PRIMARY',
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
                         'postal_code' => $contact->ShipAddr->PostalCode,
