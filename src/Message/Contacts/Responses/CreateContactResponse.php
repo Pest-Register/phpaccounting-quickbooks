@@ -75,7 +75,7 @@ class CreateContactResponse extends AbstractResponse
             $newContact['display_name'] = $contact->DisplayName;
             $newContact['first_name'] = $contact->GivenName;
             $newContact['last_name'] = $contact->FamilyName;
-            $newContact['type'] = ['CUSTOMER'];
+            $newContact['types'] = ['CUSTOMER'];
             $newContact['sync_token'] = $contact->SyncToken;
             $newContact['is_individual'] = ($contact->CompanyName ? true : false);
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
@@ -150,7 +150,7 @@ class CreateContactResponse extends AbstractResponse
                 $newContact['display_name'] = $contact->DisplayName;
                 $newContact['first_name'] = $contact->GivenName;
                 $newContact['last_name'] = $contact->FamilyName;
-                $newContact['type'] = ['CUSTOMER'];
+                $newContact['types'] = ['CUSTOMER'];
                 $newContact['sync_token'] = $contact->SyncToken;
                 $newContact['is_individual'] = ($contact->CompanyName ? true : false);
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
