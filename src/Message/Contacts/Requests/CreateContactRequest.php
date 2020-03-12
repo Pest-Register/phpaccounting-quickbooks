@@ -276,7 +276,9 @@ class CreateContactRequest extends AbstractRequest
         }
 
         if ($this->getWebsite()) {
-            $this->data['WebAddr'] = $this->getWebsite();
+            $this->data['WebAddr'] = [
+                'URI' => $this->getWebsite()
+            ];
         }
 
         if ($this->getPhones()) {

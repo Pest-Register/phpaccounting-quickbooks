@@ -317,9 +317,11 @@ class UpdateContactRequest extends AbstractRequest
                 'Address' => $this->getEmailAddress()
             ];
         }
-
+        
         if ($this->getWebsite()) {
-            $this->data['WebAddr'] = $this->getWebsite();
+            $this->data['WebAddr'] = [
+                'URI' => $this->getWebsite()
+            ];
         }
 
         if ($this->getPhones()) {
