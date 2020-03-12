@@ -87,15 +87,15 @@ class GetInventoryItemResponse extends AbstractResponse
             $newItem['cost_pool'] = $item->AvgCost;
             $newItem['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $item->MetaData->LastUpdatedTime)->toDateTimeString();
             if ($item->TrackQtyOnHand) {
-                $item['buying_account_code'] = $item->COGSAccountRef;
+                $newItem['buying_account_code'] = $item->COGSAccountRef;
             } else {
-                $item['buying_account_code'] = $item->ExpenseAccountRef;
+                $newItem['buying_account_code'] = $item->ExpenseAccountRef;
             }
-            $item['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
-            $item['buying_unit_price'] = $item->PurchaseCost;
-            $item['selling_account_code'] = $item->IncomeAccountRef;
-            $item['selling_tax_type_code'] = $item->SalesTaxCodeRef;
-            $item['selling_unit_price'] = $item->UnitPrice;
+            $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
+            $newItem['buying_unit_price'] = $item->PurchaseCost;
+            $newItem['selling_account_code'] = $item->IncomeAccountRef;
+            $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
+            $newItem['selling_unit_price'] = $item->UnitPrice;
             array_push($items, $newItem);
 
         } else {
