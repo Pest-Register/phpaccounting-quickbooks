@@ -361,7 +361,7 @@ class UpdateContactRequest extends AbstractRequest
         try {
             $targetCustomer = $quickbooks->Query("select * from Customer where Active = false and Id='".$id."'");
             if (!$targetCustomer) {
-                $targetCustomer = $quickbooks->Query("select * from Customer where Active in (true,false) and Id='".$id."'");
+                $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
             }
         } catch (\Exception $exception) {
             return $this->createResponse([
