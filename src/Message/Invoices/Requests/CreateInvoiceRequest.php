@@ -300,6 +300,16 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
                 $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
+            } else {
+                $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
+                $lineItem['DetailType'] = 'SalesItemLineDetail';
+                $lineItem['SalesItemLineDetail'] = [];
+                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+                $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
+                $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
+                $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
+                $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
             }
 
             array_push($lineItems, $lineItem);
@@ -321,7 +331,6 @@ class CreateInvoiceRequest extends AbstractRequest
         $this->issetParam('TxnDate', 'date');
         $this->issetParam('DueDate', 'due_date');
         $this->issetParam('DocNumber', 'invoice_number');
-        $this->issetParam('TotalAmt', 'total');
         $this->issetParam('Deposit', 'deposit_amount');
         $this->issetParam('SyncToken', 'sync_token');
 
