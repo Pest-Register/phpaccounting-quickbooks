@@ -381,7 +381,10 @@ class UpdateInventoryItemRequest extends AbstractRequest
         }
         $id = $this->getAccountingID();
         try {
-            $targetItem = $quickbooks->Query("select * from Item where Id='".$id."'");
+            $targetItem = $quickbooks->Query("select * from Item where Active = false and Id='".$id."'");
+            if (!$targetItem) {
+                $targetItem = $quickbooks->Query("select * from Item where Id='".$id."'");
+            }
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
