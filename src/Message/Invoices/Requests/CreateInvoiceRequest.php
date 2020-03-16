@@ -277,6 +277,24 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get Invoice Number from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getInvoiceNumber(){
+        return $this->getParameter('invoice_number');
+    }
+
+    /**
+     * Get Invoice Number from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function setInvoiceNumber($value){
+        return $this->setParameter('invoice_number', $value);
+    }
+
+    /**
      * Add Line Items to Invoice
      * @param array $data Array of Line Items
      * @return array
