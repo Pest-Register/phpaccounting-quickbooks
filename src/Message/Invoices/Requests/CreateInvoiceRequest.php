@@ -301,8 +301,17 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
             }
-
+            $counter++;
             array_push($lineItems, $lineItem);
+        }
+        if ($this->getDiscountAmount()) {
+            $discountLineItem = [];
+            $discountLineItem['LineNum'] = $counter;
+            $discountLineItem['Description'] = '';
+            $discountLineItem['Amount'] = $this->getDiscountAmount();
+            $discountLineItem['DetailType'] = 'DiscountLineDetail';
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+            array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
     }
@@ -327,16 +336,6 @@ class CreateInvoiceRequest extends AbstractRequest
 
         if ($this->getInvoiceData()) {
             $this->data['Line'] = $this->addLineItemsToInvoice($this->getInvoiceData());
-        }
-
-        if ($this->getDiscountAmount()) {
-            $discountLineItem = [];
-            $discountLineItem['LineNum'] = 1;
-            $discountLineItem['Description'] = '';
-            $discountLineItem['Amount'] = $this->getDiscountAmount();
-            $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
-            array_push($this->data['Line'], $discountLineItem);
         }
 
         if ($this->getDepositAccount()) {

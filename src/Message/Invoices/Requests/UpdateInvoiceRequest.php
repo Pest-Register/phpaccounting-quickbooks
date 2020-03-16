@@ -303,17 +303,17 @@ class UpdateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemAccountRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('account_id', $lineData);
             }
-
-            if (array_key_exists('discount_amount', $lineData)) {
-                $discountLineItem = [];
-                $discountLineItem['LineNum'] = $counter + 1;
-                $discountLineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('discount_amount', $lineData);
-                $discountLineItem['DetailType'] = 'DiscountLineDetail';
-                $discountLineItem['DiscountLineDetail'] = [];
-                array_push($lineItems, $discountLineItem);
-            }
-
+            $counter++;
             array_push($lineItems, $lineItem);
+        }
+        if ($this->getDiscountAmount()) {
+            $discountLineItem = [];
+            $discountLineItem['LineNum'] = $counter;
+            $discountLineItem['Description'] = '';
+            $discountLineItem['Amount'] = $this->getDiscountAmount();
+            $discountLineItem['DetailType'] = 'DiscountLineDetail';
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+            array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
     }
