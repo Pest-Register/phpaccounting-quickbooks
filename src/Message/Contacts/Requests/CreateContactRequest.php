@@ -179,7 +179,7 @@ class CreateContactRequest extends AbstractRequest
     public function getAddressData($data, $contact) {
         foreach($data as $address) {
             switch ($address['type']) {
-                case 'STRUCTURE':
+                case 'PRIMARY':
                     $contact['ShipAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
@@ -222,7 +222,7 @@ class CreateContactRequest extends AbstractRequest
     public function getPhoneData($data, $contact) {
         foreach($data as $phone) {
             switch ($phone['type']) {
-                case 'BUSINESS':
+                case 'DEFAULT':
                     $contact['PrimaryPhone'] =
                         [
                             'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
@@ -268,6 +268,14 @@ class CreateContactRequest extends AbstractRequest
         $this->issetParam('DisplayName', 'name');
         $this->issetParam('GivenName', 'first_name');
         $this->issetParam('FamilyName', 'last_name');
+
+        if ($this->getStatus()) {
+            if ($this->getStatus() == 'ACTIVE') {
+                $this->data['Active'] = true;
+            } elseif ($this->getStatus() == 'INACTIVE') {
+                $this->data['Active'] = false;
+            }
+        }
 
         if ($this->getEmailAddress()) {
             $this->data['PrimaryEmailAddr'] = [

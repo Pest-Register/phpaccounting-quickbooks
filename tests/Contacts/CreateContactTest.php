@@ -11,29 +11,19 @@ class CreateContactTest extends BaseTest
         try {
 
             $params = [
-                'name' => $faker->name,
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
-                'email_address' => $faker->email,
+                'name' => 'Dylan Aird',
+                'website' => 'https://www.bobdown.com',
                 'addresses' => [
                     [
-                        'type' => 'BILLING',
-                        'address_line_1' => $faker->streetAddress,
-                        'city' => $faker->city,
-                        'postal_code' => $faker->postcode,
-                        'country' => $faker->country
-                    ]
-                ],
-                'phones' => [
-                    [
-                        'type' => 'MOBILE',
-                        'area_code' => '',
-                        'country_code' => '',
-                        'phone_number' => $faker->phoneNumber
+                        'type' => 'PRIMARY',
+                        'address_line_1' => '454 Collins Street',
+                        'city' => 'Melbourne',
+                        'postal_code' => '3000',
+                        'state' => 'Victoria',
+                        'country' => 'Australia'
                     ]
                 ]
             ];
-
             $response = $this->gateway->createContact($params)->send();
             if ($response->isSuccessful()) {
                 $contacts = $response->getContacts();

@@ -75,19 +75,26 @@ class CreateContactResponse extends AbstractResponse
             $newContact['display_name'] = $contact->DisplayName;
             $newContact['first_name'] = $contact->GivenName;
             $newContact['last_name'] = $contact->FamilyName;
-            $newContact['type'] = ['CUSTOMER'];
+            $newContact['types'] = ['CUSTOMER'];
             $newContact['sync_token'] = $contact->SyncToken;
             $newContact['is_individual'] = ($contact->CompanyName ? true : false);
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
             $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
 
+            if ($contact->Active) {
+                if ($contact->Active == true) {
+                    $newContact['status'] = 'ACTIVE';
+                } else {
+                    $newContact['status'] = 'INACTIVE';
+                }
+            }
             if ($contact->WebAddr) {
                 $newContact['website'] = $contact->WebAddr->URI;
             }
             if ($contact->ShipAddr) {
                 array_push($newContact['addresses'], [
-                    'address_type' =>  'STRUCTURE',
+                    'address_type' =>  'PRIMARY',
                     'address_line_1' => $contact->ShipAddr->Line1,
                     'city' => $contact->ShipAddr->City,
                     'postal_code' => $contact->ShipAddr->PostalCode,
@@ -136,7 +143,7 @@ class CreateContactResponse extends AbstractResponse
                     'type' =>  'EXTRA',
                     'area_code' => '',
                     'country_code' => '',
-                    'phone_number' => $contact->Mobile->FreeFormNumber
+                    'phone_number' => $contact->AlternatePhone->FreeFormNumber
                 ]);
             }
             array_push($contacts, $newContact);
@@ -150,19 +157,27 @@ class CreateContactResponse extends AbstractResponse
                 $newContact['display_name'] = $contact->DisplayName;
                 $newContact['first_name'] = $contact->GivenName;
                 $newContact['last_name'] = $contact->FamilyName;
-                $newContact['type'] = ['CUSTOMER'];
+                $newContact['types'] = ['CUSTOMER'];
                 $newContact['sync_token'] = $contact->SyncToken;
                 $newContact['is_individual'] = ($contact->CompanyName ? true : false);
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
                 $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
 
+                if ($contact->Active) {
+                    if ($contact->Active == true) {
+                        $newContact['status'] = 'ACTIVE';
+                    } else {
+                        $newContact['status'] = 'INACTIVE';
+                    }
+                }
+                
                 if ($contact->WebAddr) {
                     $newContact['website'] = $contact->WebAddr->URI;
                 }
                 if ($contact->ShipAddr) {
                     array_push($newContact['addresses'], [
-                        'address_type' =>  'STRUCTURE',
+                        'address_type' =>  'PRIMARY',
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
                         'postal_code' => $contact->ShipAddr->PostalCode,

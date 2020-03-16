@@ -217,7 +217,7 @@ class UpdateContactRequest extends AbstractRequest
     public function getAddressData($data, $contact) {
         foreach($data as $address) {
             switch ($address['type']) {
-                case 'STRUCTURE':
+                case 'PRIMARY':
                     $contact['ShipAddr'] =
                         [
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
@@ -260,7 +260,7 @@ class UpdateContactRequest extends AbstractRequest
     public function getPhoneData($data, $contact) {
         foreach($data as $phone) {
             switch ($phone['type']) {
-                case 'BUSINESS':
+                case 'DEFAULT':
                     $contact['PrimaryPhone'] =
                         [
                             'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
@@ -312,6 +312,13 @@ class UpdateContactRequest extends AbstractRequest
 
         $this->data['sparse'] = true;
 
+        if ($this->getStatus()) {
+           if ($this->getStatus() == 'ACTIVE') {
+               $this->data['Active'] = true;
+           } elseif ($this->getStatus() == 'INACTIVE') {
+               $this->data['Active'] = false;
+           }
+        }
         if ($this->getEmailAddress()) {
             $this->data['PrimaryEmailAddr'] = [
                 'Address' => $this->getEmailAddress()
@@ -352,7 +359,10 @@ class UpdateContactRequest extends AbstractRequest
         }
         $id = $this->getAccountingID();
         try {
-            $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
+            $targetCustomer = $quickbooks->Query("select * from Customer where Active = false and Id='".$id."'");
+            if (!$targetCustomer) {
+                $targetCustomer = $quickbooks->Query("select * from Customer where Id='".$id."'");
+            }
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
@@ -364,10 +374,15 @@ class UpdateContactRequest extends AbstractRequest
             $customer = Customer::update(current($targetCustomer),$updateParams);
             $response = $quickbooks->Update($customer);
         } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'detail' => 'Existing Customer not Found'
-            ]);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'detail' => 'Existing Customer not Found'
+                ]);
+            }
         }
 
         $error = $quickbooks->getLastError();

@@ -376,10 +376,15 @@ class UpdatePaymentRequest extends AbstractRequest
             $item = Payment::update(current($targetItem), $updateParams);
             $response = $quickbooks->Update($item);
         } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'detail' => 'Existing Payment not Found'
-            ]);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'detail' => 'Existing Payment not Found'
+                ]);
+            }
         }
 
 

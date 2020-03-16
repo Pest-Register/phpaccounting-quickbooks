@@ -14,15 +14,18 @@ class UpdateContactTest extends BaseTest
         try {
 
             $params = [
-                'accounting_id' => '565acaa9-e7f3-4fbf-80c3-16b081ddae10',
-                'name' => 'Test Client',
+                'accounting_id' => '72',
+                'name' => 'Bob Down',
+                'website' => 'https://www.bobdown.com',
+                'sync_token' => 6,
                 'addresses' => [
                     [
-                        'type' => 'STREET',
-                        'address_line_1' => $faker->streetAddress,
-                        'city' => $faker->city,
-                        'postal_code' => $faker->postcode,
-                        'country' => $faker->country
+                        'type' => 'PRIMARY',
+                        'address_line_1' => '454 Collins Street',
+                        'city' => 'Melbourne',
+                        'postal_code' => '3000',
+                        'state' => 'Victoria',
+                        'country' => 'Australia'
                     ]
                 ]
             ];
