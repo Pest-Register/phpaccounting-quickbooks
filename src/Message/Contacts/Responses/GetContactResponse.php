@@ -100,6 +100,7 @@ class GetContactResponse extends AbstractResponse
                     'address_line_1' => $contact->ShipAddr->Line1,
                     'city' => $contact->ShipAddr->City,
                     'postal_code' => $contact->ShipAddr->PostalCode,
+                    'state' => $contact->ShipAddr->CountrySubDivisionCode,
                     'country' => $contact->ShipAddr->Country
                 ]);
             }
@@ -109,6 +110,7 @@ class GetContactResponse extends AbstractResponse
                     'address_line_1' => $contact->BillAddr->Line1,
                     'city' => $contact->BillAddr->City,
                     'postal_code' => $contact->BillAddr->PostalCode,
+                    'state' => $contact->BillAddr->CountrySubDivisionCode,
                     'country' => $contact->BillAddr->Country
                 ]);
             }
@@ -117,6 +119,7 @@ class GetContactResponse extends AbstractResponse
                     'type' =>  'EXTRA',
                     'address_line_1' => $contact->OtherAddr->Line1,
                     'city' => $contact->OtherAddr->City,
+                    'state' => $contact->OtherAddr->CountrySubDivisionCode,
                     'postal_code' => $contact->OtherAddr->PostalCode,
                     'country' => $contact->OtherAddr->Country
                 ]);
@@ -180,6 +183,7 @@ class GetContactResponse extends AbstractResponse
                         'address_type' =>  'PRIMARY',
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
+                        'state' => $contact->ShipAddr->CountrySubDivisionCode,
                         'postal_code' => $contact->ShipAddr->PostalCode,
                         'country' => $contact->ShipAddr->Country
                     ]);
@@ -189,6 +193,7 @@ class GetContactResponse extends AbstractResponse
                         'address_type' =>  'BILLING',
                         'address_line_1' => $contact->BillAddr->Line1,
                         'city' => $contact->BillAddr->City,
+                        'state' => $contact->BillAddr->CountrySubDivisionCode,
                         'postal_code' => $contact->BillAddr->PostalCode,
                         'country' => $contact->BillAddr->Country
                     ]);
@@ -198,6 +203,7 @@ class GetContactResponse extends AbstractResponse
                         'type' =>  'EXTRA',
                         'address_line_1' => $contact->OtherAddr->Line1,
                         'city' => $contact->OtherAddr->City,
+                        'state' => $contact->OtherAddr->CountrySubDivisionCode,
                         'postal_code' => $contact->OtherAddr->PostalCode,
                         'country' => $contact->OtherAddr->Country
                     ]);

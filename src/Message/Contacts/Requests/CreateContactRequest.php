@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use Cassandra\Index;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
@@ -185,6 +186,7 @@ class CreateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
@@ -194,6 +196,7 @@ class CreateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
@@ -203,6 +206,7 @@ class CreateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;

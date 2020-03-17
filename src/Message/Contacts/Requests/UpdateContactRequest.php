@@ -223,6 +223,7 @@ class UpdateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
@@ -232,6 +233,7 @@ class UpdateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
@@ -241,6 +243,7 @@ class UpdateContactRequest extends AbstractRequest
                             'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
                             'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
                             'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
+                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
                             'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                         ];
                     break;
