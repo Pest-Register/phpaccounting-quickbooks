@@ -91,6 +91,25 @@ class CreateAccountRequest extends AbstractRequest
         return $this->setParameter('tax_type_id', $value);
     }
 
+    /**
+     * Set Sub type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param string $value Account Sub Type
+     * @return CreateAccountRequest
+     */
+    public function setSubType($value){
+        return $this->setParameter('sub_type', $value);
+    }
+
+    /**
+     * Get Sub Type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getSubType(){
+        return $this->getParameter('sub_type');
+    }
+
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
@@ -106,6 +125,7 @@ class CreateAccountRequest extends AbstractRequest
         $this->issetParam('AcctNum', 'code');
         $this->issetParam('Name', 'name');
         $this->issetParam('AccountType', 'type');
+        $this->issetParam('AccountSubType', 'sub_type');
         if ($this->getTaxTypeID()) {
             $this->data['TaxCodeRef'] = [
                 'value' => $this->getTaxTypeID()

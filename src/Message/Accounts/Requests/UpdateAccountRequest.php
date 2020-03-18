@@ -166,6 +166,27 @@ class UpdateAccountRequest extends AbstractRequest
     }
 
     /**
+     * Set Sub type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param string $value Sub Type
+     * @return UpdateAccountRequest
+     */
+    public function setSubType($value){
+        return $this->setParameter('sub_type', $value);
+    }
+
+    /**
+     * Get Sub Type Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getSubType(){
+        return $this->getParameter('sub_type');
+    }
+
+
+
+    /**
      * Get the raw data array for this message. The format of this varies from gateway to
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
@@ -181,6 +202,7 @@ class UpdateAccountRequest extends AbstractRequest
         $this->issetParam('Name', 'name');
         $this->issetParam('SyncToken', 'sync_token');
         $this->issetParam('AccountType', 'type');
+        $this->issetParam('AccountSubType', 'sub_type');
         $this->issetParam('Description', 'description');
         $this->issetParam('CurrencyRef', 'currency_code');
 
