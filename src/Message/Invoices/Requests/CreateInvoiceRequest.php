@@ -335,9 +335,9 @@ class CreateInvoiceRequest extends AbstractRequest
             $discountLineItem['LineNum'] = $counter;
             $discountLineItem['Description'] = '';
             $discountLineItem['Amount'] = $this->getDiscountAmount();
-            $discountLineItem['DiscountPercent'] = $this->getDiscountRate();
             $discountLineItem['DetailType'] = 'DiscountLineDetail';
             $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
+            $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
             array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
