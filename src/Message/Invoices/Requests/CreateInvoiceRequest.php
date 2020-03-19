@@ -224,6 +224,25 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get Tax Inclusive Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getTaxInclusiveAmount(){
+        return $this->getParameter('tax_inclusive_amount');
+    }
+
+    /**
+     * Set Tax Inclusive Amount Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @param string $value Invoice Due Date
+     * @return CreateInvoiceRequest
+     */
+    public function setTaxInclusiveAmount($value){
+        return $this->setParameter('tax_inclusive_amount', $value);
+    }
+
+    /**
      * Get Due Date Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
@@ -240,6 +259,24 @@ class CreateInvoiceRequest extends AbstractRequest
      */
     public function setDueDate($value){
         return $this->setParameter('due_date', $value);
+    }
+
+    /**
+     * Get Total Tax from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getTotalTax(){
+        return $this->getParameter('total_tax');
+    }
+
+    /**
+     * Get Total Tax from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function setTotalTax($value){
+        return $this->setParameter('total_tax', $value);
     }
 
     /**
@@ -317,6 +354,7 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
                 $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                $lineItem['SalesItemLineDetail']['TaxInclusiveAmt'] = IndexSanityCheckHelper::indexSanityCheck('tax_inclusive_amount', $lineData);
             } else {
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
@@ -326,6 +364,7 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
                 $lineItem['SalesItemLineDetail']['DiscountRate'] = IndexSanityCheckHelper::indexSanityCheck('discount_rate', $lineData);
+                $lineItem['SalesItemLineDetail']['TaxInclusiveAmt'] = IndexSanityCheckHelper::indexSanityCheck('tax_inclusive_amount', $lineData);
             }
             $counter++;
             array_push($lineItems, $lineItem);
@@ -392,6 +431,10 @@ class CreateInvoiceRequest extends AbstractRequest
             } else {
                 $this->data['EmailStatus'] = 'NotSet';
             }
+        }
+
+        if ($this->getTotalTax() ) {
+            $this->data['TxnTaxDetail']['TotalTax'] = $this->getTotalTax();
         }
 
         if ($this->getAddress()) {
