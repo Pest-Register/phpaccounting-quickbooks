@@ -330,13 +330,14 @@ class CreateInvoiceRequest extends AbstractRequest
             $counter++;
             array_push($lineItems, $lineItem);
         }
-        if ($this->getDiscountAmount()) {
+        if ($this->getDiscountRate()) {
             $discountLineItem = [];
             $discountLineItem['LineNum'] = $counter;
             $discountLineItem['Description'] = '';
             $discountLineItem['Amount'] = $this->getDiscountAmount();
+            $discountLineItem['DiscountPercent'] = $this->getDiscountRate();
             $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
             array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
@@ -403,8 +404,6 @@ class CreateInvoiceRequest extends AbstractRequest
                     'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                 ];
         }
-
-        $this->data['ApplyTaxAfterDiscount'] = true;
         return $this->data;
     }
 
