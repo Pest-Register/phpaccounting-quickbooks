@@ -374,16 +374,6 @@ class UpdateInvoiceRequest extends AbstractRequest
             $this->data['DepositToAccountRef']['value'] = $this->getDepositAccount();
         }
 
-        if ($this->getDiscountAmount()) {
-            $discountLineItem = [];
-            $discountLineItem['LineNum'] = 1;
-            $discountLineItem['Description'] = '';
-            $discountLineItem['Amount'] = $this->getDiscountAmount();
-            $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
-            array_push($this->data['Line'], $discountLineItem);
-        }
-
         if ($this->getContact()) {
             $this->data['CustomerRef'] = [
                 'value' => $this->getContact()
