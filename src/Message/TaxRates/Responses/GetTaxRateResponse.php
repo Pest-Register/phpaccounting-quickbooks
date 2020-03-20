@@ -98,7 +98,6 @@ class GetTaxRateResponse extends AbstractResponse
                 } elseif ($taxRate->PurchaseTaxRateList) {
                     $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
                 }
-
                 $newTaxRate['is_asset'] = true;
                 $newTaxRate['is_equity'] = true;
                 $newTaxRate['is_expense'] = true;

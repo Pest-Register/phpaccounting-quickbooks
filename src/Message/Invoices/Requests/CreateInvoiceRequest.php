@@ -332,6 +332,24 @@ class CreateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get Tax Lines from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getTaxLines() {
+        return $this->getParameter('tax_lines');
+    }
+
+    /**
+     * Set Tax Lines from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function setTaxLines($value) {
+        return $this->setParameter('tax_lines', $value);
+    }
+
+    /**
      * Add Line Items to Invoice
      * @param array $data Array of Line Items
      * @return array
@@ -434,7 +452,22 @@ class CreateInvoiceRequest extends AbstractRequest
         }
 
         if ($this->getTotalTax() ) {
+            $this->data['TxnTaxDetail'] = [];
+            $this->data['TxnTaxDetail']['TaxLine'] = [];
             $this->data['TxnTaxDetail']['TotalTax'] = $this->getTotalTax();
+            if ($this->getTaxLines()) {
+                foreach ($this->getTaxLines() as $key => $value) {
+                    $taxLineItem = [];
+                    $taxLineItem['DetailType'] = 'TaxLineDetail';
+                    $taxLineItem['Amount'] = $value['total_tax'];
+                    $taxLineItem['TaxLineDetail'] = [];
+                    $taxLineItem['TaxLineDetail']['TaxRateRef'] = $value['tax_rate_id'];
+                    $taxLineItem['TaxLineDetail']['TaxPercent'] = $value['tax_percent'];
+                    $taxLineItem['TaxLineDetail']['NetAmountTaxable'] = $value['net_amount'];
+                    $taxLineItem['TaxLineDetail']['PercentBased'] = true;
+                    array_push($this->data['TxnTaxDetail']['TaxLine'],$taxLineItem);
+                }
+            }
         }
 
         if ($this->getAddress()) {
@@ -447,6 +480,7 @@ class CreateInvoiceRequest extends AbstractRequest
                     'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                 ];
         }
+        var_dump($this->data);
         return $this->data;
     }
 
