@@ -387,14 +387,13 @@ class CreateInvoiceRequest extends AbstractRequest
             $counter++;
             array_push($lineItems, $lineItem);
         }
-        if ($this->getDiscountRate()) {
+        if ($this->getDiscountAmount()) {
             $discountLineItem = [];
             $discountLineItem['LineNum'] = $counter;
             $discountLineItem['Description'] = '';
             $discountLineItem['Amount'] = $this->getDiscountAmount();
             $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
-            $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
             array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
