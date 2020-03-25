@@ -389,13 +389,14 @@ class UpdateInvoiceRequest extends AbstractRequest
             $counter++;
             array_push($lineItems, $lineItem);
         }
-        if ($this->getDiscountAmount()) {
+        if ($this->getDiscountRate()) {
             $discountLineItem = [];
             $discountLineItem['LineNum'] = $counter;
             $discountLineItem['Description'] = '';
-            $discountLineItem['Amount'] = $this->getDiscountAmount();
+            $discountLineItem['Amount'] = $this->getDiscountRate();
             $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+            $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
+            $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
             array_push($lineItems, $discountLineItem);
         }
         return $lineItems;
