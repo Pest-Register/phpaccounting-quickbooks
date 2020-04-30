@@ -19,7 +19,7 @@ class GetInvoiceTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_id' => 214,
+                'accounting_id' => 231,
                 'page' => 1
             ];
 

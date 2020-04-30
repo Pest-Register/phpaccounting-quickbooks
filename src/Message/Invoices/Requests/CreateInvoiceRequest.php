@@ -19,7 +19,7 @@ class CreateInvoiceRequest extends AbstractRequest
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @return mixed
      */
-    public function getSynToken(){
+    public function getSyncToken(){
         return $this->getParameter('sync_token');
     }
 
