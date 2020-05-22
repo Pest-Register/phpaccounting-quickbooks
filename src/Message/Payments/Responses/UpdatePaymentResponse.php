@@ -44,7 +44,7 @@ class UpdatePaymentResponse extends AbstractResponse
 
     /**
      * Fetch Error Message from Response
-     * @return string
+     * @return array
      */
     public function getErrorMessage(){
         if ($this->data) {
@@ -56,7 +56,7 @@ class UpdatePaymentResponse extends AbstractResponse
                 return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Payment');
             }
         } else {
-            return 'NULL Returned from API or End of Pagination';
+            return ['message' => 'NULL Returned from API or End of Pagination'];
         }
 
         return null;
