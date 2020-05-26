@@ -24,6 +24,8 @@ class ErrorResponseHelper
                     $response = ['message' => 'Model cannot be edited' ];
                 } elseif (strpos($response, 'A business validation error has occurred while processing your request') !== false) {
                     $response = [ 'message' => 'Validation exception. Possibly duplicate ID or business error' ];
+                } else {
+                    $response = ['message' => $response];
                 }
                 return $response;
         }
