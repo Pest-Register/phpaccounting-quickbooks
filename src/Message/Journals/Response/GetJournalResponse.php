@@ -62,7 +62,7 @@ class GetJournalResponse extends AbstractResponse
                 return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Journal');
             }
         } else {
-            return ['message' => 'NULL Returned from API or End of Pagination'];
+            return ['message' => 'NULL Returned from API or End of Pagination', 'exception' =>'NULL Returned from API or End of Pagination' ];
         }
 
         return null;
