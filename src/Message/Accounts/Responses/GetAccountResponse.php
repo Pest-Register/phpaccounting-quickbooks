@@ -50,15 +50,54 @@ class GetAccountResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
+            $errorCode = '';
+            $statusCode = '';
+            $detail = '';
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
-                    return ErrorResponseHelper::parseErrorResponse($this->data['error']['detail']['message'], 'Account');
+                    if (array_key_exists('error_code', $this->data['error']['detail'])) {
+                        $errorCode = $this->data['error']['detail']['error_code'];
+                    }
+                    if (array_key_exists('status_code', $this->data['error']['detail'])) {
+                        $statusCode = $this->data['error']['detail']['status_code'];
+                    }
+                    if (array_key_exists('detail', $this->data['error']['detail'])){
+                        $detail = $this->data['error']['detail']['detail'];
+                    }
+                    return ErrorResponseHelper::parseErrorResponse(
+                        $this->data['error']['detail']['message'],
+                        $this->data['error']['status'],
+                        $errorCode,
+                        $statusCode,
+                        $detail,
+                        'Account');
                 }
             } elseif (array_key_exists('status', $this->data)) {
-                return ErrorResponseHelper::parseErrorResponse($this->data['detail'], 'Account');
+                if (array_key_exists('error_code', $this->data['detail'])) {
+                    $errorCode = $this->data['detail']['error_code'];
+                }
+                if (array_key_exists('status_code', $this->data['detail'])) {
+                    $statusCode = $this->data['detail']['status_code'];
+                }
+                if (array_key_exists('detail', $this->data['detail'])){
+                    $detail = $this->data['detail']['detail'];
+                }
+                return ErrorResponseHelper::parseErrorResponse(
+                    $this->data['detail']['message'],
+                    $this->data['status'],
+                    $errorCode,
+                    $statusCode,
+                    $detail,
+                    'Account');
             }
         } else {
-            return ['message' => 'NULL Returned from API or End of Pagination', 'exception' =>'NULL Returned from API or End of Pagination' ];
+            return [
+                'message' => 'NULL Returned from API or End of Pagination',
+                'exception' =>'NULL Returned from API or End of Pagination',
+                'error_code' => null,
+                'status_code' => null,
+                'detail' => null
+            ];
         }
 
         return null;
