@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
@@ -409,7 +410,11 @@ class CreateInvoiceRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('type', 'contact', 'invoice_data');
+        try {
+            $this->validate('type', 'contact', 'invoice_data');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
 
         $this->issetParam('TxnDate', 'date');
         $this->issetParam('DueDate', 'due_date');
@@ -492,6 +497,16 @@ class CreateInvoiceRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' => $data->getMessage(),
+                'error_code' => $data->getCode(),
+                'status_code' => $data->getCode(),
+            ];
+            return $this->createResponse($response);
+        }
         $quickbooks = $this->createQuickbooksDataService();
         $createParams = [];
 

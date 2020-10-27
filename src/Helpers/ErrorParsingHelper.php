@@ -12,10 +12,11 @@ class ErrorParsingHelper
     public static function parseError($error) {
         $errorObj = new \SimpleXMLElement($error->getResponseBody());
         $errorObj = json_decode( json_encode($errorObj) , true);
+        $errorResponse = [];
 
         if (array_key_exists('Message', $errorObj['Fault']['Error'])) {
             $messageExploded = explode(';', $errorObj['Fault']['Error']['Message']);
-            $errorResponse = [];
+
             if (array_key_exists(0, $messageExploded)) {
                 $message = substr($messageExploded[0], strpos($messageExploded[0], "="));
                 $errorResponse['message'] = $message;

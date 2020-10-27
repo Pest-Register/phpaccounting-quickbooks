@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
@@ -60,7 +61,11 @@ class DeleteContactRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('accounting_id');
+        try {
+            $this->validate('accounting_id');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
         $this->issetParam('Id', 'accounting_id');
         $this->issetParam('SyncToken', 'sync_token');
         $this->data['Active'] = false;
@@ -76,6 +81,17 @@ class DeleteContactRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' => $data->getMessage(),
+                'error_code' => $data->getCode(),
+                'status_code' => $data->getCode(),
+            ];
+            return $this->createResponse($response);
+        }
+
         $quickbooks = $this->createQuickbooksDataService();
         $updateParams = [];
 

@@ -4,6 +4,7 @@
 namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\DeletePaymentResponse;
@@ -57,7 +58,11 @@ class DeletePaymentRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('accounting_id', 'sync_token');
+        try {
+            $this->validate('accounting_id', 'sync_token');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
 
         return $this->data;
     }
@@ -70,6 +75,16 @@ class DeletePaymentRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' => $data->getMessage(),
+                'error_code' => $data->getCode(),
+                'status_code' => $data->getCode(),
+            ];
+            return $this->createResponse($response);
+        }
         $quickbooks = $this->createQuickbooksDataService();
         $payment = $quickbooks->FindbyId('payment', $this->getAccountingID());
         $response = $quickbooks->Delete($payment);

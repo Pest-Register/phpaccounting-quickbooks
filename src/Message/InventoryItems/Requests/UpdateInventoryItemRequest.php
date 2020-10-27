@@ -2,6 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
@@ -306,9 +307,13 @@ class UpdateInventoryItemRequest extends AbstractRequest
      */
     public function getData()
     {
-        $datetime = new \DateTime('NOW');
-        $this->validate('name');
+        try {
+            $this->validate('name');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
 
+        $datetime = new \DateTime('NOW');
         $this->issetParam('Name', 'name');
         $this->issetParam('Description', 'description');
         $this->issetParam('PurchaseDesc', 'buying_description');
@@ -373,6 +378,16 @@ class UpdateInventoryItemRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' => $data->getMessage(),
+                'error_code' => $data->getCode(),
+                'status_code' => $data->getCode(),
+            ];
+            return $this->createResponse($response);
+        }
         $quickbooks = $this->createQuickbooksDataService();
         $updateParams = [];
 
