@@ -363,9 +363,12 @@ class UpdateContactRequest extends AbstractRequest
             $response = [
                 'status' => 'error',
                 'type' => 'InvalidRequestException',
-                'detail' => $data->getMessage(),
-                'error_code' => $data->getCode(),
-                'status_code' => $data->getCode(),
+                'detail' =>
+                    [
+                        'message' => $data->getMessage(),
+                        'error_code' => $data->getCode(),
+                        'status_code' => 422,
+                    ],
             ];
             return $this->createResponse($response);
         }
