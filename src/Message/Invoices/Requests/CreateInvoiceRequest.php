@@ -485,7 +485,6 @@ class CreateInvoiceRequest extends AbstractRequest
                     'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
                 ];
         }
-        var_dump($this->data);
         return $this->data;
     }
 
