@@ -108,13 +108,18 @@ class GetOrganisationResponse extends AbstractResponse
 
     public function getOrganisations(){
         $organisations = [];
-        if ($this->data instanceof IPPCompanyInfo){
-            $organisation = $this->data;
+        if ($this->data[0] instanceof IPPCompanyInfo){
+            $organisation = $this->data[0];
             $newOrganisation = [];
             $newOrganisation['accounting_id'] = $organisation->Id;
             $newOrganisation['name'] = $organisation->CompanyName;
             $newOrganisation['country_code'] = $organisation->Country;
             $newOrganisation['legal_name'] = $organisation->LegalName;
+
+            if($this->data[1] instanceof IPPPreferences) {
+                $preferences = $this->data[1];
+                $newOrganisation['gst_registered'] = $preferences->TaxPrefs->UsingSalesTax;
+            }
             array_push($organisations, $newOrganisation);
         }
 

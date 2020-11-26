@@ -22,7 +22,11 @@ class GetOrganisationRequest extends AbstractRequest
         $quickbooks = $this->createQuickbooksDataService();
         $quickbooks->throwExceptionOnError(true);
 
-        $response = $quickbooks->getCompanyInfo();
+        $response = [
+            $quickbooks->getCompanyInfo(),
+            $quickbooks->getCompanyPreferences()
+        ];
+
         $error = $quickbooks->getLastError();
         if ($error) {
             $response = [
