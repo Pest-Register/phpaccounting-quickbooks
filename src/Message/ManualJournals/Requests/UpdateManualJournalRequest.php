@@ -9,6 +9,7 @@
 namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
@@ -144,7 +145,11 @@ class UpdateManualJournalRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('journal_data', 'accounting_id');
+        try {
+            $this->validate('journal_data', 'accounting_id');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
         $this->issetParam('Line', 'journal_data');
         $this->issetParam('PrivateNote', 'narration');
         $this->issetParam('DocNumber', 'reference_id');
@@ -167,6 +172,19 @@ class UpdateManualJournalRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $data->getMessage(),
+                        'error_code' => $data->getCode(),
+                        'status_code' => 422,
+                    ],
+            ];
+            return $this->createResponse($response);
+        }
         $quickbooks = $this->createQuickbooksDataService();
 
         $updateParams = [];

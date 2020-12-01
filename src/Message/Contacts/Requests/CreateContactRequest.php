@@ -3,6 +3,7 @@
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
 use Cassandra\Index;
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
@@ -267,7 +268,11 @@ class CreateContactRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('name');
+        try {
+            $this->validate('name');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
 
         $this->issetParam('DisplayName', 'name');
         $this->issetParam('GivenName', 'first_name');
@@ -311,6 +316,20 @@ class CreateContactRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $data->getMessage(),
+                        'error_code' => $data->getCode(),
+                        'status_code' => 422,
+                    ],
+            ];
+            return $this->createResponse($response);
+        }
+
         $quickbooks = $this->createQuickbooksDataService();
         $createParams = [];
 

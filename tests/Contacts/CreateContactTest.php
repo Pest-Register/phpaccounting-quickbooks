@@ -34,6 +34,8 @@ class CreateContactTest extends BaseTest
             }
         } catch (\Exception $exception) {
             var_dump($exception->getMessage());
+            var_dump($exception->getLine());
+            var_dump($exception->getTrace());
         }
     }
 }
