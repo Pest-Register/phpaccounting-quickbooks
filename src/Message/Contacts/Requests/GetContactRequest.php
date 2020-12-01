@@ -52,6 +52,42 @@ class GetContactRequest extends AbstractRequest
     }
 
     /**
+     * Set SearchTerm from Parameter Bag (interface for query-based searching)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
+     * @param $value
+     * @return GetContactRequest
+     */
+    public function setSearchTerm($value) {
+        return $this->setParameter('search_term', $value);
+    }
+
+    /**
+     * Set SearchParam from Parameter Bag (interface for query-based searching)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
+     * @param $value
+     * @return GetContactRequest
+     */
+    public function setSearchParam($value) {
+        return $this->setParameter('search_param', $value);
+    }
+
+    /**
+     * Return Search Parameter for query-based searching
+     * @return integer
+     */
+    public function getSearchParam() {
+        return $this->getParameter('search_param');
+    }
+
+    /**
+     * Return Search Term for query-based searching
+     * @return integer
+     */
+    public function getSearchTerm() {
+        return $this->getParameter('search_term');
+    }
+
+    /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
@@ -66,7 +102,13 @@ class GetContactRequest extends AbstractRequest
             $accounts = $quickbooks->FindById('customer', $this->getAccountingID());
             $response = $accounts;
         } else {
-            $response = $quickbooks->FindAll('customer', $this->getPage(), 1000);
+            if($this->getSearchParam() && $this->getSearchTerm())
+            {
+                // Set contains query for partial matching
+                $response = $quickbooks->Query("SELECT * FROM Customer WHERE ".$this->getSearchParam()." LIKE '%".$this->getSearchTerm()."%'");
+            } else {
+                $response = $quickbooks->FindAll('customer', $this->getPage(), 500);
+            }
         }
 
         $error = $quickbooks->getLastError();

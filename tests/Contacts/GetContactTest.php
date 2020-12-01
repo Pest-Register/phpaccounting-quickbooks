@@ -21,7 +21,9 @@ class GetContactTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_id' => '74',
+                'search_param' => 'DisplayName',
+                'search_term' => 'adwin',
+                'accounting_id' => '',
                 'page' => 1
             ];
 

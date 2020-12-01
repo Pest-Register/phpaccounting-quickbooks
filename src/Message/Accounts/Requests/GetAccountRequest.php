@@ -54,6 +54,42 @@ class GetAccountRequest extends AbstractRequest
     }
 
     /**
+     * Set SearchTerm from Parameter Bag (interface for query-based searching)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
+     * @param $value
+     * @return GetAccountRequest
+     */
+    public function setSearchTerm($value) {
+        return $this->setParameter('search_term', $value);
+    }
+
+    /**
+     * Set SearchParam from Parameter Bag (interface for query-based searching)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
+     * @param $value
+     * @return GetAccountRequest
+     */
+    public function setSearchParam($value) {
+        return $this->setParameter('search_param', $value);
+    }
+
+    /**
+     * Return Search Parameter for query-based searching
+     * @return integer
+     */
+    public function getSearchParam() {
+        return $this->getParameter('search_param');
+    }
+
+    /**
+     * Return Search Term for query-based searching
+     * @return integer
+     */
+    public function getSearchTerm() {
+        return $this->getParameter('search_term');
+    }
+
+    /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetAccountResponse
@@ -67,9 +103,17 @@ class GetAccountRequest extends AbstractRequest
         if ($this->getAccountingID()) {
             if ($this->getAccountingID() !== "") {
                 $response = $quickbooks->FindById('account', $this->getAccountingID());
+            } else {
+                $response = $quickbooks->FindAll('account', $this->getPage(), 500);
             }
         } else {
-            $response = $quickbooks->FindAll('account', $this->getPage(), 500);
+            if($this->getSearchParam() && $this->getSearchTerm())
+            {
+                // Set contains query for partial matching
+                $response = $quickbooks->Query("SELECT * FROM Account WHERE ".$this->getSearchParam()." LIKE '%".$this->getSearchTerm()."%'");
+            } else {
+                $response = $quickbooks->FindAll('account', $this->getPage(), 500);
+            }
         }
 
         $error = $quickbooks->getLastError();

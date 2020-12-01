@@ -20,8 +20,10 @@ class GetAccountTest extends BaseTest
     {
         $this->setUp();
         $params = [
+            'search_param' => 'Name',
+            'search_term' => 'Inventory',
             'accountingID' => "",
-            'page' => 111
+            'page' => 1
         ];
         try {
             $response = $this->gateway->getAccount($params)->send();
