@@ -13,8 +13,9 @@ class GetTaxRateTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'search_param' => 'Name',
-                'search_term' => 'export',
+                'search_params' => [
+                    'Name' => 'export'
+                ],
                 'accounting_ids' => [""],
                 'page' => 10
             ];

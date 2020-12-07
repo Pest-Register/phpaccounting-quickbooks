@@ -20,8 +20,9 @@ class GetAccountTest extends BaseTest
     {
         $this->setUp();
         $params = [
-            'search_param' => 'Name',
-            'search_term' => 'Inventory',
+            'search_params' => [
+                'Name' => 'Inventory',
+            ],
             'accountingID' => "",
             'page' => 1
         ];

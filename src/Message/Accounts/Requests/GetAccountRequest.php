@@ -54,39 +54,20 @@ class GetAccountRequest extends AbstractRequest
     }
 
     /**
-     * Set SearchTerm from Parameter Bag (interface for query-based searching)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
+     * Set SearchParams from Parameter Bag (interface for query-based searching)
+     * @see https://www.odata.org/documentation/odata-version-3-0/odata-version-3-0-core-protocol/
      * @param $value
      * @return GetAccountRequest
      */
-    public function setSearchTerm($value) {
-        return $this->setParameter('search_term', $value);
+    public function setSearchParams($value) {
+        return $this->setParameter('search_params', $value);
     }
-
     /**
-     * Set SearchParam from Parameter Bag (interface for query-based searching)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/develop/explore-the-quickbooks-online-api/data-queries
-     * @param $value
-     * @return GetAccountRequest
+     * Return Search Parameters for query-based searching
+     * @return array
      */
-    public function setSearchParam($value) {
-        return $this->setParameter('search_param', $value);
-    }
-
-    /**
-     * Return Search Parameter for query-based searching
-     * @return integer
-     */
-    public function getSearchParam() {
-        return $this->getParameter('search_param');
-    }
-
-    /**
-     * Return Search Term for query-based searching
-     * @return integer
-     */
-    public function getSearchTerm() {
-        return $this->getParameter('search_term');
+    public function getSearchParams() {
+        return $this->getParameter('search_params');
     }
 
     /**
@@ -107,10 +88,19 @@ class GetAccountRequest extends AbstractRequest
                 $response = $quickbooks->FindAll('account', $this->getPage(), 500);
             }
         } else {
-            if($this->getSearchParam() && $this->getSearchTerm())
+            if($this->getSearchParams())
             {
+                $query = "SELECT * FROM Account WHERE ";
+                $separationFilter = "";
+                $searchParameters = $this->getSearchParams();
+                foreach($searchParameters as $key => $value)
+                {
+                    $statement = $separationFilter.$key." LIKE '%".$value."%'";
+                    $separationFilter = " AND ";
+                    $query .= $statement;
+                }
                 // Set contains query for partial matching
-                $response = $quickbooks->Query("SELECT * FROM Account WHERE ".$this->getSearchParam()." LIKE '%".$this->getSearchTerm()."%'");
+                $response = $quickbooks->Query($query);
             } else {
                 $response = $quickbooks->FindAll('account', $this->getPage(), 500);
             }
