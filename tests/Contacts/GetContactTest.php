@@ -22,10 +22,11 @@ class GetContactTest extends BaseTest
         try {
             $params = [
                 'search_params' => [
-                    'DisplayName' => 'adwin'
+                    'DisplayName' => 'adwin ko'
                 ],
-                'accounting_id' => '',
-                'page' => 1
+                'exact_search_value' => true,
+//                'accounting_id' => '',
+//                'page' => 1
             ];
 
             $response = $this->gateway->getContact($params)->send();

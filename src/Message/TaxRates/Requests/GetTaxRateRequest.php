@@ -72,6 +72,23 @@ class GetTaxRateRequest extends AbstractRequest
     }
 
     /**
+     * Set boolean to determine partial or exact query based searches
+     * @param $value
+     * @return GetTaxRateRequest
+     */
+    public function setExactSearchValue($value) {
+        return $this->setParameter('exact_search_value', $value);
+    }
+
+    /**
+     * Get boolean to determine partial or exact query based searches
+     * @return mixed
+     */
+    public function getExactSearchValue() {
+        return $this->getParameter('exact_search_value');
+    }
+
+    /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetTaxRateResponse
@@ -94,7 +111,12 @@ class GetTaxRateRequest extends AbstractRequest
                 $searchParameters = $this->getSearchParams();
                 foreach($searchParameters as $key => $value)
                 {
-                    $statement = $separationFilter.$key." LIKE '%".$value."%'";
+                    if ($this->getExactSearchValue())
+                    {
+                        $statement = $separationFilter.$key."='".$value."'";
+                    } else {
+                        $statement = $separationFilter.$key." LIKE '%".$value."%'";
+                    }
                     $separationFilter = " AND ";
                     $query .= $statement;
                 }

@@ -23,8 +23,9 @@ class GetAccountTest extends BaseTest
             'search_params' => [
                 'Name' => 'Inventory',
             ],
-            'accountingID' => "",
-            'page' => 1
+            'exact_search_value' => true,
+//            'accountingID' => "",
+//            'page' => 1
         ];
         try {
             $response = $this->gateway->getAccount($params)->send();
