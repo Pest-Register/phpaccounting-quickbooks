@@ -23,9 +23,16 @@ class GetAccountTest extends BaseTest
             'search_params' => [
                 'Name' => 'Inventory',
             ],
-            'exact_search_value' => true,
-//            'accountingID' => "",
-//            'page' => 1
+//            'search_filters' => [
+//                'AccountType' => [
+//                    'Bank',
+//                    'Other Current Asset'
+//                ]
+//            ],
+//            'match_all_filters' => false,
+//            'exact_search_value' => false,
+            'accountingID' => "",
+            'page' => 1
         ];
         try {
             $response = $this->gateway->getAccount($params)->send();
