@@ -4,7 +4,9 @@
 namespace PHPAccounting\Quickbooks\Message\Quotations\Responses;
 
 
-class DeleteQuotationResponse
+use Omnipay\Common\Message\AbstractResponse;
+
+class DeleteQuotationResponse extends AbstractResponse
 {
 
 }

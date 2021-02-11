@@ -41,7 +41,7 @@ class UpdateQuotationTest extends BaseTest
                 'discount_amount' => 0,
                 'discount_rate' => 0,
                 'gst_inclusive' => 'INCLUSIVE',
-                'sync_token' => '4',
+                'sync_token' => '0',
                 'total_tax' => 140.00,
                 'tax_lines' => [
                     [

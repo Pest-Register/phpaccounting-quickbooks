@@ -4,7 +4,137 @@
 namespace PHPAccounting\Quickbooks\Message\Quotations\Requests;
 
 
-class DeleteQuotationRequest
-{
+use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
+use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
+use PHPAccounting\Quickbooks\Message\Quotations\Responses\DeleteQuotationResponse;
+use PHPAccounting\Quickbooks\Message\Quotations\Responses\GetQuotationResponse;
+use QuickBooksOnline\API\Facades\Estimate;
 
+class DeleteQuotationRequest extends AbstractRequest
+{
+    /**
+     * Get Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @return mixed
+     */
+    public function getSyncToken(){
+        return $this->getParameter('sync_token');
+    }
+
+    /**
+     * Set Sync Token Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
+     * @param string $value Account Code
+     * @return DeleteQuotationRequest
+     */
+    public function setSyncToken($value){
+        return $this->setParameter('sync_token', $value);
+    }
+
+    /**
+     * Set AccountingID from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @param $value
+     * @return DeleteQuotationRequest
+     */
+    public function setAccountingID($value) {
+        return $this->setParameter('accounting_id', $value);
+    }
+
+    /**
+     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
+     * @return mixed
+     */
+    public function getAccountingID() {
+        return  $this->getParameter('accounting_id');
+    }
+
+    /**
+     * Get the raw data array for this message. The format of this varies from gateway to
+     * gateway, but will usually be either an associative array, or a SimpleXMLElement.
+     *
+     * @return mixed
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    public function getData()
+    {
+        try {
+            $this->validate('accounting_id');
+        } catch (InvalidRequestException $exception) {
+            return $exception;
+        }
+        $this->issetParam('Id', 'accounting_id');
+        $this->issetParam('SyncToken', 'sync_token');
+        $this->data['TxnStatus'] = 'Closed';
+        return $this->data;
+    }
+
+    /**
+     * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
+     * @param mixed $data Parameter Bag Variables After Validation
+     * @return \Omnipay\Common\Message\ResponseInterface|DeleteQuotationResponse
+     * @throws \QuickBooksOnline\API\Exception\IdsException
+     * @throws \Exception
+     */
+    public function sendData($data)
+    {
+        if($data instanceof InvalidRequestException) {
+            $response = [
+                'status' => 'error',
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $data->getMessage(),
+                        'error_code' => $data->getCode(),
+                        'status_code' => 422,
+                    ],
+            ];
+            return $this->createResponse($response);
+        }
+
+        $quickbooks = $this->createQuickbooksDataService();
+        $updateParams = [];
+
+        foreach ($data as $key => $value){
+            $updateParams[$key] = $data[$key];
+        }
+        $id = $this->getAccountingID();
+        try {
+            $targetCustomer = $quickbooks->Query("select * from Estimate where Id='".$id."'");
+        } catch (\Exception $exception) {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => $exception->getMessage()
+            ]);
+        }
+        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+            $estimate = Estimate::update(current($targetCustomer),$updateParams);
+            $response = $quickbooks->Update($estimate);
+        } else {
+            return $this->createResponse([
+                'status' => 'error',
+                'detail' => 'Existing Estimate not Found'
+            ]);
+        }
+
+        $error = $quickbooks->getLastError();
+        if ($error) {
+            $response = ErrorParsingHelper::parseError($error);
+        }
+
+        return $this->createResponse($response);
+    }
+
+    /**
+     * Create Generic Response from Quickbooks Endpoint
+     * @param mixed $data Array Elements or Quickbooks Collection from Response
+     * @return GetQuotationResponse
+     */
+    public function createResponse($data)
+    {
+        return $this->response = new GetQuotationResponse($this, $data);
+    }
 }
