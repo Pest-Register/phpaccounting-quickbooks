@@ -189,6 +189,28 @@ class Gateway extends AbstractGateway
     }
 
     /**
+     * Quotation Requests
+     * @param array $parameters
+     * @return \Omnipay\Common\Message\AbstractRequest
+     */
+
+    public function createQuotation(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Quotations\Requests\CreateQuotationRequest', $parameters);
+    }
+
+    public function updateQuotation(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Quotations\Requests\UpdateQuotationRequest', $parameters);
+    }
+
+    public function getQuotation(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Quotations\Requests\GetQuotationRequest', $parameters);
+    }
+
+    public function deleteQuotation(array $parameters = []){
+        return $this->createRequest('\PHPAccounting\Quickbooks\Message\Quotations\Requests\DeleteQuotationRequest', $parameters);
+    }
+
+    /**
      * Account Requests
      * @param array $parameters
      * @return \Omnipay\Common\Message\AbstractRequest

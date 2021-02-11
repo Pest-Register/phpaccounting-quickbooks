@@ -1,28 +1,24 @@
 <?php
 
-namespace Tests\TaxRates;
+
+namespace Tests\Quotations;
 
 
 use Tests\BaseTest;
 
-class GetTaxRateTest extends BaseTest
+class GetQuotationTest extends BaseTest
 {
-
-    public function testGetTaxRates()
+    public function testGetQuotations()
     {
         $this->setUp();
         try {
             $params = [
-//                'search_params' => [
-//                    'Name' => 'export'
-//                ],
-                'accounting_ids' => [""],
                 'page' => 1
             ];
 
-            $response = $this->gateway->getTaxRate($params)->send();
+            $response = $this->gateway->getQuotation($params)->send();
             if ($response->isSuccessful()) {
-                var_dump($response->getTaxRates());
+                var_dump($response->getQuotations());
             } else {
                 var_dump($response->getErrorMessage());
             }
