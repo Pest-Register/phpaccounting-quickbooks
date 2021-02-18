@@ -16,7 +16,7 @@ class GetTaxRateTest extends BaseTest
 //                'search_params' => [
 //                    'Name' => 'export'
 //                ],
-                'accounting_ids' => [""],
+                'accounting_id' => "",
                 'page' => 1
             ];
 

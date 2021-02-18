@@ -19,7 +19,7 @@ class GetTaxRateValueTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_id' => '',
+                'accounting_id' => '20',
                 'page' => 1
             ];
 
