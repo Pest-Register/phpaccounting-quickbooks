@@ -13,11 +13,12 @@ class GetTaxRateTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-//                'search_params' => [
-//                    'Name' => 'export'
-//                ],
-                'accounting_id' => "",
-                'page' => 1
+                'search_params' => [
+                    'Name' => 'GST'
+                ],
+                'exact_search_value' => true,
+//                'accounting_id' => "10",
+//                'page' => 1
             ];
 
             $response = $this->gateway->getTaxRate($params)->send();
