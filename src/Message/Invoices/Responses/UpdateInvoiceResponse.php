@@ -127,6 +127,7 @@ class UpdateInvoiceResponse extends AbstractResponse
                         $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
+                    array_push($lineItems, $newLineItem);
                 } else {
                     if ($lineItem->DiscountLineDetail) {
                         $invoice['discount_amount'] = $lineItem->Amount;
@@ -134,8 +135,6 @@ class UpdateInvoiceResponse extends AbstractResponse
                         $invoice['sub_total'] = $lineItem->Amount;
                     }
                 }
-
-                array_push($lineItems, $newLineItem);
             }
 
             $invoice['invoice_data'] = $lineItems;
