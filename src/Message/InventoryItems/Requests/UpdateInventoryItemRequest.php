@@ -342,6 +342,10 @@ class UpdateInventoryItemRequest extends AbstractRequest
             if (array_key_exists('buying_unit_price', $buyingDetails)) {
                 $this->data['PurchaseCost'] = $buyingDetails['buying_unit_price'];
             }
+
+            if (array_key_exists('buying_tax_inclusive', $buyingDetails)) {
+                $this->data['PurchaseTaxIncluded'] = $buyingDetails['buying_tax_inclusive'];
+            }
         }
 
         if ($salesDetails) {
@@ -352,6 +356,10 @@ class UpdateInventoryItemRequest extends AbstractRequest
             }
             if (array_key_exists('selling_unit_price', $salesDetails)) {
                 $this->data['UnitPrice'] = $salesDetails['selling_unit_price'];
+            }
+
+            if (array_key_exists('selling_tax_inclusive', $salesDetails)) {
+                $this->data['SalesTaxIncluded'] = $salesDetails['selling_tax_inclusive'];
             }
         }
 
