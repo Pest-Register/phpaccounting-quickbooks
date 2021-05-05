@@ -122,7 +122,7 @@ class GetInventoryItemResponse extends AbstractResponse
                 $newItem['sync_token'] = $item->SyncToken;
                 $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
                 $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
-                $newItem['is_tracked'] = $item->TrackQtyOnHand;
+                $newItem['is_tracked'] = filter_var($item->TrackQtyOnHand, FILTER_VALIDATE_BOOLEAN);
                 $newItem['buying_description'] = $item->PurchaseDesc;
                 $newItem['selling_description'] = $item->Description;
                 $newItem['quantity'] = $item->QtyOnHand;
@@ -135,11 +135,11 @@ class GetInventoryItemResponse extends AbstractResponse
                 }
                 $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
                 $newItem['buying_unit_price'] = $item->PurchaseCost;
-                $newItem['buying_tax_inclusive'] = $item->PurchaseTaxIncluded;
+                $newItem['buying_tax_inclusive'] = filter_var($item->PurchaseTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                 $newItem['selling_account_code'] = $item->IncomeAccountRef;
                 $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
                 $newItem['selling_unit_price'] = $item->UnitPrice;
-                $newItem['selling_tax_inclusive'] = $item->SalesTaxIncluded;
+                $newItem['selling_tax_inclusive'] = filter_var($item->SalesTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                 array_push($items, $newItem);
             }
         } else {
@@ -156,7 +156,7 @@ class GetInventoryItemResponse extends AbstractResponse
                     $newItem['sync_token'] = $item->SyncToken;
                     $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
                     $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
-                    $newItem['is_tracked'] = $item->TrackQtyOnHand;
+                    $newItem['is_tracked'] = filter_var($item->TrackQtyOnHand, FILTER_VALIDATE_BOOLEAN);
                     $newItem['buying_description'] = $item->PurchaseDesc;
                     $newItem['selling_description'] = $item->Description;
                     $newItem['quantity'] = $item->QtyOnHand;
@@ -169,11 +169,11 @@ class GetInventoryItemResponse extends AbstractResponse
                     }
                     $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
                     $newItem['buying_unit_price'] = $item->PurchaseCost;
-                    $newItem['buying_tax_inclusive'] = $item->PurchaseTaxIncluded;
+                    $newItem['buying_tax_inclusive'] = filter_var($item->PurchaseTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                     $newItem['selling_account_code'] = $item->IncomeAccountRef;
                     $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
                     $newItem['selling_unit_price'] = $item->UnitPrice;
-                    $newItem['selling_tax_inclusive'] = $item->SalesTaxIncluded;
+                    $newItem['selling_tax_inclusive'] = filter_var($item->SalesTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                     array_push($items, $newItem);
                 }
             }
