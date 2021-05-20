@@ -119,6 +119,9 @@ class UpdateInvoiceResponse extends AbstractResponse
 
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
+                        if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
+                            $newLineItem['tax_inclusive_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                        }
                         $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
                         $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
