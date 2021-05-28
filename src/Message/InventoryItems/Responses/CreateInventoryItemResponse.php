@@ -117,8 +117,8 @@ class CreateInventoryItemResponse extends AbstractResponse
             $newItem['description'] = $item->Description;
             $newItem['type'] = $item->Type;
             $newItem['sync_token'] = $item->SyncToken;
-            $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
-            $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
+            $newItem['is_selling'] = ($item->IncomeAccountRef ? true : false);
+            $newItem['is_buying'] = ($item->ExpenseAccountRef ? true : false);
             $newItem['is_tracked'] = filter_var($item->TrackQtyOnHand, FILTER_VALIDATE_BOOLEAN);
             $newItem['buying_description'] = $item->PurchaseDesc;
             $newItem['selling_description'] = $item->Description;
@@ -147,8 +147,8 @@ class CreateInventoryItemResponse extends AbstractResponse
                 $newItem['description'] = $item->Description;
                 $newItem['type'] = $item->Type;
                 $newItem['sync_token'] = $item->SyncToken;
-                $newItem['is_buying'] = ($item->IncomeAccountRef ? true : false);
-                $newItem['is_selling'] = ($item->ExpenseAccountRef ? true : false);
+                $newItem['is_selling'] = ($item->IncomeAccountRef ? true : false);
+                $newItem['is_buying'] = ($item->ExpenseAccountRef ? true : false);
                 $newItem['is_tracked'] = filter_var($item->TrackQtyOnHand, FILTER_VALIDATE_BOOLEAN);
                 $newItem['buying_description'] = $item->PurchaseDesc;
                 $newItem['selling_description'] = $item->Description;
