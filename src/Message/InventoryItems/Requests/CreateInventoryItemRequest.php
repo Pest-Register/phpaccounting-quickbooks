@@ -306,6 +306,10 @@ class CreateInventoryItemRequest extends AbstractRequest
             if (array_key_exists('buying_tax_inclusive', $buyingDetails)) {
                 $this->data['PurchaseTaxIncluded'] = $buyingDetails['buying_tax_inclusive'];
             }
+
+            if (array_key_exists('buying_tax_type_id', $buyingDetails)) {
+                $this->data['PurchaseTaxCodeRef'] = $buyingDetails['buying_tax_type_id'];
+            }
         }
 
         if ($salesDetails) {
@@ -320,6 +324,9 @@ class CreateInventoryItemRequest extends AbstractRequest
 
             if (array_key_exists('selling_tax_inclusive', $salesDetails)) {
                 $this->data['SalesTaxIncluded'] = $salesDetails['selling_tax_inclusive'];
+            }
+            if (array_key_exists('selling_tax_type_id', $salesDetails)) {
+                $this->data['SalesTaxCodeRef'] = $salesDetails['selling_tax_type_id'];
             }
         }
 
