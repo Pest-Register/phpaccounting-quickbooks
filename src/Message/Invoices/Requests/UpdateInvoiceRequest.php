@@ -300,6 +300,42 @@ class UpdateInvoiceRequest extends AbstractRequest
     }
 
     /**
+     * Get Subtotal After Tax Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getSubtotalAfterTax(){
+        return $this->getParameter('sub_total_after_tax');
+    }
+
+    /**
+     * Set Subtotal After Tax Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return UpdateInvoiceRequest
+     */
+    public function setSubtotalAfterTax($value){
+        return $this->setParameter('sub_total_after_tax', $value);
+    }
+
+    /**
+     * Get Subtotal Before Tax Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return mixed
+     */
+    public function getSubtotalBeforeTax(){
+        return $this->getParameter('sub_total_before_tax');
+    }
+
+    /**
+     * Set Subtotal Before Tax Parameter from Parameter Bag
+     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
+     * @return UpdateInvoiceRequest
+     */
+    public function setSubtotalBeforeTax($value){
+        return $this->setParameter('sub_total_before_tax', $value);
+    }
+
+    /**
      * Set AccountingID from Parameter Bag (ContactID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
      * @param $value
@@ -391,14 +427,35 @@ class UpdateInvoiceRequest extends AbstractRequest
             array_push($lineItems, $lineItem);
         }
         if ($this->getDiscountRate()) {
-            $discountLineItem = [];
-            $discountLineItem['LineNum'] = $counter;
-            $discountLineItem['Description'] = '';
-            $discountLineItem['Amount'] = $this->getDiscountRate();
-            $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
-            $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
-            array_push($lineItems, $discountLineItem);
+            if ($this->getDiscountRate() > 0) {
+                $discountLineItem = [];
+                $discountLineItem['LineNum'] = $counter;
+                $discountLineItem['Description'] = '';
+                $discountLineItem['Amount'] = $this->getDiscountAmount();
+                $discountLineItem['DetailType'] = 'DiscountLineDetail';
+                $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
+                $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
+                array_push($lineItems, $discountLineItem);
+            }
+        }
+        if ($this->getDiscountAmount()) {
+            if ($this->getDiscountAmount() > 0) {
+                $discountLineItem = [];
+                $discountLineItem['LineNum'] = $counter;
+                $discountLineItem['Description'] = '';
+                $discountLineItem['Amount'] = $this->getDiscountAmount();
+                $discountLineItem['DetailType'] = 'DiscountLineDetail';
+                $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+                array_push($lineItems, $discountLineItem);
+            }
+        }
+        if ($this->getSubtotalBeforeTax()) {
+            $subtotalLineItem = [];
+            $subtotalLineItem['LineNum'] = $counter;
+            $subtotalLineItem['Description'] = '';
+            $subtotalLineItem['Amount'] = $this->getSubtotalBeforeTax();
+            $subtotalLineItem['DetailType'] = 'SubTotalLineDetail';
+            array_push($lineItems, $subtotalLineItem);
         }
         return $lineItems;
     }

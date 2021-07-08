@@ -114,6 +114,7 @@ class CreateInvoiceResponse extends AbstractResponse
     private function parseLineItems($data, $invoice) {
         if ($data) {
             $lineItems = [];
+            $totalTax = 0.00;
             foreach($data as $lineItem) {
                 if ($lineItem->Id) {
                     $newLineItem = [];
@@ -132,20 +133,23 @@ class CreateInvoiceResponse extends AbstractResponse
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                        $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
+                        $newLineItem['tax_amount'] = abs((double) $lineItem->Amount - (double) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
+                        $totalTax += $newLineItem['tax_amount'];
                     }
                     array_push($lineItems, $newLineItem);
                 } else {
                     if ($lineItem->DiscountLineDetail) {
                         $invoice['discount_amount'] = $lineItem->Amount;
                     } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-                        $invoice['sub_total'] = $lineItem->Amount;
+                        $invoice['sub_total_before_tax'] = $lineItem->Amount;
                     }
                 }
             }
 
             $invoice['invoice_data'] = $lineItems;
+            $invoice['sub_total'] = $invoice['sub_total_before_tax'] + $totalTax;
+            $invoice['sub_total_after_tax'] = $invoice['sub_total'];
         }
 
         return $invoice;
