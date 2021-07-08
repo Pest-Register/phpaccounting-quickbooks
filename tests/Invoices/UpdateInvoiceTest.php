@@ -19,30 +19,75 @@ class UpdateInvoiceTest extends BaseTest
         $faker = Faker\Factory::create();
         try {
 
-            $params = [
-
-                'accounting_id' => 128,
-                'sync_token' => 2,
-                'status' => 'PAID',
+            $params = array (
+                'accounting_id' => '219',
+                'address' =>
+                    array (
+                        'address_line_1' => ' ',
+                        'city' => 'Sydney',
+                        'postal_code' => NULL,
+                        'state' => 'New South Wales',
+                        'country' => 'Australia',
+                    ),
                 'type' => 'ACCREC',
-                'contact' => [
-                    'accounting_id' => 3
-                ],
-                'invoice_data' => [
-                    [
-                        'description' => 'consulting for upcoming company event',
-                        'line_amount' => 800,
-                        'accounting_id' => 1,
-                        'amount' => 800,
-                        'quantity' => 4,
-                        'unit_amount' => 200,
-                        'account_id' => 1,
-                        'item_id' => 1,
-                        'tax_amount' => 800,
-                        'tax_type' => 10
-                    ]
-                ]
-            ];
+                'date' => '2021-03-31',
+                'due_date' => '2021-04-14',
+                'contact' => '1',
+                'email_status' => false,
+                'amount_paid' => '0.00',
+                'amount_due' => '116.00',
+                'invoice_data' =>
+                    array (
+                        0 =>
+                            array (
+                                'description' => 'Entertainment',
+                                'accounting_id' => NULL,
+                                'amount' => 18.18,
+                                'quantity' => 1.0,
+                                'unit_amount' => 18.18,
+                                'discount_rate' => 0.0,
+                                'item_code' => 'Entertainment',
+                                'item_id' => '6',
+                                'unit' => 'QTY',
+                                'tax_id' => '10',
+                                'tax_type' => 'GST',
+                                'discount_amount' => 0.0,
+                                'tax_inclusive_amount' => 20.0,
+                            ),
+                    ),
+                'total_discount' => 0.0,
+                'gst_registered' => false,
+                'invoice_number' => '20210331_0001',
+                'invoice_reference' => '20210331_0001',
+                'total' => 116.0,
+                'discount_amount' => '4.00',
+                'discount_rate' => 3.076662717887967,
+                'deposit_amount' => '0.00',
+                'gst_inclusive' => 'INCLUSIVE',
+                'sync_token' => NULL,
+                'total_tax' => '1.45',
+                'tax_lines' =>
+                    array (
+                        '' =>
+                            array (
+                                'tax_id' => NULL,
+                                'tax_rate_id' => NULL,
+                                'tax_percent' => NULL,
+                                'net_amount' => 100.0,
+                                'percent_based' => true,
+                                'total_tax' => 0,
+                            ),
+                        10 =>
+                            array (
+                                'tax_id' => '10',
+                                'tax_rate_id' => '20',
+                                'tax_percent' => '10',
+                                'net_amount' => 14.55,
+                                'percent_based' => true,
+                                'total_tax' => 1.45,
+                            ),
+                    ),
+            );
 
             $response = $this->gateway->updateInvoice($params)->send();
             if ($response->isSuccessful()) {

@@ -12,25 +12,18 @@ class CreateInventoryItemTest extends BaseTest
         try {
 
             $params = [
-                'name' => 'Development Operations 2',
-                'description' => 'Development Operations 2',
-                'buying_description' => 'Development Operations',
-                'is_tracked' => true,
-                'purchase_details' => [
-                    'buying_unit_price' => 100,
-                    'buying_account_code' => 88,
-                    'buying_tax_type_code' => 'OUTPUT'
-                ],
+                'name' => 'Development Operations 3',
+                'description' => 'Development Operations 3',
+                'selling_description' => 'Development Operations',
+                'is_selling' => true,
+                'is_tracked' => false,
                 'sales_details' => [
                     'selling_unit_price' => 150,
-                    'selling_account_code' => 81,
-                    'selling_tax_type_code' => 'OUTPUT'
+                    'selling_account_code' => '81',
+                    'selling_tax_type_id' => '10',
+                    'selling_tax_inclusive' => true
                 ],
-                'asset_details' => [
-                  'asset_account_code' => 32
-                ],
-                'type' => 'Inventory',
-                'quantity' => 10
+                'type' => 'NonInventory',
             ];
 
             $response = $this->gateway->createInventoryItem($params)->send();
