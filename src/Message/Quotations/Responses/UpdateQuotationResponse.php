@@ -195,7 +195,11 @@ class UpdateQuotationResponse extends AbstractResponse
             $newQuote['date'] = date('Y-m-d', strtotime($quote->TxnDate));
             $newQuote['sync_token'] = $quote->SyncToken;
             $newQuote['gst_inclusive'] = $this->parseTaxCalculation($quote->GlobalTaxCalculation);
-            $newQuote['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $quote->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($quote->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($quote->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newQuote['updated_at'] = $updatedAt->toDateTimeString();
+            }
             $newQuote = $this->parseContact($quote->CustomerRef, $newQuote);
             $newQuote = $this->parseLineItems($quote->Line, $newQuote);
 
@@ -233,7 +237,11 @@ class UpdateQuotationResponse extends AbstractResponse
                 $newQuote['date'] = date('Y-m-d', strtotime($quote->TxnDate));
                 $newQuote['sync_token'] = $quote->SyncToken;
                 $newQuote['gst_inclusive'] = $this->parseTaxCalculation($quote->GlobalTaxCalculation);
-                $newQuote['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $quote->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($quote->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($quote->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newQuote['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 $newQuote = $this->parseContact($quote->CustomerRef, $newQuote);
                 $newQuote = $this->parseLineItems($quote->Line, $newQuote);
 

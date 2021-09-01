@@ -192,6 +192,7 @@ class GetInvoiceResponse extends AbstractResponse
      */
     public function getInvoices(){
         $invoices = [];
+//        var_dump($this->data);
         if ($this->data instanceof IPPInvoice){
             $invoice = $this->data;
             $newInvoice = [];
@@ -209,7 +210,11 @@ class GetInvoiceResponse extends AbstractResponse
             $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
             $newInvoice['sync_token'] = $invoice->SyncToken;
             $newInvoice['gst_inclusive'] = $this->parseTaxCalculation($invoice->GlobalTaxCalculation);
-            $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($invoice->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($invoice->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
+            }
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
 
@@ -250,7 +255,11 @@ class GetInvoiceResponse extends AbstractResponse
                 $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
                 $newInvoice['sync_token'] = $invoice->SyncToken;
                 $newInvoice['gst_inclusive'] = $this->parseTaxCalculation($invoice->GlobalTaxCalculation);
-                $newInvoice['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $invoice->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($invoice->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($invoice->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
 

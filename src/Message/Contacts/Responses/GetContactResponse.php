@@ -122,7 +122,11 @@ class GetContactResponse extends AbstractResponse
             $newContact['is_individual'] = ($contact->CompanyName ? true : false);
             $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
-            $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($contact->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newContact['updated_at'] = $updatedAt->toDateTimeString();
+            }
             if ($contact->Active) {
                 if ($contact->Active == true) {
                     $newContact['status'] = 'ACTIVE';
@@ -206,7 +210,11 @@ class GetContactResponse extends AbstractResponse
                 $newContact['is_individual'] = ($contact->CompanyName ? true : false);
                 $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
-                $newContact['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $contact->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($contact->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newContact['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 if ($contact->Active) {
                     if ($contact->Active == true) {
                         $newContact['status'] = 'ACTIVE';
