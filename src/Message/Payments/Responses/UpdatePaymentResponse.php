@@ -163,7 +163,11 @@ class UpdatePaymentResponse extends AbstractResponse
             $newPayment['type'] = 'ACCRECPAYMENT';
             $newPayment['sync_token'] = $payment->SyncToken;
             $newPayment['status'] = $payment->TxnStatus;
-            $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($payment->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($payment->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newPayment['updated_at'] = $updatedAt->toDateTimeString();
+            }
             $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
             $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
@@ -180,7 +184,11 @@ class UpdatePaymentResponse extends AbstractResponse
                 $newPayment['type'] = 'ACCRECPAYMENT';
                 $newPayment['sync_token'] = $payment->SyncToken;
                 $newPayment['status'] = $payment->TxnStatus;
-                $newPayment['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $payment->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($payment->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($payment->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newPayment['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
                 $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 

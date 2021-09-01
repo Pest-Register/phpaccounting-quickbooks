@@ -123,7 +123,11 @@ class GetAccountResponse extends AbstractResponse
             $newAccount['tax_type'] = $account->TaxCodeRef;
             $newAccount['bank_account_number'] = $account->BankNum;
             $newAccount['currency_code'] = $account->CurrencyRef;
-            $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($account->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($account->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newAccount['updated_at'] = $updatedAt->toDateTimeString();
+            }
 
             if ($account->AccountType === 'Bank') {
                 $newAccount['is_bank_account'] = true;
@@ -144,7 +148,11 @@ class GetAccountResponse extends AbstractResponse
                 $newAccount['tax_type'] = $account->TaxCodeRef;
                 $newAccount['bank_account_number'] = $account->BankNum;
                 $newAccount['currency_code'] = $account->CurrencyRef;
-                $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($account->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($account->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newAccount['updated_at'] = $updatedAt->toDateTimeString();
+                }
 
                 if ($account->AccountType === 'Bank') {
                     $newAccount['is_bank_account'] = true;

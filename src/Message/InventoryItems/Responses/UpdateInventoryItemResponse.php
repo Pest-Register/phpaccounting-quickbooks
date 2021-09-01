@@ -124,7 +124,11 @@ class UpdateInventoryItemResponse extends AbstractResponse
             $newItem['selling_description'] = $item->Description;
             $newItem['quantity'] = $item->QtyOnHand;
             $newItem['cost_pool'] = $item->AvgCost;
-            $newItem['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $item->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($item->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($item->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newItem['updated_at'] = $updatedAt->toDateTimeString();
+            }
             if ($item->TrackQtyOnHand) {
                 $newItem['buying_account_code'] = $item->COGSAccountRef;
             } else {
@@ -154,7 +158,11 @@ class UpdateInventoryItemResponse extends AbstractResponse
                 $newItem['selling_description'] = $item->Description;
                 $newItem['quantity'] = $item->QtyOnHand;
                 $newItem['cost_pool'] = $item->AvgCost;
-                $newItem['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $item->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($item->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($item->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newItem['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 if ($item->TrackQtyOnHand) {
                     $newItem['buying_account_code'] = $item->COGSAccountRef;
                 } else {

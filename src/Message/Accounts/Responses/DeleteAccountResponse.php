@@ -122,7 +122,11 @@ class DeleteAccountResponse extends AbstractResponse
             $newAccount['tax_type'] = $account->TaxCodeRef;
             $newAccount['bank_account_number'] = $account->BankNum;
             $newAccount['currency_code'] = $account->CurrencyRef;
-            $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime)->toDateTimeString();
+            if ($account->MetaData->LastUpdatedTime) {
+                $updatedAt = Carbon::parse($account->MetaData->LastUpdatedTime);
+                $updatedAt->setTimezone('UTC');
+                $newAccount['updated_at'] = $updatedAt->toDateTimeString();
+            }
             array_push($accounts, $newAccount);
         }
         else {
@@ -139,7 +143,11 @@ class DeleteAccountResponse extends AbstractResponse
                 $newAccount['tax_type'] = $account->TaxCodeRef;
                 $newAccount['bank_account_number'] = $account->BankNum;
                 $newAccount['currency_code'] = $account->CurrencyRef;
-                $newAccount['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $account->MetaData->LastUpdatedTime)->toDateTimeString();
+                if ($account->MetaData->LastUpdatedTime) {
+                    $updatedAt = Carbon::parse($account->MetaData->LastUpdatedTime);
+                    $updatedAt->setTimezone('UTC');
+                    $newAccount['updated_at'] = $updatedAt->toDateTimeString();
+                }
                 array_push($accounts, $newAccount);
             }
         }

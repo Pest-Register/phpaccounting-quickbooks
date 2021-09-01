@@ -20,11 +20,10 @@ class GetInvoiceTest extends BaseTest
         try {
             $params = [
                 'page' => 1,
-                'accounting_id' => '256'
+                'accounting_id' => '281'
             ];
 
             $response = $this->gateway->getInvoice($params)->send();
-//            var_dump($response);
             if ($response->isSuccessful()) {
                 echo print_r($response->getInvoices(), true);
             } else {
