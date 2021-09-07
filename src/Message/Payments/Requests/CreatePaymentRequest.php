@@ -259,10 +259,10 @@ class CreatePaymentRequest extends AbstractRequest
         return $this->setParameter('date', $value);
     }
 
-    private function addCreditNoteToPayment( $payment, $value) {
+    private function addCreditNoteToPayment($payment, $value, $totalAmount) {
         if (array_key_exists('accounting_id', $value)) {
             $invoice = [
-                'Amount' => $value['amount'],
+                'Amount' => $totalAmount,
                 'LinkedTxn' => [
                     'TxnId' => $value['accounting_id'],
                     'TxnType' => 'CreditMemo'
@@ -270,12 +270,13 @@ class CreatePaymentRequest extends AbstractRequest
             ];
             array_push($payment['Line'], $invoice);
         }
+        return $payment;
     }
 
-    private function addInvoiceToPayment($payment, $value) {
+    private function addInvoiceToPayment($payment, $value, $paymentAmount) {
         if (array_key_exists('accounting_id', $value)) {
             $invoice = [
-                'Amount' => $value['amount'],
+                'Amount' => $paymentAmount,
                 'LinkedTxn' => [
                     'TxnId' => $value['accounting_id'],
                     'TxnType' => 'Invoice'
@@ -305,16 +306,16 @@ class CreatePaymentRequest extends AbstractRequest
         $this->issetParam('TotalAmt', 'amount');
         $this->issetParam('PaymentRefNum', 'reference_id');
         $this->issetParam('SyncToken', 'sync_token');
-
         $this->data['Line'] = [];
-        if ($this->getInvoice()) {
-            $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice());
-        }
+        if ($this->getAmount()) {
+            if ($this->getInvoice()) {
+                $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice(), $this->getAmount());
+            }
 
-        if ($this->getCreditNote()) {
-            $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote());
+            if ($this->getCreditNote()) {
+                $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote(), $this->getAmount());
+            }
         }
-
         if ($this->getAccount()) {
             $this->data['ARAccountRef']['value'] = $this->getAccount()['accounting_id'];
         }
@@ -326,7 +327,6 @@ class CreatePaymentRequest extends AbstractRequest
         if ($this->getContact()) {
             $this->data['CustomerRef']['value'] = $this->getContact()['accounting_id'];
         }
-
         return $this->data;
     }
 

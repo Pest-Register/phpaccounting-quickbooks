@@ -276,10 +276,10 @@ class UpdatePaymentRequest extends AbstractRequest
         return  $this->getParameter('accounting_id');
     }
 
-    private function addCreditNoteToPayment( $payment, $value) {
+    private function addCreditNoteToPayment( $payment, $value, $paymentAmount) {
         if (array_key_exists('accounting_id', $value)) {
             $invoice = [
-                'Amount' => $value['amount'],
+                'Amount' => $paymentAmount,
                 'LinkedTxn' => [
                     'TxnId' => $value['accounting_id'],
                     'TxnType' => 'CreditMemo'
@@ -289,10 +289,10 @@ class UpdatePaymentRequest extends AbstractRequest
         }
     }
 
-    private function addInvoiceToPayment($payment, $value) {
+    private function addInvoiceToPayment($payment, $value, $paymentAmount) {
         if (array_key_exists('accounting_id', $value)) {
             $invoice = [
-                'Amount' => $value['amount'],
+                'Amount' => $paymentAmount,
                 'LinkedTxn' => [
                     'TxnId' => $value['accounting_id'],
                     'TxnType' => 'Invoice'
@@ -328,12 +328,14 @@ class UpdatePaymentRequest extends AbstractRequest
         $this->data['sparse'] = true;
 
         $this->data['Line'] = [];
-        if ($this->getInvoice()) {
-            $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice());
-        }
+        if ($this->getAmount()) {
+            if ($this->getInvoice()) {
+                $this->data = $this->addInvoiceToPayment($this->data, $this->getInvoice(), $this->getAmount());
+            }
 
-        if ($this->getCreditNote()) {
-            $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote());
+            if ($this->getCreditNote()) {
+                $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote(), $this->getAmount());
+            }
         }
 
         if ($this->getAccount()) {
