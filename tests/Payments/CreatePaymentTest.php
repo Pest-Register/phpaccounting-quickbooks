@@ -11,21 +11,28 @@ class CreatePaymentTest extends BaseTest
         $this->setUp();
         try {
 
-            $params = [
+            $params = array (
+                'contact' =>
+                    array (
+                        'accounting_id' => '1',
+                    ),
                 'currency' => 'AUD',
                 'currency_rate' => 1.0,
-                'amount' => 7150.00,
-                'reference_id' => 'Test Description',
-                'is_reconciled' => true,
-                'date' => '2019-27-06',
-                'invoice' => [
-                    'accounting_id' => '127',
-                    'amount' => 7150.00
-                ],
-                'contact' => [
-                    'accounting_id' => 3
-                ]
-            ];
+                'amount' => 300.0,
+                'reference_id' => 'PR00001',
+                'is_reconciled' => false,
+                'invoice' =>
+                    array (
+                        'accounting_id' => '289',
+                        'amount' => '5501.00'
+                    ),
+                'account' =>
+                    array (
+                        'accounting_id' => '106',
+                    ),
+                'date' => '2021-09-06',
+                'sync_token' => NULL,
+            );
 
             $response = $this->gateway->createPayment($params)->send();
             if ($response->isSuccessful()) {

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPInvoice;
+use QuickBooksOnline\API\Data\IPPLinkedTxn;
 
 /**
  * Get Invoice(s) Response
@@ -172,6 +173,36 @@ class GetInvoiceResponse extends AbstractResponse
         return $invoice;
     }
 
+    /**
+     * Add Payments to Invoice
+     *
+     * @param $data
+     * @param $invoice
+     * @return mixed
+     */
+    private function parsePayments($data, $invoice) {
+        if ($data) {
+            if ($data instanceof IPPLinkedTxn) {
+                    if ($data->TxnType === 'Payment') {
+                        $newPayment = [];
+                        $newPayment['accounting_id'] = $data->TxnId;
+                        array_push($invoice['payments'], $newPayment);
+                    }
+            } else {
+                foreach($data as $transaction) {
+                    if ($transaction) {
+                        if ($transaction->TxnType === 'Payment') {
+                            $newPayment = [];
+                            $newPayment['accounting_id'] = $transaction->TxnId;
+                            array_push($invoice['payments'], $newPayment);
+                        }
+                    }
+                }
+            }
+        }
+        return $invoice;
+    }
+
     private function parseTaxCalculation($data)  {
         if ($data) {
             switch($data) {
@@ -192,7 +223,6 @@ class GetInvoiceResponse extends AbstractResponse
      */
     public function getInvoices(){
         $invoices = [];
-//        var_dump($this->data);
         if ($this->data instanceof IPPInvoice){
             $invoice = $this->data;
             $newInvoice = [];
@@ -215,8 +245,10 @@ class GetInvoiceResponse extends AbstractResponse
                 $updatedAt->setTimezone('UTC');
                 $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
             }
+            $newInvoice['payments'] = [];
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+            $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
 
             if ($invoice->BillAddr) {
                 $newInvoice['address'] = [
@@ -262,6 +294,7 @@ class GetInvoiceResponse extends AbstractResponse
                 }
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+                $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
 
                 if ($invoice->BillAddr) {
                     $newInvoice['address'] = [

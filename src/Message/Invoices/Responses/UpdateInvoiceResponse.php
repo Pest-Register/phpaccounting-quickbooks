@@ -7,6 +7,7 @@ use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use QuickBooksOnline\API\Data\IPPInvoice;
+use QuickBooksOnline\API\Data\IPPLinkedTxn;
 
 /**
  * Update Invoice(s) Response
@@ -163,6 +164,36 @@ class UpdateInvoiceResponse extends AbstractResponse
         return $invoice;
     }
 
+    /**
+     * Add Payments to Invoice
+     *
+     * @param $data
+     * @param $invoice
+     * @return mixed
+     */
+    private function parsePayments($data, $invoice) {
+        if ($data) {
+            if ($data instanceof IPPLinkedTxn) {
+                if ($data->TxnType === 'Payment') {
+                    $newPayment = [];
+                    $newPayment['accounting_id'] = $data->TxnId;
+                    array_push($invoice['payments'], $newPayment);
+                }
+            } else {
+                foreach($data as $transaction) {
+                    if ($transaction) {
+                        if ($transaction->TxnType === 'Payment') {
+                            $newPayment = [];
+                            $newPayment['accounting_id'] = $transaction->TxnId;
+                            array_push($invoice['payments'], $newPayment);
+                        }
+                    }
+                }
+            }
+        }
+        return $invoice;
+    }
+
     private function parseTaxCalculation($data)  {
         if ($data) {
             switch($data) {
@@ -208,6 +239,7 @@ class UpdateInvoiceResponse extends AbstractResponse
             }
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+            $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
             if ($invoice->BillAddr) {
                 $newInvoice['address'] = [
                     'address_type' =>  'BILLING',
@@ -252,6 +284,7 @@ class UpdateInvoiceResponse extends AbstractResponse
                 }
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
+                $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
                 if ($invoice->BillAddr) {
                     $newInvoice['address'] = [
                         'address_type' =>  'BILLING',
