@@ -316,8 +316,10 @@ class CreatePaymentRequest extends AbstractRequest
                 $this->data= $this->addCreditNoteToPayment($this->data, $this->getCreditNote(), $this->getAmount());
             }
         }
+
         if ($this->getAccount()) {
             $this->data['ARAccountRef']['value'] = $this->getAccount()['accounting_id'];
+            $this->data['DepositToAccountRef']['value'] = $this->getAccount()['accounting_id'];
         }
 
         if ($this->getCurrency()) {
