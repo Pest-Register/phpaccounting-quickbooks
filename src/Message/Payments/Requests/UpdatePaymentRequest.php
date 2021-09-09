@@ -340,6 +340,7 @@ class UpdatePaymentRequest extends AbstractRequest
 
         if ($this->getAccount()) {
             $this->data['ARAccountRef']['value'] = $this->getAccount()['accounting_id'];
+            $this->data['DepositToAccountRef']['value'] = $this->getAccount()['accounting_id'];
         }
 
         if ($this->getCurrency()) {

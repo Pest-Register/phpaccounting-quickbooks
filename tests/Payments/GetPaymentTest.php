@@ -18,7 +18,7 @@ class GetPaymentTest extends BaseTest
         $this->setUp();
         try {
             $params = [
-                'accounting_ids' => "223",
+                'accounting_id' => "298",
                 'page' => 1
             ];
 

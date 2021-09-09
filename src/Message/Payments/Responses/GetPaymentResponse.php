@@ -141,7 +141,7 @@ class GetPaymentResponse extends AbstractResponse
     private function parseAccount($data, $payment) {
         if ($data) {
             $newAccount = [];
-            $newAccount['accounting_id'] = $data->value;
+            $newAccount['accounting_id'] = $data;
             $payment['account'] = $newAccount;
         }
 
@@ -170,7 +170,7 @@ class GetPaymentResponse extends AbstractResponse
                 $updatedAt->setTimezone('UTC');
                 $newPayment['updated_at'] = $updatedAt->toDateTimeString();
             }
-            $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+            $newPayment = $this->parseAccount($payment->DepositToAccountRef, $newPayment);
             $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
             array_push($payments, $newPayment);
@@ -191,7 +191,7 @@ class GetPaymentResponse extends AbstractResponse
                     $updatedAt->setTimezone('UTC');
                     $newPayment['updated_at'] = $updatedAt->toDateTimeString();
                 }
-                $newPayment = $this->parseAccount($payment->ARAccountRef, $newPayment);
+                $newPayment = $this->parseAccount($payment->DepositToAccountRef, $newPayment);
                 $newPayment = $this->parseInvoice($payment->Line, $newPayment);
 
                 array_push($payments, $newPayment);
