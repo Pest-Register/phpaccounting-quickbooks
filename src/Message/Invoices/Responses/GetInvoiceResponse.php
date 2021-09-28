@@ -182,11 +182,12 @@ class GetInvoiceResponse extends AbstractResponse
      */
     private function parsePayments($data, $invoice) {
         if ($data) {
+            $payments = [];
             if ($data instanceof IPPLinkedTxn) {
                     if ($data->TxnType === 'Payment') {
                         $newPayment = [];
                         $newPayment['accounting_id'] = $data->TxnId;
-                        array_push($invoice['payments'], $newPayment);
+                        array_push($payments, $newPayment);
                     }
             } else {
                 foreach($data as $transaction) {
@@ -194,11 +195,12 @@ class GetInvoiceResponse extends AbstractResponse
                         if ($transaction->TxnType === 'Payment') {
                             $newPayment = [];
                             $newPayment['accounting_id'] = $transaction->TxnId;
-                            array_push($invoice['payments'], $newPayment);
+                            array_push($payments, $newPayment);
                         }
                     }
                 }
             }
+            $invoice['payments'] = $payments;
         }
         return $invoice;
     }
@@ -245,7 +247,6 @@ class GetInvoiceResponse extends AbstractResponse
                 $updatedAt->setTimezone('UTC');
                 $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
             }
-            $newInvoice['payments'] = [];
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
             $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);

@@ -173,11 +173,12 @@ class UpdateInvoiceResponse extends AbstractResponse
      */
     private function parsePayments($data, $invoice) {
         if ($data) {
+            $payments = [];
             if ($data instanceof IPPLinkedTxn) {
                 if ($data->TxnType === 'Payment') {
                     $newPayment = [];
                     $newPayment['accounting_id'] = $data->TxnId;
-                    array_push($invoice['payments'], $newPayment);
+                    array_push($payments, $newPayment);
                 }
             } else {
                 foreach($data as $transaction) {
@@ -185,11 +186,12 @@ class UpdateInvoiceResponse extends AbstractResponse
                         if ($transaction->TxnType === 'Payment') {
                             $newPayment = [];
                             $newPayment['accounting_id'] = $transaction->TxnId;
-                            array_push($invoice['payments'], $newPayment);
+                            array_push($payments, $newPayment);
                         }
                     }
                 }
             }
+            $invoice['payments'] = $payments;
         }
         return $invoice;
     }
