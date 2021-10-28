@@ -296,6 +296,7 @@ class GetInvoiceResponse extends AbstractResponse
                     $updatedAt->setTimezone('UTC');
                     $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
                 }
+                $newInvoice['payments'] = [];
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
                 $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);

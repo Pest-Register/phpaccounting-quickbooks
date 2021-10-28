@@ -112,12 +112,13 @@ class GetTaxRateValuesResponse extends AbstractResponse
         if ($this->data instanceof IPPTaxRate){
             $taxRate = $this->data;
             $newTaxRate = [];
+            $newTaxRate['accounting_id'] = $taxRate->Id;
             $newTaxRate['rate'] = $taxRate->RateValue;
             array_push($taxRates, $newTaxRate);
-
         } else {
             foreach ($this->data as $taxRate) {
                 $newTaxRate = [];
+                $newTaxRate['accounting_id'] = $taxRate->Id;
                 $newTaxRate['rate'] = $taxRate->RateValue;
                 array_push($taxRates, $newTaxRate);
             }
