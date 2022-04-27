@@ -3,6 +3,7 @@
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
+use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 
@@ -51,7 +52,6 @@ class GetInventoryItemRequest extends AbstractRequest
     public function getPage() {
         return $this->getParameter('page');
     }
-
     /**
      * Set SearchParams from Parameter Bag (interface for query-based searching)
      * @see https://www.odata.org/documentation/odata-version-3-0/odata-version-3-0-core-protocol/
@@ -87,6 +87,41 @@ class GetInventoryItemRequest extends AbstractRequest
     }
 
     /**
+     * Set SearchFilters from Parameter Bag (interface for query-based searching)
+     * @see https://www.odata.org/documentation/odata-version-3-0/odata-version-3-0-core-protocol/
+     * @param $value
+     * @return GetInventoryItemRequest
+     */
+    public function setSearchFilters($value) {
+        return $this->setParameter('search_filters', $value);
+    }
+
+    /**
+     * Return Search Filters for query-based searching
+     * @return array
+     */
+    public function getSearchFilters() {
+        return $this->getParameter('search_filters');
+    }
+
+    /**
+     * Set boolean to determine whether all filters need to be matched
+     * @param $value
+     * @return GetInventoryItemRequest
+     */
+    public function setMatchAllFilters($value) {
+        return $this->setParameter('match_all_filters', $value);
+    }
+
+    /**
+     * Get boolean to determine whether all filters need to be matched
+     * @return mixed
+     */
+    public function getMatchAllFilters() {
+        return $this->getParameter('match_all_filters');
+    }
+
+    /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return GetInventoryItemResponse
@@ -103,23 +138,15 @@ class GetInventoryItemRequest extends AbstractRequest
         } else {
             if($this->getSearchParams())
             {
-                $query = "SELECT * FROM Item WHERE ";
+                $query = SearchBuilder::buildSearchQuery(
+                    'Item',
+                    $this->getSearchParams(),
+                    $this->getExactSearchValue(),
+                    $this->getSearchFilters(),
+                    $this->getMatchAllFilters()
+                );
                 // Set contains query for partial matching
-                $separationFilter = "";
-                $searchParameters = $this->getSearchParams();
-                foreach($searchParameters as $key => $value)
-                {
-                    if ($this->getExactSearchValue())
-                    {
-                        $statement = $separationFilter.$key."='".$value."'";
-                    } else {
-                        $statement = $separationFilter.$key." LIKE '%".$value."%'";
-                    }
-                    $separationFilter = " AND ";
-                    $query .= $statement;
-                }
-                // Set contains query for partial matching
-                $response = $quickbooks->Query($query);
+                $response = $quickbooks->Query($query, $this->getPage(), 500);
             } else {
                 $response = $quickbooks->FindAll('item', $this->getPage(), 500);
             }

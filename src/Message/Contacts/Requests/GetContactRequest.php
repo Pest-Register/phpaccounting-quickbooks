@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
 
 /**
  * Get Contact(s)
@@ -87,7 +88,7 @@ class GetContactRequest extends AbstractRequest
 
     /**
      * Set SearchFilters from Parameter Bag (interface for query-based searching)
-     * @see https://developer.xero.com/documentation/api/requests-and-responses#get-modified
+     * @see https://www.odata.org/documentation/odata-version-3-0/odata-version-3-0-core-protocol/
      * @param $value
      * @return GetContactRequest
      */
@@ -121,68 +122,6 @@ class GetContactRequest extends AbstractRequest
     }
 
     /**
-     * Builds search / filter query based on search parameters and filter
-     */
-    private function buildSearchQuery() {
-        $query = "SELECT * FROM Customer WHERE ";
-        $separationFilter = "";
-        if ($this->getSearchParams()) {
-            $searchParameters = $this->getSearchParams();
-            foreach($searchParameters as $key => $value)
-            {
-                if ($this->getExactSearchValue())
-                {
-                    $statement = $separationFilter.$key."='".$value."'";
-                } else {
-                    $statement = $separationFilter.$key." LIKE '%".$value."%'";
-                }
-
-                $separationFilter = " AND ";
-                $query .= $statement;
-            }
-        }
-        $queryCounter = 0;
-        if ($this->getSearchFilters()) {
-            if ($this->getSearchParams())
-            {
-                $query.=' AND ';
-            }
-            foreach($this->getSearchFilters() as $key => $value) {
-                $queryString = '';
-                $filterKey = $key;
-                if ($this->getMatchAllFilters())
-                {
-                    foreach($value as $filterValue) {
-                        $searchQuery = $filterKey."='".$filterValue."'";
-                        if ($queryCounter == 0) {
-                            $queryString = $searchQuery;
-                        } else {
-                            $queryString.= ' AND '.$searchQuery;
-                        }
-                        $queryCounter++;
-                    }
-                } else {
-                    $searchQuery = $filterKey." IN (";
-                    $count = 1;
-                    $queryString = $searchQuery;
-                    foreach($value as $filterValue) {
-                        if ($count != count($value))
-                        {
-                            $queryString.="'".$filterValue."', ";
-                        }
-                        else {
-                            $queryString.="'".$filterValue."')";
-                        }
-                        $count++;
-                    }
-                }
-                $query .= $queryString;
-            }
-        }
-        return $query;
-    }
-
-    /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
      * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
@@ -200,9 +139,15 @@ class GetContactRequest extends AbstractRequest
             if($this->getSearchParams() || $this->getSearchFilters())
             {
                 // Build search query with filters (if applicable)
-                $query = $this->buildSearchQuery();
+                $query = SearchBuilder::buildSearchQuery(
+                    'Customer',
+                    $this->getSearchParams(),
+                    $this->getExactSearchValue(),
+                    $this->getSearchFilters(),
+                    $this->getMatchAllFilters()
+                );
                 // Set contains query for partial matching
-                $response = $quickbooks->Query($query);
+                $response = $quickbooks->Query($query, $this->getPage(), 500);
             } else {
                 $response = $quickbooks->FindAll('customer', $this->getPage(), 500);
             }
