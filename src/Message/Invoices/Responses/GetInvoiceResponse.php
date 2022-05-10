@@ -111,52 +111,51 @@ class GetInvoiceResponse extends AbstractResponse
      * @return mixed
      */
     private function parseLineItems($data, $invoice) {
+        $subtotal = 0;
         if ($data) {
             $lineItems = [];
-            $totalTax = 0.00;
             foreach($data as $lineItem) {
                 if ($lineItem->Id) {
                     $newLineItem = [];
                     $newLineItem['description'] = $lineItem->Description;
-                    $newLineItem['line_amount'] = $lineItem->Amount;
                     $newLineItem['accounting_id'] = $lineItem->Id;
-                    $newLineItem['amount'] = $lineItem->Amount;
-                    $newLineItem['quantity'] = 0;
+                    $newLineItem['quantity'] = 1;
                     $newLineItem['unit_amount'] = 0;
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
                         if ($lineItem->SalesItemLineDetail->UnitPrice) {
-                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
                         }
                         if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
-                            $newLineItem['tax_inclusive_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
                         }
                         if ($lineItem->SalesItemLineDetail->Qty) {
                             $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
                         } else {
-                            $newLineItem['quantity'] = 0;
+                            $newLineItem['quantity'] = 1;
                         }
                         $newLineItem['service_date'] = $lineItem->SalesItemLineDetail->ServiceDate;
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                        $newLineItem['tax_amount'] = abs((double) $lineItem->Amount - (double) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
-                        $totalTax += $newLineItem['tax_amount'];
                     }
+                    $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
                     $invoice['discount_amount'] = $lineItem->Amount;
-
-                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-                    $invoice['sub_total_before_tax'] = $lineItem->Amount;
                 }
+//                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
+//                    $invoice['subtotal'] = $lineItem->Amount;
+//                }
             }
+            $invoice['subtotal'] = $subtotal;
             $invoice['invoice_data'] = $lineItems;
-            $invoice['sub_total'] = $invoice['sub_total_before_tax'] + $totalTax;
-            $invoice['sub_total_after_tax'] = $invoice['sub_total'];
         }
-
         return $invoice;
     }
 
@@ -237,7 +236,7 @@ class GetInvoiceResponse extends AbstractResponse
             $newInvoice['currency'] = $invoice->CurrencyRef;
             $newInvoice['invoice_number'] = $invoice->DocNumber;
             $newInvoice['amount_due'] = $invoice->Balance;
-            $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+            $newInvoice['amount_paid'] = (float) $invoice->TotalAmt - (float) $invoice->Balance;
             $newInvoice['deposit_amount'] = $invoice->Deposit;
             $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
             $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
@@ -284,7 +283,7 @@ class GetInvoiceResponse extends AbstractResponse
                 $newInvoice['currency'] = $invoice->CurrencyRef;
                 $newInvoice['invoice_number'] = $invoice->DocNumber;
                 $newInvoice['amount_due'] = $invoice->Balance;
-                $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+                $newInvoice['amount_paid'] = (float) $invoice->TotalAmt - (float) $invoice->Balance;
                 $newInvoice['deposit_amount'] = $invoice->Deposit;
                 $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
                 $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));

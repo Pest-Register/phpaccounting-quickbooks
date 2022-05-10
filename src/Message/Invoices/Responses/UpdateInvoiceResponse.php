@@ -108,46 +108,51 @@ class UpdateInvoiceResponse extends AbstractResponse
      * @return mixed
      */
     private function parseLineItems($data, $invoice) {
+        $subtotal = 0;
         if ($data) {
             $lineItems = [];
-            $totalTax = 0.00;
             foreach($data as $lineItem) {
                 if ($lineItem->Id) {
                     $newLineItem = [];
                     $newLineItem['description'] = $lineItem->Description;
-                    $newLineItem['line_amount'] = $lineItem->Amount;
                     $newLineItem['accounting_id'] = $lineItem->Id;
-                    $newLineItem['amount'] = $lineItem->Amount;
-
+                    $newLineItem['quantity'] = 1;
+                    $newLineItem['unit_amount'] = 0;
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
-                        if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
-                            $newLineItem['tax_inclusive_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                        if ($lineItem->SalesItemLineDetail->UnitPrice) {
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
                         }
-                        $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
-                        $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
+                        if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                        }
+                        if ($lineItem->SalesItemLineDetail->Qty) {
+                            $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
+                        } else {
+                            $newLineItem['quantity'] = 1;
+                        }
+                        $newLineItem['service_date'] = $lineItem->SalesItemLineDetail->ServiceDate;
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                        $newLineItem['tax_amount'] = abs((double) $lineItem->Amount - (double) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
-                        $totalTax += $newLineItem['tax_amount'];
                     }
+                    $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);
-                } else {
-                    if ($lineItem->DiscountLineDetail) {
-                        $invoice['discount_amount'] = $lineItem->Amount;
-                    } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-                        $invoice['sub_total'] = $lineItem->Amount;
-                    }
+                } elseif ($lineItem->DiscountLineDetail) {
+                    $invoice['discount_amount'] = $lineItem->Amount;
                 }
+//                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
+//                    $invoice['subtotal'] = $lineItem->Amount;
+//                }
             }
-
+            $invoice['subtotal'] = $subtotal;
             $invoice['invoice_data'] = $lineItems;
-            $invoice['sub_total'] = $invoice['sub_total_before_tax'] + $totalTax;
-            $invoice['sub_total_after_tax'] = $invoice['sub_total'];
         }
-
         return $invoice;
     }
 
@@ -225,15 +230,14 @@ class UpdateInvoiceResponse extends AbstractResponse
             $newInvoice['accounting_id'] = $invoice->Id;
             $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
             $newInvoice['total'] = $invoice->TotalAmt;
-            $newInvoice['sync_token'] = $invoice->SyncToken;
             $newInvoice['currency'] = $invoice->CurrencyRef;
             $newInvoice['invoice_number'] = $invoice->DocNumber;
             $newInvoice['amount_due'] = $invoice->Balance;
-            $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+            $newInvoice['amount_paid'] = (float) $invoice->TotalAmt - (float) $invoice->Balance;
             $newInvoice['deposit_amount'] = $invoice->Deposit;
             $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
-            $newInvoice['date'] = $invoice->TxnDate;
-            $newInvoice['due_date'] = $invoice->DueDate;
+            $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
+            $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
             $newInvoice['sync_token'] = $invoice->SyncToken;
             $newInvoice['gst_inclusive'] = $this->parseTaxCalculation($invoice->GlobalTaxCalculation);
             if ($invoice->MetaData->LastUpdatedTime) {
@@ -241,9 +245,11 @@ class UpdateInvoiceResponse extends AbstractResponse
                 $updatedAt->setTimezone('UTC');
                 $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
             }
+            $newInvoice['payments'] = [];
             $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
             $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
             $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
+
             if ($invoice->BillAddr) {
                 $newInvoice['address'] = [
                     'address_type' =>  'BILLING',
@@ -253,6 +259,7 @@ class UpdateInvoiceResponse extends AbstractResponse
                     'country' => $invoice->BillAddr->Country
                 ];
             }
+
             if ($newInvoice['amount_due'] == 0) {
                 $newInvoice['status'] = 'PAID';
             } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
@@ -270,15 +277,14 @@ class UpdateInvoiceResponse extends AbstractResponse
                 $newInvoice['accounting_id'] = $invoice->Id;
                 $newInvoice['total_tax'] = $invoice->TxnTaxDetail->TotalTax;
                 $newInvoice['total'] = $invoice->TotalAmt;
-                $newInvoice['sync_token'] = $invoice->SyncToken;
                 $newInvoice['currency'] = $invoice->CurrencyRef;
                 $newInvoice['invoice_number'] = $invoice->DocNumber;
                 $newInvoice['amount_due'] = $invoice->Balance;
-                $newInvoice['amount_paid'] = (float) $invoice->TotalAmt -  (float) $invoice->Balance;
+                $newInvoice['amount_paid'] = (float) $invoice->TotalAmt - (float) $invoice->Balance;
                 $newInvoice['deposit_amount'] = $invoice->Deposit;
                 $newInvoice['deposit_account'] = $invoice->DepositToAccountRef;
-                $newInvoice['date'] = $invoice->TxnDate;
-                $newInvoice['due_date'] = $invoice->DueDate;
+                $newInvoice['date'] = date('Y-m-d', strtotime($invoice->TxnDate));
+                $newInvoice['due_date'] = date('Y-m-d', strtotime($invoice->DueDate));
                 $newInvoice['sync_token'] = $invoice->SyncToken;
                 $newInvoice['gst_inclusive'] = $this->parseTaxCalculation($invoice->GlobalTaxCalculation);
                 if ($invoice->MetaData->LastUpdatedTime) {
@@ -286,9 +292,11 @@ class UpdateInvoiceResponse extends AbstractResponse
                     $updatedAt->setTimezone('UTC');
                     $newInvoice['updated_at'] = $updatedAt->toDateTimeString();
                 }
+                $newInvoice['payments'] = [];
                 $newInvoice = $this->parseContact($invoice->CustomerRef, $newInvoice);
                 $newInvoice = $this->parseLineItems($invoice->Line, $newInvoice);
                 $newInvoice = $this->parsePayments($invoice->LinkedTxn, $newInvoice);
+
                 if ($invoice->BillAddr) {
                     $newInvoice['address'] = [
                         'address_type' =>  'BILLING',
@@ -298,9 +306,10 @@ class UpdateInvoiceResponse extends AbstractResponse
                         'country' => $invoice->BillAddr->Country
                     ];
                 }
+
                 if ($newInvoice['amount_due'] == 0) {
                     $newInvoice['status'] = 'PAID';
-                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
+                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] != $newInvoice['total']) {
                     $newInvoice['status'] = 'PARTIAL';
                 } else {
                     $newInvoice['status'] = 'SUBMITTED';

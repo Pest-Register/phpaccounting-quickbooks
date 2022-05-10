@@ -403,7 +403,7 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
@@ -414,7 +414,7 @@ class CreateInvoiceRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
@@ -436,7 +436,7 @@ class CreateInvoiceRequest extends AbstractRequest
                 array_push($lineItems, $discountLineItem);
             }
         }
-        if ($this->getDiscountAmount()) {
+        else if ($this->getDiscountAmount()) {
             if ($this->getDiscountAmount() > 0) {
                 $discountLineItem = [];
                 $discountLineItem['LineNum'] = $counter;
@@ -447,14 +447,14 @@ class CreateInvoiceRequest extends AbstractRequest
                 array_push($lineItems, $discountLineItem);
             }
         }
-        if ($this->getSubtotalBeforeTax()) {
-            $subtotalLineItem = [];
-            $subtotalLineItem['LineNum'] = $counter;
-            $subtotalLineItem['Description'] = '';
-            $subtotalLineItem['Amount'] = $this->getSubtotalBeforeTax();
-            $subtotalLineItem['DetailType'] = 'SubTotalLineDetail';
-            array_push($lineItems, $subtotalLineItem);
-        }
+//        if ($this->getSubtotalBeforeTax()) {
+//            $subtotalLineItem = [];
+//            $subtotalLineItem['LineNum'] = $counter;
+//            $subtotalLineItem['Description'] = '';
+//            $subtotalLineItem['Amount'] = $this->getSubtotalBeforeTax();
+//            $subtotalLineItem['DetailType'] = 'SubTotalLineDetail';
+//            array_push($lineItems, $subtotalLineItem);
+//        }
         return $lineItems;
     }
 
@@ -574,6 +574,7 @@ class CreateInvoiceRequest extends AbstractRequest
         }
 
         $account = Invoice::create($createParams);
+        var_dump($account);
         $response = $quickbooks->Add($account);
         $error = $quickbooks->getLastError();
         if ($error) {
