@@ -423,7 +423,7 @@ class CreateQuotationRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
@@ -434,7 +434,7 @@ class CreateQuotationRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
+//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
@@ -445,14 +445,27 @@ class CreateQuotationRequest extends AbstractRequest
             array_push($lineItems, $lineItem);
         }
         if ($this->getDiscountRate()) {
-            $discountLineItem = [];
-            $discountLineItem['LineNum'] = $counter;
-            $discountLineItem['Description'] = '';
-            $discountLineItem['Amount'] = $this->getDiscountRate();
-            $discountLineItem['DetailType'] = 'DiscountLineDetail';
-            $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
-            $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
-            array_push($lineItems, $discountLineItem);
+            if ($this->getDiscountRate() > 0) {
+                $discountLineItem = [];
+                $discountLineItem['LineNum'] = $counter;
+                $discountLineItem['Description'] = '';
+                $discountLineItem['Amount'] = $this->getDiscountRate();
+                $discountLineItem['DetailType'] = 'DiscountLineDetail';
+                $discountLineItem['DiscountLineDetail']['PercentBased'] = true;
+                $discountLineItem['DiscountLineDetail']['DiscountPercent'] = $this->getDiscountRate();
+                array_push($lineItems, $discountLineItem);
+            }
+        }
+        else if ($this->getDiscountAmount()) {
+            if ($this->getDiscountAmount() > 0) {
+                $discountLineItem = [];
+                $discountLineItem['LineNum'] = $counter;
+                $discountLineItem['Description'] = '';
+                $discountLineItem['Amount'] = $this->getDiscountAmount();
+                $discountLineItem['DetailType'] = 'DiscountLineDetail';
+                $discountLineItem['DiscountLineDetail']['PercentBased'] = false;
+                array_push($lineItems, $discountLineItem);
+            }
         }
         return $lineItems;
     }

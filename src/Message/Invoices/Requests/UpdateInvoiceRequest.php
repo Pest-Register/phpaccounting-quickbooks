@@ -438,7 +438,7 @@ class UpdateInvoiceRequest extends AbstractRequest
                 array_push($lineItems, $discountLineItem);
             }
         }
-        if ($this->getDiscountAmount()) {
+        else if ($this->getDiscountAmount()) {
             if ($this->getDiscountAmount() > 0) {
                 $discountLineItem = [];
                 $discountLineItem['LineNum'] = $counter;
