@@ -117,9 +117,9 @@ class GetTaxRateResponse extends AbstractResponse
             $newTaxRate['description'] = $taxRate->Description;
             $newTaxRate['tax_type'] = $taxRate->Name;
             if ($taxRate->SalesTaxRateList) {
-                $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
+                $newTaxRate['tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
             } elseif ($taxRate->PurchaseTaxRateList) {
-                $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
+                $newTaxRate['tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
             }
             $newTaxRate['sync_token'] = $taxRate->SyncToken;
             $newTaxRate['is_asset'] = true;
@@ -138,9 +138,9 @@ class GetTaxRateResponse extends AbstractResponse
                 $newTaxRate['name'] = $taxRate->Name;
                 $newTaxRate['tax_type'] = $taxRate->Name;
                 if ($taxRate->SalesTaxRateList) {
-                    $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
+                    $newTaxRate['tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
                 } elseif ($taxRate->PurchaseTaxRateList) {
-                    $newTaxRate['quickbooks_tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
+                    $newTaxRate['tax_rate_id'] = $taxRate->PurchaseTaxRateList->TaxRateDetail->TaxRateRef;
                 }
                 $newTaxRate['is_asset'] = true;
                 $newTaxRate['is_equity'] = true;
