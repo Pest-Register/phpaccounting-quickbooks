@@ -36,11 +36,25 @@ class SearchQueryBuilder
                 $filterKey = $key;
                 if ($exactFilters)
                 {
-                    foreach($value as $filterValue) {
-                        if (is_bool($filterValue)) {
-                            $searchQuery = $filterKey."=".($filterValue ? 'true' : 'false');
+                    if (is_array($value)) {
+                        foreach($value as $filterValue) {
+                            if (is_bool($filterValue)) {
+                                $searchQuery = $filterKey."=".($filterValue ? 'true' : 'false');
+                            } else {
+                                $searchQuery = $filterKey."='".$filterValue."'";
+                            }
+                            if ($queryCounter == 0) {
+                                $queryString = $searchQuery;
+                            } else {
+                                $queryString.= ' AND '.$searchQuery;
+                            }
+                            $queryCounter++;
+                        }
+                    } else {
+                        if (is_bool($value)) {
+                            $searchQuery = $filterKey."=".($value ? 'true' : 'false');
                         } else {
-                            $searchQuery = $filterKey."='".$filterValue."'";
+                            $searchQuery = $filterKey."='".$value."'";
                         }
                         if ($queryCounter == 0) {
                             $queryString = $searchQuery;
@@ -49,20 +63,26 @@ class SearchQueryBuilder
                         }
                         $queryCounter++;
                     }
+
                 } else {
                     $searchQuery = $filterKey." IN (";
                     $count = 1;
                     $queryString = $searchQuery;
-                    foreach($value as $filterValue) {
-                        if ($count != count($value))
-                        {
-                            $queryString.="'".$filterValue."', ";
+                    if (is_array($value)) {
+                        foreach($value as $filterValue) {
+                            if ($count != count($value))
+                            {
+                                $queryString.="'".$filterValue."', ";
+                            }
+                            else {
+                                $queryString.="'".$filterValue."')";
+                            }
+                            $count++;
                         }
-                        else {
-                            $queryString.="'".$filterValue."')";
-                        }
-                        $count++;
+                    } else {
+                        $queryString.="'".$value."')";
                     }
+
                 }
                 $query .= $queryString;
             }
