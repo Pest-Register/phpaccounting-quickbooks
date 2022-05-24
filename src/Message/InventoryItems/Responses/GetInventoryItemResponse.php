@@ -116,7 +116,7 @@ class GetInventoryItemResponse extends AbstractResponse
                 $newItem = [];
                 $newItem['accounting_id'] = $item->Id;
                 $newItem['name'] = $item->Name;
-                $newItem['code'] = null;
+                $newItem['code'] = $item->Sku;
                 $newItem['description'] = $item->Description;
                 $newItem['type'] = $item->Type;
                 $newItem['sync_token'] = $item->SyncToken;
@@ -154,7 +154,7 @@ class GetInventoryItemResponse extends AbstractResponse
                     $newItem = [];
                     $newItem['accounting_id'] = $item->Id;
                     $newItem['name'] = $item->Name;
-                    $newItem['code'] = null;
+                    $newItem['code'] = $item->Sku;
                     $newItem['description'] = $item->Description;
                     $newItem['type'] = $item->Type;
                     $newItem['sync_token'] = $item->SyncToken;
