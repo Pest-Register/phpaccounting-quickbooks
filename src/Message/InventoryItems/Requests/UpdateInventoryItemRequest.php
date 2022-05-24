@@ -318,6 +318,7 @@ class UpdateInventoryItemRequest extends AbstractRequest
         $this->issetParam('Description', 'description');
         $this->issetParam('PurchaseDesc', 'buying_description');
         $this->issetParam('Type', 'type');
+        $this->issetParam('Sku', 'code');
         $this->issetParam('TrackQtyOnHand', 'is_tracked');
         $this->issetParam('QtyOnHand', 'quantity');
         if ($this->getInventoryAccountCode()) {
