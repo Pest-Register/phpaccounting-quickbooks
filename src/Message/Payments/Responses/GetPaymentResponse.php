@@ -129,7 +129,6 @@ class GetPaymentResponse extends AbstractResponse
                     }
                 }
             }
-
         }
         return $payment;
     }

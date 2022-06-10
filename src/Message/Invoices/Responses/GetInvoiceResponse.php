@@ -121,6 +121,7 @@ class GetInvoiceResponse extends AbstractResponse
                     $newLineItem['accounting_id'] = $lineItem->Id;
                     $newLineItem['quantity'] = 1;
                     $newLineItem['unit_amount'] = 0;
+                    $newLineItem['line_amount'] = 0;
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
                         if ($lineItem->SalesItemLineDetail->UnitPrice) {
