@@ -142,6 +142,9 @@ class CreateQuotationResponse extends AbstractResponse
                     }
                     $subtotal += $newLineItem['line_amount'];
                 } elseif ($lineItem->DiscountLineDetail) {
+                    if ($lineItem->DiscountLineDetail->PercentBased) {
+                        $quote['discount_rate'] = $lineItem->DiscountLineDetail->DiscountPercent;
+                    }
                     $quote['discount_amount'] = $lineItem->Amount;
                 }
 

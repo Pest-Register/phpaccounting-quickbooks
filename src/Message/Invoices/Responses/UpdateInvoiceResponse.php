@@ -145,6 +145,9 @@ class UpdateInvoiceResponse extends AbstractResponse
                     $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
+                    if ($lineItem->DiscountLineDetail->PercentBased) {
+                        $invoice['discount_rate'] = $lineItem->DiscountLineDetail->DiscountPercent;
+                    }
                     $invoice['discount_amount'] = $lineItem->Amount;
                 }
 //                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {

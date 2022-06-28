@@ -143,6 +143,9 @@ class UpdateQuotationResponse extends AbstractResponse
                     $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
+                    if ($lineItem->DiscountLineDetail->PercentBased) {
+                        $quote['discount_rate'] = $lineItem->DiscountLineDetail->DiscountPercent;
+                    }
                     $quote['discount_amount'] = $lineItem->Amount;
                 }
 

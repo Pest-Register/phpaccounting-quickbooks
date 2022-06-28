@@ -141,10 +141,10 @@ class GetQuotationResponse extends AbstractResponse
                     }
                     array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
+                    if ($lineItem->DiscountLineDetail->PercentBased) {
+                        $quote['discount_rate'] = $lineItem->DiscountLineDetail->DiscountPercent;
+                    }
                     $quote['discount_amount'] = $lineItem->Amount;
-
-                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-                    $quote['sub_total'] = $lineItem->Amount;
                 }
             }
             $quote['quotation_data'] = $lineItems;
