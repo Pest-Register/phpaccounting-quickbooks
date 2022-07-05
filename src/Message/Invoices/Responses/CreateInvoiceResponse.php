@@ -271,7 +271,11 @@ class CreateInvoiceResponse extends AbstractResponse
             } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
                 $newInvoice['status'] = 'PARTIAL';
             } else {
-                $newInvoice['status'] = 'SUBMITTED';
+                $newInvoice['status'] = 'OPEN';
+            }
+
+            if ($invoice->PrivateNote === 'Voided') {
+                $newInvoice['status'] = 'DELETED';
             }
 
             array_push($invoices, $newInvoice);
@@ -315,11 +319,16 @@ class CreateInvoiceResponse extends AbstractResponse
 
                 if ($newInvoice['amount_due'] == 0) {
                     $newInvoice['status'] = 'PAID';
-                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] != $newInvoice['total']) {
+                } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
                     $newInvoice['status'] = 'PARTIAL';
                 } else {
-                    $newInvoice['status'] = 'SUBMITTED';
+                    $newInvoice['status'] = 'OPEN';
                 }
+
+                if ($invoice->PrivateNote === 'Voided') {
+                    $newInvoice['status'] = 'DELETED';
+                }
+
                 array_push($invoices, $newInvoice);
             }
         }

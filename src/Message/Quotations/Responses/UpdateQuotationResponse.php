@@ -191,6 +191,23 @@ class UpdateQuotationResponse extends AbstractResponse
         return 'NONE';
     }
 
+    private function parseStatus($data)  {
+        if ($data) {
+            switch($data) {
+                case 'Accepted':
+                case 'Converted':
+                    return 'ACCEPTED';
+                case 'Rejected':
+                    return 'REJECTED';
+                case 'Pending':
+                    return 'SENT';
+                case 'Closed':
+                    return 'CLOSED';
+            }
+        }
+        return 'DRAFT';
+    }
+
     /**
      * Return all Quotations with Generic Schema Variable Assignment
      * @return array
@@ -202,7 +219,7 @@ class UpdateQuotationResponse extends AbstractResponse
             $newQuote = [];
             $newQuote['address'] = [];
             $newQuote['accounting_id'] = $quote->Id;
-            $newQuote['status'] = $quote->TxnStatus;
+            $newQuote['status'] = $this->parseStatus($quote->TxnStatus);
             $newQuote['total_tax'] = $quote->TxnTaxDetail->TotalTax;
             $newQuote['total'] = $quote->TotalAmt;
             $newQuote['currency'] = $quote->CurrencyRef;
@@ -244,7 +261,7 @@ class UpdateQuotationResponse extends AbstractResponse
                 $newQuote = [];
                 $newQuote['address'] = [];
                 $newQuote['accounting_id'] = $quote->Id;
-                $newQuote['status'] = $quote->TxnStatus;
+                $newQuote['status'] = $this->parseStatus($quote->TxnStatus);
                 $newQuote['total_tax'] = $quote->TxnTaxDetail->TotalTax;
                 $newQuote['total'] = $quote->TotalAmt;
                 $newQuote['currency'] = $quote->CurrencyRef;
