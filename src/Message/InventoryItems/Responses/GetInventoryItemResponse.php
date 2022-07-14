@@ -103,6 +103,22 @@ class GetInventoryItemResponse extends AbstractResponse
     }
 
     /**
+     * @param $data
+     * @return string
+     */
+    private function parseType($data) {
+        switch ($data) {
+            case 'Inventory':
+            case 'NonInventory':
+                return 'PRODUCT';
+            case 'Service':
+                return 'SERVICE';
+            default:
+                return 'UNSUPPORTED';
+        }
+    }
+
+    /**
      * Return all Invoices with Generic Schema Variable Assignment
      * @return array
      */
@@ -118,7 +134,7 @@ class GetInventoryItemResponse extends AbstractResponse
                 $newItem['name'] = $item->Name;
                 $newItem['code'] = $item->Sku;
                 $newItem['description'] = $item->Description;
-                $newItem['type'] = $item->Type;
+                $newItem['type'] = $this->parseType($item->Type);
                 $newItem['sync_token'] = $item->SyncToken;
                 $newItem['is_selling'] = ($item->IncomeAccountRef ? true : false);
                 $newItem['is_buying'] = ($item->ExpenseAccountRef ? true : false);
@@ -156,7 +172,7 @@ class GetInventoryItemResponse extends AbstractResponse
                     $newItem['name'] = $item->Name;
                     $newItem['code'] = $item->Sku;
                     $newItem['description'] = $item->Description;
-                    $newItem['type'] = $item->Type;
+                    $newItem['type'] = $this->parseType($item->Type);
                     $newItem['sync_token'] = $item->SyncToken;
                     $newItem['is_selling'] = ($item->IncomeAccountRef ? true : false);
                     $newItem['is_buying'] = ($item->ExpenseAccountRef ? true : false);
