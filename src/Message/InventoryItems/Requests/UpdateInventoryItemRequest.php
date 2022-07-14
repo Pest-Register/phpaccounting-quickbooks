@@ -317,7 +317,6 @@ class UpdateInventoryItemRequest extends AbstractRequest
         $this->issetParam('Name', 'name');
         $this->issetParam('Description', 'description');
         $this->issetParam('PurchaseDesc', 'buying_description');
-        $this->issetParam('Type', 'type');
         $this->issetParam('Sku', 'code');
         $this->issetParam('TrackQtyOnHand', 'is_tracked');
         $this->issetParam('QtyOnHand', 'quantity');
@@ -326,6 +325,22 @@ class UpdateInventoryItemRequest extends AbstractRequest
                 'value' => $this->getInventoryAccountCode()
             ];
         }
+
+        // Set item type
+        if ($this->getType()) {
+            $itemType = $this->getType();
+            if ($itemType === 'PRODUCT') {
+                if ($this->getIsTracked()) {
+                    $this->data['Type'] = 'Inventory';
+                } else {
+                    $this->data['Type'] = 'NonInventory';
+                }
+            }
+            else if ($itemType === 'SERVICE') {
+                $this->data['Type'] = 'Service';
+            }
+        }
+
         $buyingDetails = $this->getBuyingDetails();
         $salesDetails = $this->getSalesDetails();
         $assetDetails = $this->getAssetDetails();
