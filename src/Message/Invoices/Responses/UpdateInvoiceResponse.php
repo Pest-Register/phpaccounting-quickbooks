@@ -150,9 +150,6 @@ class UpdateInvoiceResponse extends AbstractResponse
                     }
                     $invoice['discount_amount'] = $lineItem->Amount;
                 }
-//                } elseif ($lineItem->DetailType == 'SubTotalLineDetail') {
-//                    $invoice['subtotal'] = $lineItem->Amount;
-//                }
             }
             $invoice['subtotal'] = $subtotal;
             $invoice['invoice_data'] = $lineItems;

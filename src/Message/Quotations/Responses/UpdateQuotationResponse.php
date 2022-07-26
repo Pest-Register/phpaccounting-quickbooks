@@ -108,6 +108,7 @@ class UpdateQuotationResponse extends AbstractResponse
      * @return mixed
      */
     private function parseLineItems($data, $quote) {
+        $subtotal = 0;
         if ($data) {
             $lineItems = [];
             foreach($data as $lineItem) {
@@ -148,15 +149,12 @@ class UpdateQuotationResponse extends AbstractResponse
                     }
                     $quote['discount_amount'] = $lineItem->Amount;
                 }
-
-                array_push($lineItems, $newLineItem);
             }
 
             $quote['subtotal'] = $subtotal;
             $quote['quotation_data'] = $lineItems;
 
         }
-
         return $quote;
     }
 

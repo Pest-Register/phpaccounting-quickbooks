@@ -108,6 +108,7 @@ class CreateQuotationResponse extends AbstractResponse
      * @return mixed
      */
     private function parseLineItems($data, $quote) {
+        $subtotal = 0;
         if ($data) {
             $lineItems = [];
             foreach($data as $lineItem) {
@@ -141,19 +142,17 @@ class CreateQuotationResponse extends AbstractResponse
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
                     $subtotal += $newLineItem['line_amount'];
+                    array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
                     if ($lineItem->DiscountLineDetail->PercentBased) {
                         $quote['discount_rate'] = $lineItem->DiscountLineDetail->DiscountPercent;
                     }
                     $quote['discount_amount'] = $lineItem->Amount;
                 }
-
-                array_push($lineItems, $newLineItem);
             }
             $quote['subtotal'] = $subtotal;
             $quote['quotation_data'] = $lineItems;
         }
-
         return $quote;
     }
 

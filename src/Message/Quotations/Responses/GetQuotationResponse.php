@@ -110,35 +110,40 @@ class GetQuotationResponse extends AbstractResponse
      * @return mixed
      */
     private function parseLineItems($data, $quote) {
+        $subtotal = 0;
         if ($data) {
             $lineItems = [];
             foreach($data as $lineItem) {
                 if ($lineItem->Id) {
                     $newLineItem = [];
                     $newLineItem['description'] = $lineItem->Description;
-                    $newLineItem['line_amount'] = $lineItem->Amount;
                     $newLineItem['accounting_id'] = $lineItem->Id;
-                    $newLineItem['amount'] = $lineItem->Amount;
-
-                    $newLineItem['quantity'] = 0;
+                    $newLineItem['quantity'] = 1;
                     $newLineItem['unit_amount'] = 0;
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
                         if ($lineItem->SalesItemLineDetail->UnitPrice) {
-                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                        }
+                        if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
                         }
                         if ($lineItem->SalesItemLineDetail->Qty) {
                             $newLineItem['quantity'] = $lineItem->SalesItemLineDetail->Qty;
                         } else {
-                            $newLineItem['quantity'] = 0;
+                            $newLineItem['quantity'] = 1;
                         }
                         $newLineItem['service_date'] = $lineItem->SalesItemLineDetail->ServiceDate;
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                        $newLineItem['tax_amount'] = abs((float) $lineItem->Amount - (float) $lineItem->SalesItemLineDetail->TaxInclusiveAmt);
                         $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
+                    $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);
                 } elseif ($lineItem->DiscountLineDetail) {
                     if ($lineItem->DiscountLineDetail->PercentBased) {
@@ -147,9 +152,9 @@ class GetQuotationResponse extends AbstractResponse
                     $quote['discount_amount'] = $lineItem->Amount;
                 }
             }
+            $quote['subtotal'] = $subtotal;
             $quote['quotation_data'] = $lineItems;
         }
-
         return $quote;
     }
 
