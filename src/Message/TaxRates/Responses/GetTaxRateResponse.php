@@ -115,7 +115,7 @@ class GetTaxRateResponse extends AbstractResponse
             $newTaxRate['accounting_id'] = $taxRate->Id;
             $newTaxRate['name'] = $taxRate->Name;
             $newTaxRate['description'] = $taxRate->Description;
-            $newTaxRate['tax_type'] = $taxRate->Name;
+            $newTaxRate['tax_type_id'] = $taxRate->Name;
             if ($taxRate->SalesTaxRateList) {
                 $newTaxRate['tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
             } elseif ($taxRate->PurchaseTaxRateList) {
@@ -136,7 +136,7 @@ class GetTaxRateResponse extends AbstractResponse
                 $newTaxRate['accounting_id'] = $taxRate->Id;
                 $newTaxRate['description'] = $taxRate->Description;
                 $newTaxRate['name'] = $taxRate->Name;
-                $newTaxRate['tax_type'] = $taxRate->Name;
+                $newTaxRate['tax_type_id'] = $taxRate->Name;
                 if ($taxRate->SalesTaxRateList) {
                     $newTaxRate['tax_rate_id'] = $taxRate->SalesTaxRateList->TaxRateDetail->TaxRateRef;
                 } elseif ($taxRate->PurchaseTaxRateList) {

@@ -143,7 +143,7 @@ class GetInvoiceResponse extends AbstractResponse
                         $newLineItem['discount_rate'] = $lineItem->SalesItemLineDetail->DiscountRate;
                         $newLineItem['account_id'] = $lineItem->SalesItemLineDetail->ItemAccountRef;
                         $newLineItem['item_id'] = $lineItem->SalesItemLineDetail->ItemRef;
-                        $newLineItem['tax_type'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
+                        $newLineItem['tax_type_id'] = $lineItem->SalesItemLineDetail->TaxCodeRef;
                     }
                     $subtotal += $newLineItem['line_amount'];
                     array_push($lineItems, $newLineItem);

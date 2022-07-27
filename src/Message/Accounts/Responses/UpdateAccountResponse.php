@@ -115,7 +115,7 @@ class UpdateAccountResponse extends AbstractResponse
             $newAccount['sync_token'] = $account->SyncToken;
             $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
             $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
-            $newAccount['tax_type'] = $account->TaxCodeRef;
+            $newAccount['tax_type_id'] = $account->TaxCodeRef;
             $newAccount['bank_account_number'] = $account->BankNum;
             $newAccount['currency_code'] = $account->CurrencyRef;
             if ($account->MetaData->LastUpdatedTime) {
@@ -136,7 +136,7 @@ class UpdateAccountResponse extends AbstractResponse
                 $newAccount['sync_token'] = $account->SyncToken;
                 $newAccount['is_bank_account'] = $account->OnlineBankingEnabled;
                 $newAccount['enable_payments_to_account'] = ($account->OnlineBankingEnabled ? true : false);
-                $newAccount['tax_type'] = $account->TaxCodeRef;
+                $newAccount['tax_type_id'] = $account->TaxCodeRef;
                 $newAccount['bank_account_number'] = $account->BankNum;
                 $newAccount['currency_code'] = $account->CurrencyRef;
                 if ($account->MetaData->LastUpdatedTime) {

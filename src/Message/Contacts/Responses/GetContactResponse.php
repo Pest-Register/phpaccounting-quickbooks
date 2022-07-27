@@ -120,7 +120,7 @@ class GetContactResponse extends AbstractResponse
             $newContact['types'] = ['CUSTOMER'];
             $newContact['sync_token'] = $contact->SyncToken;
             $newContact['is_individual'] = ($contact->CompanyName ? true : false);
-            $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+            $newContact['tax_type_id'] = $contact->DefaultTaxCodeRef;
             $newContact['currency_code'] = $contact->CurrencyRef;
             if ($contact->MetaData->LastUpdatedTime) {
                 $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
@@ -208,7 +208,7 @@ class GetContactResponse extends AbstractResponse
                 $newContact['types'] = ['CUSTOMER'];
                 $newContact['sync_token'] = $contact->SyncToken;
                 $newContact['is_individual'] = ($contact->CompanyName ? true : false);
-                $newContact['tax_type'] = $contact->DefaultTaxCodeRef;
+                $newContact['tax_type_id'] = $contact->DefaultTaxCodeRef;
                 $newContact['currency_code'] = $contact->CurrencyRef;
                 if ($contact->MetaData->LastUpdatedTime) {
                     $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
