@@ -121,7 +121,7 @@ class UpdateManualJournalRequest extends AbstractRequest
             $lineItem['JournalEntryLineDetail']['PostingType'] = $lineData['is_credit'] == true ? 'Credit' : 'Debit';
             if(array_key_exists('tax_type_id', $lineItem)){
                 $lineItem['JournalEntryLineDetail']['TaxCodeRef'] = [];
-                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('tax_type',$lineData);
+//                $lineItem['JournalEntryLineDetail']['TaxCodeRef']['name'] = IndexSanityCheckHelper::indexSanityCheck('tax_type',$lineData);
                 $lineItem['JournalEntryLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_type_id',$lineData);
             }
             $lineItem['JournalEntryLineDetail']['AccountRef'] = [];

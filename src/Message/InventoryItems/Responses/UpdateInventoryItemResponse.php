@@ -151,11 +151,11 @@ class UpdateInventoryItemResponse extends AbstractResponse
             } else {
                 $newItem['buying_account_code'] = $item->ExpenseAccountRef;
             }
-            $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
+            $newItem['buying_tax_type_id'] = $item->PurchaseTaxCodeRef;
             $newItem['buying_unit_price'] = $item->PurchaseCost;
             $newItem['buying_tax_inclusive'] = filter_var($item->PurchaseTaxIncluded, FILTER_VALIDATE_BOOLEAN);
             $newItem['selling_account_code'] = $item->IncomeAccountRef;
-            $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
+            $newItem['selling_tax_type_id'] = $item->SalesTaxCodeRef;
             $newItem['selling_unit_price'] = $item->UnitPrice;
             $newItem['selling_tax_inclusive'] = filter_var($item->SalesTaxIncluded, FILTER_VALIDATE_BOOLEAN);
             array_push($items, $newItem);
@@ -185,11 +185,11 @@ class UpdateInventoryItemResponse extends AbstractResponse
                 } else {
                     $newItem['buying_account_code'] = $item->ExpenseAccountRef;
                 }
-                $newItem['buying_tax_type_code'] = $item->PurchaseTaxCodeRef;
+                $newItem['buying_tax_type_id'] = $item->PurchaseTaxCodeRef;
                 $newItem['buying_unit_price'] = $item->PurchaseCost;
                 $newItem['buying_tax_inclusive'] = filter_var($item->PurchaseTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                 $newItem['selling_account_code'] = $item->IncomeAccountRef;
-                $newItem['selling_tax_type_code'] = $item->SalesTaxCodeRef;
+                $newItem['selling_tax_type_id'] = $item->SalesTaxCodeRef;
                 $newItem['selling_unit_price'] = $item->UnitPrice;
                 $newItem['selling_tax_inclusive'] = filter_var($item->SalesTaxIncluded, FILTER_VALIDATE_BOOLEAN);
                 array_push($items, $newItem);

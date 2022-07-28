@@ -447,14 +447,6 @@ class CreateInvoiceRequest extends AbstractRequest
                 array_push($lineItems, $discountLineItem);
             }
         }
-//        if ($this->getSubtotalBeforeTax()) {
-//            $subtotalLineItem = [];
-//            $subtotalLineItem['LineNum'] = $counter;
-//            $subtotalLineItem['Description'] = '';
-//            $subtotalLineItem['Amount'] = $this->getSubtotalBeforeTax();
-//            $subtotalLineItem['DetailType'] = 'SubTotalLineDetail';
-//            array_push($lineItems, $subtotalLineItem);
-//        }
         return $lineItems;
     }
 

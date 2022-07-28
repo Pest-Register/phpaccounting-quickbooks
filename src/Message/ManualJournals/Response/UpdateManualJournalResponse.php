@@ -130,7 +130,7 @@ class UpdateManualJournalResponse extends AbstractResponse
                 }
 
                 if(isset($journalItem->JournalEntryLineDetail->TaxCodeRef)){
-                    $newJournalItem['tax_type'] = $journalItem->JournalEntryLineDetail->TaxCodeRef;
+                    $newJournalItem['tax_type_id'] = $journalItem->JournalEntryLineDetail->TaxCodeRef;
                 }
                 if(isset($journalItem->JournalEntryLineDetail->TaxAmount)){
                     $newJournalItem['tax_amount'] = $journalItem->JournalEntryLineDetail->TaxAmount;
