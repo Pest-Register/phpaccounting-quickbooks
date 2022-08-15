@@ -566,7 +566,6 @@ class CreateInvoiceRequest extends AbstractRequest
         }
 
         $account = Invoice::create($createParams);
-        var_dump($account);
         $response = $quickbooks->Add($account);
         $error = $quickbooks->getLastError();
         if ($error) {

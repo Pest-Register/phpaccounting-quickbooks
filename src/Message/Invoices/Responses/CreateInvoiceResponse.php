@@ -84,7 +84,6 @@ class CreateInvoiceResponse extends AbstractResponse
                 if (array_key_exists('detail', $this->data['detail'])){
                     $detail = $this->data['detail']['detail'];
                 }
-                var_dump($this->data);
                 return ErrorResponseHelper::parseErrorResponse(
                     $this->data['detail']['message'],
                     $this->data['status'],

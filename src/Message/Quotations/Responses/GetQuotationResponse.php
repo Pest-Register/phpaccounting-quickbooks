@@ -212,7 +212,6 @@ class GetQuotationResponse extends AbstractResponse
      */
     public function getQuotations(){
         $quotes = [];
-        echo print_r($this->data);
         if ($this->data instanceof IPPEstimate){
             $quote = $this->data;
             $newQuote = [];
