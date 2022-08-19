@@ -1,17 +1,11 @@
 <?php
 
-namespace PHPAccounting\Quickbooks\Message\Accounts\Responses;
+namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
-use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
-use QuickBooksOnline\API\Data\IPPAccount;
 
-/**
- * Delete ContactGroup(s) Response
- * @package PHPAccounting\Quickbooks\Message\ContactGroups\Responses
- */
-class DeleteAccountResponse extends AbstractResponse
+class DeleteContactResponse extends AbstractResponse
 {
     /**
      * Check Response for Error or Success
@@ -87,7 +81,7 @@ class DeleteAccountResponse extends AbstractResponse
                     $errorCode,
                     $statusCode,
                     $detail,
-                    'Account');
+                    'Contact');
             }
         } else {
             return [
@@ -106,7 +100,7 @@ class DeleteAccountResponse extends AbstractResponse
      * Return all Invoices with Generic Schema Variable Assignment
      * @return array
      */
-    public function getAccounts(){
+    public function getContacts(){
 
         return [];
     }

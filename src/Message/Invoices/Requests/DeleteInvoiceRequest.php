@@ -6,6 +6,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Requests\DeleteAccountRequest;
+use PHPAccounting\Quickbooks\Message\Invoices\Responses\DeleteInvoiceResponse;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\GetInvoiceResponse;
 use QuickBooksOnline\API\Facades\Account;
 use QuickBooksOnline\API\Facades\Invoice;
@@ -148,10 +149,10 @@ class DeleteInvoiceRequest extends AbstractRequest
     /**
      * Create Generic Response from Quickbooks Endpoint
      * @param mixed $data Array Elements or Quickbooks Collection from Response
-     * @return GetInvoiceResponse
+     * @return DeleteInvoiceResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new GetInvoiceResponse($this, $data);
+        return $this->response = new DeleteInvoiceResponse($this, $data);
     }
 }

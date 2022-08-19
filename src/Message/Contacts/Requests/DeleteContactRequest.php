@@ -5,6 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\DeleteContactResponse;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use QuickBooksOnline\API\Facades\Customer;
 
@@ -137,10 +138,10 @@ class DeleteContactRequest extends AbstractRequest
     /**
      * Create Generic Response from Quickbooks Endpoint
      * @param mixed $data Array Elements or Quickbooks Collection from Response
-     * @return GetContactResponse
+     * @return DeleteContactResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new GetContactResponse($this, $data);
+        return $this->response = new DeleteContactResponse($this, $data);
     }
 }

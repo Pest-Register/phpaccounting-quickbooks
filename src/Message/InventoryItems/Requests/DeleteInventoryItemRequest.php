@@ -138,10 +138,10 @@ class DeleteInventoryItemRequest extends AbstractRequest
     /**
      * Create Generic Response from Quickbooks Endpoint
      * @param mixed $data Array Elements or Quickbooks Collection from Response
-     * @return GetInventoryItemResponse
+     * @return DeleteInventoryItemResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new GetInventoryItemResponse($this, $data);
+        return $this->response = new DeleteInventoryItemResponse($this, $data);
     }
 }
