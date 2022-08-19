@@ -402,7 +402,13 @@ class UpdateContactRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Customer not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Customer not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
         }

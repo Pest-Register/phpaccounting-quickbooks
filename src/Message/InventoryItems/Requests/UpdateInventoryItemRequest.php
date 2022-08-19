@@ -438,7 +438,13 @@ class UpdateInventoryItemRequest extends AbstractRequest
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => $exception->getMessage()
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $exception->getMessage(),
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 
@@ -452,7 +458,13 @@ class UpdateInventoryItemRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Item not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Item not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
         }

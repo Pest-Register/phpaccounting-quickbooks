@@ -117,7 +117,13 @@ class DeleteInventoryItemRequest extends AbstractRequest
         } else {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => 'Existing Item not Found'
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => 'Existing Item not found',
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 

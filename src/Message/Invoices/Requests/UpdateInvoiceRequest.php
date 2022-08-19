@@ -588,7 +588,13 @@ class UpdateInvoiceRequest extends AbstractRequest
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => $exception->getMessage()
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $exception->getMessage(),
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 
@@ -602,7 +608,13 @@ class UpdateInvoiceRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Invoice not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Invoice not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
 

@@ -390,7 +390,13 @@ class UpdatePaymentRequest extends AbstractRequest
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => $exception->getMessage()
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $exception->getMessage(),
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 
@@ -404,7 +410,13 @@ class UpdatePaymentRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Payment not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Payment not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
         }

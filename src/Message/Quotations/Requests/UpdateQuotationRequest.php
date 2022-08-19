@@ -601,7 +601,13 @@ class UpdateQuotationRequest extends AbstractRequest
         } catch (\Exception $exception) {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => $exception->getMessage()
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => $exception->getMessage(),
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 
@@ -615,7 +621,13 @@ class UpdateQuotationRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Estimate not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Estimate not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
 

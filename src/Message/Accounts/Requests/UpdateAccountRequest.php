@@ -266,7 +266,13 @@ class UpdateAccountRequest extends AbstractRequest
             } else {
                 return $this->createResponse([
                     'status' => 'error',
-                    'detail' => 'Existing Account not Found'
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Account not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
                 ]);
             }
 

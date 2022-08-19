@@ -71,7 +71,7 @@ class DeleteInvoiceRequest extends AbstractRequest
         $this->issetParam('Id', 'accounting_id');
         $this->issetParam('SyncToken', 'sync_token');
 
-        $this->data['Active'] = false;
+//        $this->data['Active'] = false;
         return $this->data;
     }
 
@@ -108,8 +108,16 @@ class DeleteInvoiceRequest extends AbstractRequest
             $targetAccount = $quickbooks->Query("select * from Invoice where Id='".$id."'");
         } catch (\Exception $exception) {
             return $this->createResponse([
-                'status' => 'error',
-                'detail' => $exception->getMessage()
+                [
+                    'status' => 'error',
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => $exception->getMessage(),
+                            'error_code' => $exception->getCode(),
+                            'status_code' => 422,
+                        ],
+                ]
             ]);
         };
         if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
@@ -118,7 +126,13 @@ class DeleteInvoiceRequest extends AbstractRequest
         } else {
             return $this->createResponse([
                 'status' => 'error',
-                'detail' => 'Existing Account not Found'
+                'type' => 'InvalidRequestException',
+                'detail' =>
+                    [
+                        'message' => 'Existing Invoice not found',
+                        'error_code' => null,
+                        'status_code' => 422,
+                    ],
             ]);
         }
 

@@ -91,6 +91,7 @@ class DeletePaymentRequest extends AbstractRequest
         $quickbooks = $this->createQuickbooksDataService();
         $payment = $quickbooks->FindbyId('payment', $this->getAccountingID());
         $response = $quickbooks->Delete($payment);
+
         $error = $quickbooks->getLastError();
         if ($error) {
             $response = ErrorParsingHelper::parseError($error);
