@@ -50,13 +50,12 @@ class ErrorParsingHelper
      * @param \Exception $exception
      * @return array[]
      */
-    public static function parseQbPackageError (\Exception $exception) {
+    public static function parseQbPackageError (\Throwable $exception) {
         return [
             'status' => 'error',
             'detail' => [
                 'message' => $exception->getMessage(),
-                'line' => $exception->getLine(),
-                'stack' => $exception->getTraceAsString()
+                'error_code' => -1
             ]
         ];
     }
