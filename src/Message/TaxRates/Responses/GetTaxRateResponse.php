@@ -53,21 +53,21 @@ class GetTaxRateResponse extends AbstractResponse
                 if ($this->data['error']['status']){
                     $detail = $this->data['error']['detail'] ?? [];
                     return ErrorResponseHelper::parseErrorResponse(
-                        $detail['message'] ?: null,
+                        $detail['message'] ?? null,
                         $this->data['error']['status'],
-                        $detail['error_code'] ?: null,
-                        $detail['status_code'] ?: null,
-                        $detail['detail'] ?: null,
+                        $detail['error_code'] ?? null,
+                        $detail['status_code'] ?? null,
+                        $detail['detail'] ?? null,
                         'Tax Rate');
                 }
             } elseif (array_key_exists('status', $this->data)) {
                 $detail = $this->data['detail'] ?? [];
                 return ErrorResponseHelper::parseErrorResponse(
-                    $detail['message'] ?: null,
+                    $detail['message'] ?? null,
                     $this->data['status'],
-                    $detail['error_code'] ?: null,
-                    $detail['status_code'] ?: null,
-                    $detail['detail'] ?: null,
+                    $detail['error_code'] ?? null,
+                    $detail['status_code'] ?? null,
+                    $detail['detail'] ?? null,
                     'Tax Rate');
             }
         } else {
