@@ -11,7 +11,7 @@ class ErrorResponseHelper
      * @param string $model
      * @return array
      */
-    public static function parseErrorResponse ($response,$status, $errorCode, $statusCode, $detail, $model = '') {
+    public static function parseErrorResponse ($response = 'Internal QuickBooks error occurred', $status = '', $errorCode = '', $statusCode = '', $detail = '', $model = '') {
         switch ($model) {
             default:
                 if (strpos($response, 'Duplicate') !== false) {

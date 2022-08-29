@@ -48,44 +48,25 @@ class UpdatePaymentResponse extends AbstractResponse
      */
     public function getErrorMessage(){
         if ($this->data) {
-            $errorCode = '';
-            $statusCode = '';
-            $detail = '';
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
-                    if (array_key_exists('error_code', $this->data['error']['detail'])) {
-                        $errorCode = $this->data['error']['detail']['error_code'];
-                    }
-                    if (array_key_exists('status_code', $this->data['error']['detail'])) {
-                        $statusCode = $this->data['error']['detail']['status_code'];
-                    }
-                    if (array_key_exists('detail', $this->data['error']['detail'])){
-                        $detail = $this->data['error']['detail']['detail'];
-                    }
+                    $detail = $this->data['error']['detail'] ?? [];
                     return ErrorResponseHelper::parseErrorResponse(
-                        $this->data['error']['detail']['message'],
+                        $detail['message'] ?: null,
                         $this->data['error']['status'],
-                        $errorCode,
-                        $statusCode,
-                        $detail,
+                        $detail['error_code'] ?: null,
+                        $detail['status_code'] ?: null,
+                        $detail['detail'] ?: null,
                         'Payment');
                 }
             } elseif (array_key_exists('status', $this->data)) {
-                if (array_key_exists('error_code', $this->data['detail'])) {
-                    $errorCode = $this->data['detail']['error_code'];
-                }
-                if (array_key_exists('status_code', $this->data['detail'])) {
-                    $statusCode = $this->data['detail']['status_code'];
-                }
-                if (array_key_exists('detail', $this->data['detail'])){
-                    $detail = $this->data['detail']['detail'];
-                }
+                $detail = $this->data['detail'] ?? [];
                 return ErrorResponseHelper::parseErrorResponse(
-                    $this->data['detail']['message'],
+                    $detail['message'] ?: null,
                     $this->data['status'],
-                    $errorCode,
-                    $statusCode,
-                    $detail,
+                    $detail['error_code'] ?: null,
+                    $detail['status_code'] ?: null,
+                    $detail['detail'] ?: null,
                     'Payment');
             }
         } else {
