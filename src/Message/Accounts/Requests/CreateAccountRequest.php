@@ -165,12 +165,17 @@ class CreateAccountRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $account = Account::create($createParams);
-        $response = $quickbooks->Add($account);
+        try {
+            $account = Account::create($createParams);
+            $response = $quickbooks->Add($account);
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

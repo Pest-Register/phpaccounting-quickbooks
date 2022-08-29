@@ -575,11 +575,16 @@ class CreateQuotationRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $estimate = Estimate::create($createParams);
-        $response = $quickbooks->Add($estimate);
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            $estimate = Estimate::create($createParams);
+            $response = $quickbooks->Add($estimate);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

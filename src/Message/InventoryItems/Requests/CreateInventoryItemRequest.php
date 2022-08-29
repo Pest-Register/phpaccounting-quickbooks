@@ -386,11 +386,16 @@ class CreateInventoryItemRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $item = Item::create($createParams);
-        $response = $quickbooks->Add($item);
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            $item = Item::create($createParams);
+            $response = $quickbooks->Add($item);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

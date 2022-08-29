@@ -111,25 +111,31 @@ class DeleteInventoryItemRequest extends AbstractRequest
                 'detail' => $exception->getMessage()
             ]);
         }
-        if (!empty($targetItem) && sizeof($targetItem) == 1) {
-            $item = Item::update(current($targetItem),$updateParams);
-            $response = $quickbooks->Update($item);
-        } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => 'Existing Item not found',
-                        'error_code' => null,
-                        'status_code' => 422,
-                    ],
-            ]);
-        }
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            if (!empty($targetItem) && sizeof($targetItem) == 1) {
+                $item = Item::update(current($targetItem), $updateParams);
+                $response = $quickbooks->Update($item);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Item not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
+                ]);
+            }
+
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

@@ -111,25 +111,31 @@ class DeleteContactRequest extends AbstractRequest
                 'detail' => $exception->getMessage()
             ]);
         }
-        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
-            $customer = Customer::update(current($targetCustomer),$updateParams);
-            $response = $quickbooks->Update($customer);
-        } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => 'Existing Customer not found',
-                        'error_code' => null,
-                        'status_code' => 422,
-                    ],
-            ]);
-        }
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+                $customer = Customer::update(current($targetCustomer), $updateParams);
+                $response = $quickbooks->Update($customer);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Customer not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
+                ]);
+            }
+
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

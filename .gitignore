@@ -1,8 +1,5 @@
 /vendor/
-/.idea/*
+/.idea
 .env
 /Quickbooks_keys/
 composer.lock
-/.idea/modules.xml
-/.idea/vcs.xml
-/.idea/misc.xml

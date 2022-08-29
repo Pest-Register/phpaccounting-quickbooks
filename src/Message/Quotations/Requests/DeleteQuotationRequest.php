@@ -75,7 +75,7 @@ class DeleteQuotationRequest extends AbstractRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|DeleteQuotationResponse
+     * @return GetQuotationResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
@@ -116,25 +116,31 @@ class DeleteQuotationRequest extends AbstractRequest
                     ],
             ]);
         }
-        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
-            $estimate = Estimate::update(current($targetCustomer),$updateParams);
-            $response = $quickbooks->Update($estimate);
-        } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => 'Existing Estimate not found',
-                        'error_code' => null,
-                        'status_code' => 422,
-                    ],
-            ]);
-        }
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+                $estimate = Estimate::update(current($targetCustomer), $updateParams);
+                $response = $quickbooks->Update($estimate);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Estimate not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
+                ]);
+            }
+
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

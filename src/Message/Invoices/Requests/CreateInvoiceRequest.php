@@ -334,7 +334,7 @@ class CreateInvoiceRequest extends AbstractRequest
     public function setSubtotalBeforeTax($value){
         return $this->setParameter('sub_total_before_tax', $value);
     }
-    
+
     /**
      * @return mixed
      */
@@ -565,11 +565,16 @@ class CreateInvoiceRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $account = Invoice::create($createParams);
-        $response = $quickbooks->Add($account);
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            $account = Invoice::create($createParams);
+            $response = $quickbooks->Add($account);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

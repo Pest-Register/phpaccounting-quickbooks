@@ -353,7 +353,7 @@ class UpdateContactRequest extends AbstractRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|UpdateContactRequest
+     * @return CreateContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
@@ -392,32 +392,37 @@ class UpdateContactRequest extends AbstractRequest
             ]);
         }
 
-        if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
-            $customer = Customer::update(current($targetCustomer),$updateParams);
-            $response = $quickbooks->Update($customer);
-        } else {
-            $error = $quickbooks->getLastError();
-            if ($error) {
-                $response = ErrorParsingHelper::parseError($error);
+        try {
+            if (!empty($targetCustomer) && sizeof($targetCustomer) == 1) {
+                $customer = Customer::update(current($targetCustomer), $updateParams);
+                $response = $quickbooks->Update($customer);
             } else {
-                return $this->createResponse([
-                    'status' => 'error',
-                    'type' => 'InvalidRequestException',
-                    'detail' =>
-                        [
-                            'message' => 'Existing Customer not found',
-                            'error_code' => null,
-                            'status_code' => 422,
-                        ],
-                ]);
+                $error = $quickbooks->getLastError();
+                if ($error) {
+                    $response = ErrorParsingHelper::parseError($error);
+                } else {
+                    return $this->createResponse([
+                        'status' => 'error',
+                        'type' => 'InvalidRequestException',
+                        'detail' =>
+                            [
+                                'message' => 'Existing Customer not found',
+                                'error_code' => null,
+                                'status_code' => 422,
+                            ],
+                    ]);
+                }
             }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         $error = $quickbooks->getLastError();
         if ($error) {
             $response = ErrorParsingHelper::parseError($error);
         }
-        
+
         return $this->createResponse($response);
     }
 

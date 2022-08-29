@@ -87,25 +87,31 @@ class DeleteAccountRequest extends AbstractRequest
                 'detail' => $exception->getMessage()
             ]);
         };
-        if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
-            $account = Account::update(current($targetAccount),$updateParams);
-            $response = $quickbooks->Update($account);
-        } else {
-            return $this->createResponse([
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => 'Existing Account not found',
-                        'error_code' => null,
-                        'status_code' => 422,
-                    ],
-            ]);
-        }
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            if (!empty($targetAccount) && sizeof($targetAccount) == 1) {
+                $account = Account::update(current($targetAccount), $updateParams);
+                $response = $quickbooks->Update($account);
+            } else {
+                return $this->createResponse([
+                    'status' => 'error',
+                    'type' => 'InvalidRequestException',
+                    'detail' =>
+                        [
+                            'message' => 'Existing Account not found',
+                            'error_code' => null,
+                            'status_code' => 422,
+                        ],
+                ]);
+            }
+
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
 

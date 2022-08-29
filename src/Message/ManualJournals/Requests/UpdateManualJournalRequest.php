@@ -203,26 +203,31 @@ class UpdateManualJournalRequest extends AbstractRequest
             ]);
         }
 
-        if (!empty($targetItem) && sizeof($targetItem) == 1) {
-            $item = JournalEntry::update(current($targetItem), $updateParams);
-            $response = $quickbooks->Update($item);
-        } else {
+        try {
+            if (!empty($targetItem) && sizeof($targetItem) == 1) {
+                $item = JournalEntry::update(current($targetItem), $updateParams);
+                $response = $quickbooks->Update($item);
+            } else {
+                $error = $quickbooks->getLastError();
+                if ($error) {
+                    $response = ErrorParsingHelper::parseError($error);
+                } else {
+                    return $this->createResponse([
+                        'status' => 'error',
+                        'detail' => 'Existing Journal Entry not Found'
+                    ]);
+                }
+
+            }
+
+
             $error = $quickbooks->getLastError();
             if ($error) {
                 $response = ErrorParsingHelper::parseError($error);
-            } else {
-                return $this->createResponse([
-                    'status' => 'error',
-                    'detail' => 'Existing Journal Entry not Found'
-                ]);
             }
-
         }
-
-
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

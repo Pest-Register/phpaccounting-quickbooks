@@ -154,11 +154,16 @@ class CreateManualJournalRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $manualJournal = JournalEntry::create($createParams);
-        $response = $quickbooks->Add($manualJournal);
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+        try {
+            $manualJournal = JournalEntry::create($createParams);
+            $response = $quickbooks->Add($manualJournal);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);

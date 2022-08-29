@@ -43,4 +43,24 @@ class ErrorParsingHelper
             ]
         ];
     }
+
+    /**
+     * If the QB base package fails to parse a payload correctly, it will throw generic exceptions.
+     * These exceptions are handled here
+     * @param \Exception $exception
+     * @return array[]
+     */
+    public static function parseQbPackageError (\Exception $exception) {
+        return [
+            'status' => 'error',
+            'error' => [
+                'status' => 'error',
+                'detail' => [
+                    'message' => $exception->getMessage(),
+                    'line' => $exception->getLine(),
+                    'stack' => $exception->getTraceAsString()
+                ]
+            ]
+        ];
+    }
 }

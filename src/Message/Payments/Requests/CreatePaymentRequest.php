@@ -361,12 +361,17 @@ class CreatePaymentRequest extends AbstractRequest
             $createParams[$key] = $data[$key];
         }
 
-        $payment = Payment::create($createParams);
-        $response = $quickbooks->Add($payment);
+        try {
+            $payment = Payment::create($createParams);
+            $response = $quickbooks->Add($payment);
 
-        $error = $quickbooks->getLastError();
-        if ($error) {
-            $response = ErrorParsingHelper::parseError($error);
+            $error = $quickbooks->getLastError();
+            if ($error) {
+                $response = ErrorParsingHelper::parseError($error);
+            }
+        }
+        catch (\Throwable $exception) {
+            $response = ErrorParsingHelper::parseQbPackageError($exception);
         }
 
         return $this->createResponse($response);
