@@ -53,13 +53,10 @@ class ErrorParsingHelper
     public static function parseQbPackageError (\Exception $exception) {
         return [
             'status' => 'error',
-            'error' => [
-                'status' => 'error',
-                'detail' => [
-                    'message' => $exception->getMessage(),
-                    'line' => $exception->getLine(),
-                    'stack' => $exception->getTraceAsString()
-                ]
+            'detail' => [
+                'message' => $exception->getMessage(),
+                'line' => $exception->getLine(),
+                'stack' => $exception->getTraceAsString()
             ]
         ];
     }
