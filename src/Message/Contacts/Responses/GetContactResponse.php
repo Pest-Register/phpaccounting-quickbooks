@@ -3,6 +3,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
 use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use QuickBooksOnline\API\Data\IPPCustomer;
 
@@ -118,42 +119,48 @@ class GetContactResponse extends AbstractResponse
             if ($contact->WebAddr) {
                 $newContact['website'] = $contact->WebAddr->URI;
             }
+
+            $billingAddress = null;
+            $shippingAddress = null;
+
             if ($contact->ShipAddr) {
-                array_push($newContact['addresses'], [
-                    'address_type' =>  'PRIMARY',
+                $shippingAddress = [
                     'address_line_1' => $contact->ShipAddr->Line1,
                     'city' => $contact->ShipAddr->City,
                     'postal_code' => $contact->ShipAddr->PostalCode,
                     'state' => $contact->ShipAddr->CountrySubDivisionCode,
                     'country' => $contact->ShipAddr->Country
-                ]);
+                ];
             }
+
             if ($contact->BillAddr) {
-                array_push($newContact['addresses'], [
-                    'address_type' =>  'BILLING',
+                $billingAddress = [
                     'address_line_1' => $contact->BillAddr->Line1,
                     'city' => $contact->BillAddr->City,
                     'postal_code' => $contact->BillAddr->PostalCode,
                     'state' => $contact->BillAddr->CountrySubDivisionCode,
                     'country' => $contact->BillAddr->Country
-                ]);
+                ];
             }
-            if ($contact->OtherAddr) {
-                array_push($newContact['addresses'], [
-                    'type' =>  'EXTRA',
-                    'address_line_1' => $contact->OtherAddr->Line1,
-                    'city' => $contact->OtherAddr->City,
-                    'state' => $contact->OtherAddr->CountrySubDivisionCode,
-                    'postal_code' => $contact->OtherAddr->PostalCode,
-                    'country' => $contact->OtherAddr->Country
-                ]);
+
+            if (AddressMatchChecker::doesAddressMatch($billingAddress, $shippingAddress)) {
+                $newContact['addresses'][] = $billingAddress + ['address_type' => 'PRIMARY'];
             }
+            else {
+                if ($billingAddress) {
+                    $newContact['addresses'][] = $billingAddress + ['address_type' => 'BILLING'];
+                }
+                if ($shippingAddress) {
+                    $newContact['addresses'][] = $shippingAddress + ['address_type' => 'PRIMARY'];
+                }
+            }
+
             if ($contact->PrimaryEmailAddr) {
                 $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
             }
             if ($contact->PrimaryPhone) {
                 array_push($newContact['phones'], [
-                    'type' =>  'BUSINESS',
+                    'type' =>  'DEFAULT',
                     'area_code' => '',
                     'country_code' => '',
                     'phone_number' => $contact->PrimaryPhone->FreeFormNumber
@@ -206,42 +213,48 @@ class GetContactResponse extends AbstractResponse
                 if ($contact->WebAddr) {
                     $newContact['website'] = $contact->WebAddr->URI;
                 }
+
+                $billingAddress = null;
+                $shippingAddress = null;
+
                 if ($contact->ShipAddr) {
-                    array_push($newContact['addresses'], [
-                        'address_type' =>  'PRIMARY',
+                    $shippingAddress = [
                         'address_line_1' => $contact->ShipAddr->Line1,
                         'city' => $contact->ShipAddr->City,
-                        'state' => $contact->ShipAddr->CountrySubDivisionCode,
                         'postal_code' => $contact->ShipAddr->PostalCode,
+                        'state' => $contact->ShipAddr->CountrySubDivisionCode,
                         'country' => $contact->ShipAddr->Country
-                    ]);
+                    ];
                 }
+
                 if ($contact->BillAddr) {
-                    array_push($newContact['addresses'], [
-                        'address_type' =>  'BILLING',
+                    $billingAddress = [
                         'address_line_1' => $contact->BillAddr->Line1,
                         'city' => $contact->BillAddr->City,
-                        'state' => $contact->BillAddr->CountrySubDivisionCode,
                         'postal_code' => $contact->BillAddr->PostalCode,
+                        'state' => $contact->BillAddr->CountrySubDivisionCode,
                         'country' => $contact->BillAddr->Country
-                    ]);
+                    ];
                 }
-                if ($contact->OtherAddr) {
-                    array_push($newContact['addresses'], [
-                        'type' =>  'EXTRA',
-                        'address_line_1' => $contact->OtherAddr->Line1,
-                        'city' => $contact->OtherAddr->City,
-                        'state' => $contact->OtherAddr->CountrySubDivisionCode,
-                        'postal_code' => $contact->OtherAddr->PostalCode,
-                        'country' => $contact->OtherAddr->Country
-                    ]);
+
+                if (AddressMatchChecker::doesAddressMatch($billingAddress, $shippingAddress)) {
+                    $newContact['addresses'][] = $billingAddress + ['address_type' => 'PRIMARY'];
                 }
+                else {
+                    if ($billingAddress) {
+                        $newContact['addresses'][] = $billingAddress + ['address_type' => 'BILLING'];
+                    }
+                    if ($shippingAddress) {
+                        $newContact['addresses'][] = $shippingAddress + ['address_type' => 'PRIMARY'];
+                    }
+                }
+
                 if ($contact->PrimaryEmailAddr) {
                     $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
                 }
                 if ($contact->PrimaryPhone) {
                     array_push($newContact['phones'], [
-                        'type' =>  'BUSINESS',
+                        'type' =>  'DEFAULT',
                         'area_code' => '',
                         'country_code' => '',
                         'phone_number' => $contact->PrimaryPhone->FreeFormNumber

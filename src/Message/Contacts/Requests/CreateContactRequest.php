@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
 use Cassandra\Index;
 use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
@@ -179,40 +180,32 @@ class CreateContactRequest extends AbstractRequest
      * @return array
      */
     public function getAddressData($data, $contact) {
-        foreach($data as $address) {
-            switch ($address['type']) {
-                case 'PRIMARY':
-                    $contact['ShipAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
-                case 'BILLING':
-                    $contact['BillAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
-                default:
-                    $contact['OtherAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
+        $primaryAddress = null;
+        $billingAddress = null;
+
+        foreach ($data as $address) {
+            $type = $address['type'];
+            if ($type == 'PRIMARY') {
+                $primaryAddress = $address;
+            }
+            else if ($type == 'BILLING') {
+                $billingAddress = $address;
             }
         }
+
+        if (($primaryAddress && !$billingAddress) || AddressMatchChecker::doesAddressMatch($primaryAddress, $billingAddress)) {
+            $contact['BillAddr'] = AddressMatchChecker::standardise($primaryAddress);
+            $contact['ShipAddr'] = AddressMatchChecker::standardise($primaryAddress);
+        }
+        else {
+            if ($primaryAddress) {
+                $contact['ShipAddr'] = AddressMatchChecker::standardise($primaryAddress);
+            }
+            if ($billingAddress) {
+                $contact['BillAddr'] = AddressMatchChecker::standardise($billingAddress);
+            }
+        }
+
         return $contact;
     }
 
