@@ -195,6 +195,7 @@ class CreateContactRequest extends AbstractRequest
 
         if (($primaryAddress && !$billingAddress) || AddressMatchChecker::doesAddressMatch($primaryAddress, $billingAddress)) {
             $contact['BillAddr'] = AddressMatchChecker::standardise($primaryAddress);
+            $contact['ShipAddr'] = AddressMatchChecker::standardise($primaryAddress);
         }
         else {
             if ($primaryAddress) {
