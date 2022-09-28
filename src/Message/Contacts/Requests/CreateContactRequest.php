@@ -230,6 +230,12 @@ class CreateContactRequest extends AbstractRequest
                 case 'FAX':
                     $contact['Fax'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
+                default:
+                    if (!array_key_exists('AlternatePhone', $contact)) {
+                        $contact['AlternatePhone'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
+                        break;
+                    }
+                    break;
             }
         }
         return $contact;
