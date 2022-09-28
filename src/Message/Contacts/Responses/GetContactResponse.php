@@ -161,24 +161,32 @@ class GetContactResponse extends AbstractResponse
             if ($contact->PrimaryPhone) {
                 array_push($newContact['phones'], [
                     'type' =>  'DEFAULT',
-                    'area_code' => '',
-                    'country_code' => '',
+                    'area_code' => null,
+                    'country_code' => null,
                     'phone_number' => $contact->PrimaryPhone->FreeFormNumber
                 ]);
             }
             if ($contact->Mobile) {
                 array_push($newContact['phones'], [
                     'type' =>  'MOBILE',
-                    'area_code' => '',
-                    'country_code' => '',
+                    'area_code' => null,
+                    'country_code' => null,
                     'phone_number' => $contact->Mobile->FreeFormNumber
+                ]);
+            }
+            if ($contact->Fax) {
+                array_push($newContact['phones'], [
+                    'type' =>  'FAX',
+                    'area_code' => null,
+                    'country_code' => null,
+                    'phone_number' => $contact->Fax->FreeFormNumber
                 ]);
             }
             if ($contact->AlternatePhone) {
                 array_push($newContact['phones'], [
                     'type' =>  'EXTRA',
-                    'area_code' => '',
-                    'country_code' => '',
+                    'area_code' => null,
+                    'country_code' => null,
                     'phone_number' => $contact->AlternatePhone->FreeFormNumber
                 ]);
             }
@@ -255,24 +263,32 @@ class GetContactResponse extends AbstractResponse
                 if ($contact->PrimaryPhone) {
                     array_push($newContact['phones'], [
                         'type' =>  'DEFAULT',
-                        'area_code' => '',
-                        'country_code' => '',
+                        'area_code' => null,
+                        'country_code' => null,
                         'phone_number' => $contact->PrimaryPhone->FreeFormNumber
                     ]);
                 }
                 if ($contact->Mobile) {
                     array_push($newContact['phones'], [
                         'type' =>  'MOBILE',
-                        'area_code' => '',
-                        'country_code' => '',
+                        'area_code' => null,
+                        'country_code' => null,
                         'phone_number' => $contact->Mobile->FreeFormNumber
+                    ]);
+                }
+                if ($contact->Fax) {
+                    array_push($newContact['phones'], [
+                        'type' =>  'FAX',
+                        'area_code' => null,
+                        'country_code' => null,
+                        'phone_number' => $contact->Fax->FreeFormNumber
                     ]);
                 }
                 if ($contact->AlternatePhone) {
                     array_push($newContact['phones'], [
                         'type' =>  'EXTRA',
-                        'area_code' => '',
-                        'country_code' => '',
+                        'area_code' => null,
+                        'country_code' => null,
                         'phone_number' => $contact->AlternatePhone->FreeFormNumber
                     ]);
                 }

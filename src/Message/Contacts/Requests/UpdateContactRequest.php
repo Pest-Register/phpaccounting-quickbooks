@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
+use PHPAccounting\Quickbooks\Helpers\PhoneChecker;
 use PHPAccounting\Quickbooks\Message\AbstractRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
@@ -258,31 +259,13 @@ class UpdateContactRequest extends AbstractRequest
         foreach($data as $phone) {
             switch ($phone['type']) {
                 case 'DEFAULT':
-                    $contact['PrimaryPhone'] =
-                        [
-                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                        ];
+                    $contact['PrimaryPhone'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
                 case 'MOBILE':
-                    $contact['Mobile'] =
-                        [
-                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                        ];
+                    $contact['Mobile'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
-                default:
-                    if (!array_key_exists('AlternatePhone', $contact)) {
-                        $contact['AlternatePhone'] =
-                            [
-                                'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                    IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                    IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                            ];
-                        break;
-                    }
+                case 'FAX':
+                    $contact['Fax'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
             }
         }
