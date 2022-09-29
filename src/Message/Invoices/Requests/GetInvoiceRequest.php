@@ -1,9 +1,10 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\GetInvoiceResponse;
 use QuickBooksOnline\API\Exception\IdsException;
@@ -12,8 +13,10 @@ use QuickBooksOnline\API\Exception\IdsException;
  * Get Invoice(s)
  * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
-class GetInvoiceRequest extends AbstractRequest
+class GetInvoiceRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Invoice';
+
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
@@ -131,6 +134,11 @@ class GetInvoiceRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -171,5 +179,10 @@ class GetInvoiceRequest extends AbstractRequest
     public function createResponse($data)
     {
         return $this->response = new GetInvoiceResponse($this, $data);
+    }
+
+    public function getData()
+    {
+        // TODO: Implement getData() method.
     }
 }

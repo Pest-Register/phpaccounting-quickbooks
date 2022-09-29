@@ -3,7 +3,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
@@ -13,8 +13,10 @@ use QuickBooksOnline\API\Facades\Customer;
  * Update Contact(s)
  * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
-class UpdateContactRequest extends AbstractRequest
+class UpdateContactRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Contact';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
@@ -360,17 +362,9 @@ class UpdateContactRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
 
         $quickbooks = $this->createQuickbooksDataService();

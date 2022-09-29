@@ -4,10 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
-use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
-use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\CreateInventoryItemResponse;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\UpdateInventoryItemResponse;
 use QuickBooksOnline\API\Facades\Item;
 
@@ -15,8 +12,10 @@ use QuickBooksOnline\API\Facades\Item;
  * Create Inventory Item
  * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
-class UpdateInventoryItemRequest extends AbstractRequest
+class UpdateInventoryItemRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'InventoryItem';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
@@ -411,17 +410,9 @@ class UpdateInventoryItemRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
         $quickbooks = $this->createQuickbooksDataService();
         $updateParams = [];

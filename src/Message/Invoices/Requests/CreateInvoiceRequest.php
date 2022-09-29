@@ -5,7 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\CreateInvoiceResponse;
 use QuickBooksOnline\API\Facades\Invoice;
 
@@ -13,8 +13,10 @@ use QuickBooksOnline\API\Facades\Invoice;
  * Create Invoice
  * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
-class CreateInvoiceRequest extends AbstractRequest
+class CreateInvoiceRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Invoice';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
@@ -546,17 +548,9 @@ class CreateInvoiceRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
         $quickbooks = $this->createQuickbooksDataService();
         $createParams = [];

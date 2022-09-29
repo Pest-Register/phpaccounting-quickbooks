@@ -5,82 +5,11 @@ namespace PHPAccounting\Quickbooks\Message\Quotations\Responses;
 
 
 use Carbon\Carbon;
-use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 use QuickBooksOnline\API\Data\IPPEstimate;
 
-class UpdateQuotationResponse extends AbstractResponse
+class UpdateQuotationResponse extends AbstractQuickbooksResponse
 {
-
-    /**
-     * Check Response for Error or Success
-     * @return boolean
-     */
-    public function isSuccessful()
-    {
-        if ($this->data) {
-            if (array_key_exists('status', $this->data)) {
-                if (is_array($this->data)) {
-                    if ($this->data['status'] == 'error') {
-                        return false;
-                    }
-                } else {
-                    if ($this->data->status == 'error') {
-                        return false;
-                    }
-                }
-            }
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Fetch Error Message from Response
-     * @return array
-     */
-    public function getErrorMessage(){
-        if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    $detail = $this->data['error']['detail'] ?? [];
-                    return ErrorResponseHelper::parseErrorResponse(
-                        $detail['message'] ?? null,
-                        $this->data['error']['status'],
-                        $detail['error_code'] ?? null,
-                        $detail['status_code'] ?? null,
-                        $detail['detail'] ?? null,
-                        'Invoice');
-                }
-            } elseif (array_key_exists('status', $this->data)) {
-                $detail = $this->data['detail'] ?? [];
-                return ErrorResponseHelper::parseErrorResponse(
-                    $detail['message'] ?? null,
-                    $this->data['status'],
-                    $detail['error_code'] ?? null,
-                    $detail['status_code'] ?? null,
-                    $detail['detail'] ?? null,
-                    'Quote');
-            }
-        } else {
-            return [
-                'message' => 'NULL Returned from API or End of Pagination',
-                'exception' =>'NULL Returned from API or End of Pagination',
-                'error_code' => null,
-                'status_code' => null,
-                'detail' => null
-            ];
-        }
-
-        return null;
-    }
 
     /**
      * Add LineItems to Quote
@@ -189,94 +118,64 @@ class UpdateQuotationResponse extends AbstractResponse
     }
 
     /**
+     * @param $quote
+     * @return mixed
+     */
+    private function parseData($quote) {
+        $newQuote = [];
+        $newQuote['address'] = [];
+        $newQuote['accounting_id'] = $quote->Id;
+        $newQuote['status'] = $this->parseStatus($quote->TxnStatus);
+        $newQuote['total_tax'] = $quote->TxnTaxDetail->TotalTax;
+        $newQuote['total'] = $quote->TotalAmt;
+        $newQuote['currency'] = $quote->CurrencyRef;
+        $newQuote['quotation_number'] = $quote->DocNumber;
+        $newQuote['date'] = date('Y-m-d', strtotime($quote->TxnDate));
+        $newQuote['sync_token'] = $quote->SyncToken;
+        $newQuote['gst_inclusive'] = $this->parseTaxCalculation($quote->GlobalTaxCalculation);
+        if ($quote->MetaData->LastUpdatedTime) {
+            $updatedAt = Carbon::parse($quote->MetaData->LastUpdatedTime);
+            $updatedAt->setTimezone('UTC');
+            $newQuote['updated_at'] = $updatedAt->toDateTimeString();
+        }
+        $newQuote = $this->parseContact($quote->CustomerRef, $newQuote);
+        $newQuote = $this->parseLineItems($quote->Line, $newQuote);
+
+        if ($quote->ExpirationDate)
+        {
+            $newQuote['expiry_date'] = date('Y-m-d', strtotime($quote->ExpirationDate));
+        }
+        if ($quote->AcceptedDate)
+        {
+            $newQuote['accepted_date'] = date('Y-m-d', strtotime($quote->AcceptedDate));
+        }
+
+        if ($quote->BillAddr) {
+            $newQuote['address'] = [
+                'address_type' =>  'BILLING',
+                'address_line_1' => $quote->BillAddr->Line1,
+                'city' => $quote->BillAddr->City,
+                'postal_code' => $quote->BillAddr->PostalCode,
+                'country' => $quote->BillAddr->Country
+            ];
+        }
+
+        return $newQuote;
+    }
+
+    /**
      * Return all Quotations with Generic Schema Variable Assignment
      * @return array
      */
     public function getQuotations(){
         $quotes = [];
         if ($this->data instanceof IPPEstimate){
-            $quote = $this->data;
-            $newQuote = [];
-            $newQuote['address'] = [];
-            $newQuote['accounting_id'] = $quote->Id;
-            $newQuote['status'] = $this->parseStatus($quote->TxnStatus);
-            $newQuote['total_tax'] = $quote->TxnTaxDetail->TotalTax;
-            $newQuote['total'] = $quote->TotalAmt;
-            $newQuote['currency'] = $quote->CurrencyRef;
-            $newQuote['quotation_number'] = $quote->DocNumber;
-            $newQuote['date'] = date('Y-m-d', strtotime($quote->TxnDate));
-            $newQuote['sync_token'] = $quote->SyncToken;
-            $newQuote['gst_inclusive'] = $this->parseTaxCalculation($quote->GlobalTaxCalculation);
-            if ($quote->MetaData->LastUpdatedTime) {
-                $updatedAt = Carbon::parse($quote->MetaData->LastUpdatedTime);
-                $updatedAt->setTimezone('UTC');
-                $newQuote['updated_at'] = $updatedAt->toDateTimeString();
-            }
-            $newQuote = $this->parseContact($quote->CustomerRef, $newQuote);
-            $newQuote = $this->parseLineItems($quote->Line, $newQuote);
-
-            if ($quote->ExpirationDate)
-            {
-                $newQuote['expiry_date'] = date('Y-m-d', strtotime($quote->ExpirationDate));
-            }
-            if ($quote->AcceptedDate)
-            {
-                $newQuote['accepted_date'] = date('Y-m-d', strtotime($quote->AcceptedDate));
-            }
-
-            if ($quote->BillAddr) {
-                $newQuote['address'] = [
-                    'address_type' =>  'BILLING',
-                    'address_line_1' => $quote->BillAddr->Line1,
-                    'city' => $quote->BillAddr->City,
-                    'postal_code' => $quote->BillAddr->PostalCode,
-                    'country' => $quote->BillAddr->Country
-                ];
-            }
-
-            array_push($quotes, $newQuote);
-
+            $newQuote = $this->parseData($this->data);
+            $quotes[] = $newQuote;
         } else {
             foreach ($this->data as $quote) {
-                $newQuote = [];
-                $newQuote['address'] = [];
-                $newQuote['accounting_id'] = $quote->Id;
-                $newQuote['status'] = $this->parseStatus($quote->TxnStatus);
-                $newQuote['total_tax'] = $quote->TxnTaxDetail->TotalTax;
-                $newQuote['total'] = $quote->TotalAmt;
-                $newQuote['currency'] = $quote->CurrencyRef;
-                $newQuote['quotation_number'] = $quote->DocNumber;
-                $newQuote['date'] = date('Y-m-d', strtotime($quote->TxnDate));
-                $newQuote['sync_token'] = $quote->SyncToken;
-                $newQuote['gst_inclusive'] = $this->parseTaxCalculation($quote->GlobalTaxCalculation);
-                if ($quote->MetaData->LastUpdatedTime) {
-                    $updatedAt = Carbon::parse($quote->MetaData->LastUpdatedTime);
-                    $updatedAt->setTimezone('UTC');
-                    $newQuote['updated_at'] = $updatedAt->toDateTimeString();
-                }
-                $newQuote = $this->parseContact($quote->CustomerRef, $newQuote);
-                $newQuote = $this->parseLineItems($quote->Line, $newQuote);
-
-                if ($quote->ExpirationDate)
-                {
-                    $newQuote['expiry_date'] = date('Y-m-d', strtotime($quote->ExpirationDate));
-                }
-                if ($quote->AcceptedDate)
-                {
-                    $newQuote['accepted_date'] = date('Y-m-d', strtotime($quote->AcceptedDate));
-                }
-
-                if ($quote->BillAddr) {
-                    $newQuote['address'] = [
-                        'address_type' =>  'BILLING',
-                        'address_line_1' => $quote->BillAddr->Line1,
-                        'city' => $quote->BillAddr->City,
-                        'postal_code' => $quote->BillAddr->PostalCode,
-                        'country' => $quote->BillAddr->Country
-                    ];
-                }
-
-                array_push($quotes, $newQuote);
+                $newQuote = $this->parseData($quote);
+                $quotes[] = $newQuote;
             }
         }
 

@@ -4,17 +4,18 @@ namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\DeleteInventoryItemResponse;
-use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 use QuickBooksOnline\API\Facades\Item;
 
 /**
  * Delete Contact(s)
  * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
-class DeleteInventoryItemRequest extends AbstractRequest
+class DeleteInventoryItemRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'InventoryItem';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/item
@@ -83,17 +84,9 @@ class DeleteInventoryItemRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
 
         $quickbooks = $this->createQuickbooksDataService();

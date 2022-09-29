@@ -1,16 +1,18 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\TaxRateValues\Requests;
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\TaxRateValues\Responses\GetTaxRateValuesResponse;
 
 /**
  * Get Tax Rate(s)
  * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
-class GetTaxRateValuesRequest extends AbstractRequest
+class GetTaxRateValuesRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'TaxRateValue';
 
     /**
      * Set AccountingID from Parameter Bag (ID generic interface)
@@ -60,6 +62,12 @@ class GetTaxRateValuesRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
+
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -86,5 +94,10 @@ class GetTaxRateValuesRequest extends AbstractRequest
     public function createResponse($data)
     {
         return $this->response = new GetTaxRateValuesResponse($this, $data);
+    }
+
+    public function getData()
+    {
+        // TODO: Implement getData() method.
     }
 }

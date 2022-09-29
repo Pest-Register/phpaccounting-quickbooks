@@ -4,14 +4,17 @@
 namespace PHPAccounting\Quickbooks\Message\Quotations\Requests;
 
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Quotations\Responses\GetQuotationResponse;
 use QuickBooksOnline\API\Exception\IdsException;
 
-class GetQuotationRequest extends AbstractRequest
+class GetQuotationRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Quotation';
+
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/estimates
@@ -129,6 +132,12 @@ class GetQuotationRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
+
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -169,5 +178,10 @@ class GetQuotationRequest extends AbstractRequest
     public function createResponse($data)
     {
         return $this->response = new GetQuotationResponse($this, $data);
+    }
+
+    public function getData()
+    {
+        // TODO: Implement getData() method.
     }
 }

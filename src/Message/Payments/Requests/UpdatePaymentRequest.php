@@ -3,15 +3,16 @@
 
 namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
-
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\UpdatePaymentResponse;
 use QuickBooksOnline\API\Facades\Payment;
 
-class UpdatePaymentRequest extends AbstractRequest
+class UpdatePaymentRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Payment';
+
     /**
      * Get Contact Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/payments
@@ -364,17 +365,9 @@ class UpdatePaymentRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
 
         $quickbooks = $this->createQuickbooksDataService();

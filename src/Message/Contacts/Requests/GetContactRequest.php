@@ -1,17 +1,19 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
 
 /**
  * Get Contact(s)
  * @package PHPAccounting\Quickbooks\Message\Contacts\Requests
  */
-class GetContactRequest extends AbstractRequest
+class GetContactRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Contact';
 
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
@@ -130,6 +132,11 @@ class GetContactRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -171,4 +178,8 @@ class GetContactRequest extends AbstractRequest
         return $this->response = new GetContactResponse($this, $data);
     }
 
+    public function getData()
+    {
+        // TODO: Implement getData() method.
+    }
 }

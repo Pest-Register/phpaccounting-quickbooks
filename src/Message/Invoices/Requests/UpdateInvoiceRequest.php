@@ -5,7 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Invoices\Responses\UpdateInvoiceResponse;
 use QuickBooksOnline\API\Facades\Invoice;
 
@@ -14,8 +14,10 @@ use QuickBooksOnline\API\Facades\Invoice;
  * Update Invoice(s)
  * @package PHPAccounting\Quickbooks\Message\Invoices\Requests
  */
-class UpdateInvoiceRequest extends AbstractRequest
+class UpdateInvoiceRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Invoice';
+
     /**
      * Get Deposit Amount Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/invoices
@@ -405,7 +407,6 @@ class UpdateInvoiceRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['ItemRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('item_id', $lineData);
@@ -416,7 +417,6 @@ class UpdateInvoiceRequest extends AbstractRequest
                 $lineItem['Amount'] = IndexSanityCheckHelper::indexSanityCheck('amount', $lineData);
                 $lineItem['DetailType'] = 'SalesItemLineDetail';
                 $lineItem['SalesItemLineDetail'] = [];
-//                $lineItem['SalesItemLineDetail']['ItemAccountRef'] = [];
                 $lineItem['SalesItemLineDetail']['Qty'] = IndexSanityCheckHelper::indexSanityCheck('quantity', $lineData);
                 $lineItem['SalesItemLineDetail']['UnitPrice'] = IndexSanityCheckHelper::indexSanityCheck('unit_amount', $lineData);
                 $lineItem['SalesItemLineDetail']['TaxCodeRef']['value'] = IndexSanityCheckHelper::indexSanityCheck('tax_id', $lineData);
@@ -449,14 +449,6 @@ class UpdateInvoiceRequest extends AbstractRequest
                 array_push($lineItems, $discountLineItem);
             }
         }
-//        if ($this->getSubtotalBeforeTax()) {
-//            $subtotalLineItem = [];
-//            $subtotalLineItem['LineNum'] = $counter;
-//            $subtotalLineItem['Description'] = '';
-//            $subtotalLineItem['Amount'] = $this->getSubtotalBeforeTax();
-//            $subtotalLineItem['DetailType'] = 'SubTotalLineDetail';
-//            array_push($lineItems, $subtotalLineItem);
-//        }
         return $lineItems;
     }
 
@@ -563,17 +555,9 @@ class UpdateInvoiceRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
 
         $quickbooks = $this->createQuickbooksDataService();

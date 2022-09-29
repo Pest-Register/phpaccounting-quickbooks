@@ -1,12 +1,11 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message;
 
-use Omnipay\Common\Message\ResponseInterface;
 use QuickBooksOnline\API\DataService\DataService;
+use XeroPHP\Remote\Exception\RateLimitExceededException;
 
-class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
+abstract class AbstractQuickbooksRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-
     /**
      * Live or Test Endpoint URL.
      *
@@ -15,6 +14,16 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     protected $quickbooksDataService;
 
     protected $data = [];
+
+    abstract public function sendData($data);
+
+    /**
+     * Get the raw data array for this message. The format of this varies from gateway to
+     * gateway, but will usually be either an associative array, or a SimpleXMLElement.
+     *
+     * @return mixed
+     */
+    abstract public function getData();
 
     /**
      * ClientID getters and setters
@@ -115,6 +124,24 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * Handle exception messages, codes and additional details
+     * @param $exception
+     * @param $type
+     * @return array
+     */
+    public function handleRequestException($exception, $type): array
+    {
+        $response = [
+            'status' => 'error',
+            'type' => $type,
+            'detail' => $exception->getMessage(),
+            'error_code' => $exception->getCode(),
+            'status_code' => $exception->getCode(),
+        ];
+        return $response;
+    }
+
+    /**
      * Check if key exists in param bag and add it to array
      * @param $QuickbooksKey
      * @param $localKey
@@ -135,31 +162,5 @@ class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function getHttpMethod()
     {
         return 'POST';
-    }
-    /**
-     * @return array
-     */
-
-    /**
-     * Get the raw data array for this message. The format of this varies from gateway to
-     * gateway, but will usually be either an associative array, or a SimpleXMLElement.
-     *
-     * @return mixed
-     */
-    public function getData()
-    {
-        // TODO: Implement getData() method.
-    }
-
-    /**
-     * Send the request with specified data
-     *
-     * @param  mixed $data The data to send
-     * @return ResponseInterface
-     */
-    public function sendData($data)
-    {
-        parent::sendData($data);
-        // TODO: Implement sendData() method.
     }
 }

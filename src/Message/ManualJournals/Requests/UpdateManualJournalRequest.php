@@ -12,12 +12,14 @@ namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\ManualJournals\Response\UpdateManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
-class UpdateManualJournalRequest extends AbstractRequest
+class UpdateManualJournalRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'ManualJournal';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/journalentry
@@ -173,17 +175,9 @@ class UpdateManualJournalRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
         $quickbooks = $this->createQuickbooksDataService();
 

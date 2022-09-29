@@ -4,9 +4,8 @@ namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\CreateAccountResponse;
-use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Account;
 
 
@@ -14,8 +13,10 @@ use QuickBooksOnline\API\Facades\Account;
  * Create Account(s)
  * @package PHPAccounting\Quickbooks\Message\Accounts\Requests
  */
-class CreateAccountRequest extends AbstractRequest
+class CreateAccountRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Account';
+
     /**
      * Get Code Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
@@ -142,21 +143,15 @@ class CreateAccountRequest extends AbstractRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|CreateAccountResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' => $data->getMessage(),
-                'error_code' => $data->getCode(),
-                'status_code' => $data->getCode(),
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
         $quickbooks = $this->createQuickbooksDataService();
         $createParams = [];

@@ -6,11 +6,13 @@ namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\DeletePaymentResponse;
 
-class DeletePaymentRequest extends AbstractRequest
+class DeletePaymentRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Payment';
+
     /**
      * Set Journal Data Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/payment

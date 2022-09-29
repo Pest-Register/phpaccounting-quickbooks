@@ -2,17 +2,19 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 
 /**
  * Get Inventory Items(s)
  * @package PHPAccounting\Quickbooks\Message\InventoryItems\Requests
  */
-class GetInventoryItemRequest extends AbstractRequest
+class GetInventoryItemRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'InventoryItem';
 
     /**
      * Set AccountingID from Parameter Bag (ID generic interface)
@@ -130,6 +132,11 @@ class GetInventoryItemRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -168,5 +175,10 @@ class GetInventoryItemRequest extends AbstractRequest
     public function createResponse($data)
     {
         return $this->response = new GetInventoryItemResponse($this, $data);
+    }
+
+    public function getData()
+    {
+        // TODO: Implement getData() method.
     }
 }

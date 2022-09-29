@@ -8,17 +8,16 @@
 
 namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
-
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Helpers\IndexSanityInsertionHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\ManualJournals\Response\CreateManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
-class CreateManualJournalRequest extends AbstractRequest
+class CreateManualJournalRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'ManualJournal';
 
     /**
      * Get Narration Parameter from Parameter Bag
@@ -134,17 +133,9 @@ class CreateManualJournalRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
         $quickbooks = $this->createQuickbooksDataService();
 

@@ -2,85 +2,103 @@
 namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
 use Carbon\Carbon;
-use Omnipay\Common\Message\AbstractResponse;
-use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 use QuickBooksOnline\API\Data\IPPCustomer;
 
 /**
  * Get Contact(s) Response
  * @package PHPAccounting\Quickbooks\Message\Contacts\Responses
  */
-class GetContactResponse extends AbstractResponse
+class GetContactResponse extends AbstractQuickbooksResponse
 {
-
-    /**
-     * Check Response for Error or Success
-     * @return boolean
-     */
-    public function isSuccessful()
-    {
-        if ($this->data) {
-            if (array_key_exists('status', $this->data)) {
-                if (is_array($this->data)) {
-                    if ($this->data['status'] == 'error') {
-                        return false;
-                    }
-                } else {
-                    if ($this->data->status == 'error') {
-                        return false;
-                    }
-                }
-            }
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    return false;
-                }
-            }
-        } else {
-            return false;
+    private function parseData($contact) {
+        $newContact = [];
+        $newContact['addresses'] = [];
+        $newContact['phones'] = [];
+        $newContact['accounting_id'] = $contact->Id;
+        $newContact['display_name'] = $contact->DisplayName;
+        $newContact['first_name'] = $contact->GivenName;
+        $newContact['last_name'] = $contact->FamilyName;
+        $newContact['types'] = ['CUSTOMER'];
+        $newContact['sync_token'] = $contact->SyncToken;
+        $newContact['is_individual'] = ($contact->CompanyName ? true : false);
+        $newContact['tax_type_id'] = $contact->DefaultTaxCodeRef;
+        $newContact['currency_code'] = $contact->CurrencyRef;
+        if ($contact->MetaData->LastUpdatedTime) {
+            $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
+            $updatedAt->setTimezone('UTC');
+            $newContact['updated_at'] = $updatedAt->toDateTimeString();
         }
-
-        return true;
-    }
-
-    /**
-     * Fetch Error Message from Response
-     * @return array
-     */
-    public function getErrorMessage(){
-        if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    $detail = $this->data['error']['detail'] ?? [];
-                    return ErrorResponseHelper::parseErrorResponse(
-                        $detail['message'] ?? null,
-                        $this->data['error']['status'],
-                        $detail['error_code'] ?? null,
-                        $detail['status_code'] ?? null,
-                        $detail['detail'] ?? null,
-                        'Contact');
-                }
-            } elseif (array_key_exists('status', $this->data)) {
-                $detail = $this->data['detail'] ?? [];
-                return ErrorResponseHelper::parseErrorResponse(
-                    $detail['message'] ?? null,
-                    $this->data['status'],
-                    $detail['error_code'] ?? null,
-                    $detail['status_code'] ?? null,
-                    $detail['detail'] ?? null,
-                    'Contact');
+        if ($contact->Active) {
+            if ($contact->Active == true) {
+                $newContact['status'] = 'ACTIVE';
+            } else {
+                $newContact['status'] = 'INACTIVE';
             }
-        } else {
-            return [
-                'message' => 'NULL Returned from API or End of Pagination',
-                'exception' =>'NULL Returned from API or End of Pagination',
-                'error_code' => null,
-                'status_code' => null,
-                'detail' => null
+        }
+        if ($contact->WebAddr) {
+            $newContact['website'] = $contact->WebAddr->URI;
+        }
+        if ($contact->ShipAddr) {
+            $newContact['addresses'][] = [
+                'address_type' => 'PRIMARY',
+                'address_line_1' => $contact->ShipAddr->Line1,
+                'city' => $contact->ShipAddr->City,
+                'postal_code' => $contact->ShipAddr->PostalCode,
+                'state' => $contact->ShipAddr->CountrySubDivisionCode,
+                'country' => $contact->ShipAddr->Country
+            ];
+        }
+        if ($contact->BillAddr) {
+            $newContact['addresses'][] = [
+                'address_type' => 'BILLING',
+                'address_line_1' => $contact->BillAddr->Line1,
+                'city' => $contact->BillAddr->City,
+                'postal_code' => $contact->BillAddr->PostalCode,
+                'state' => $contact->BillAddr->CountrySubDivisionCode,
+                'country' => $contact->BillAddr->Country
+            ];
+        }
+        if ($contact->OtherAddr) {
+            $newContact['addresses'][] = [
+                'type' => 'EXTRA',
+                'address_line_1' => $contact->OtherAddr->Line1,
+                'city' => $contact->OtherAddr->City,
+                'state' => $contact->OtherAddr->CountrySubDivisionCode,
+                'postal_code' => $contact->OtherAddr->PostalCode,
+                'country' => $contact->OtherAddr->Country
+            ];
+        }
+        if ($contact->PrimaryEmailAddr) {
+            $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
+        }
+        if ($contact->PrimaryPhone) {
+            $newContact['phones'][] = [
+                'type' => 'BUSINESS',
+                'area_code' => '',
+                'country_code' => '',
+                'phone_number' => $contact->PrimaryPhone->FreeFormNumber
+            ];
+        }
+        if ($contact->Mobile) {
+            $newContact['phones'][] = [
+                'type' => 'MOBILE',
+                'area_code' => '',
+                'country_code' => '',
+                'phone_number' => $contact->Mobile->FreeFormNumber
+            ];
+        }
+        if ($contact->AlternatePhone) {
+            $newContact['phones'][] = [
+                'type' => 'EXTRA',
+                'area_code' => '',
+                'country_code' => '',
+                'phone_number' => $contact->AlternatePhone->FreeFormNumber
             ];
         }
 
-        return null;
+        return $newContact;
+
     }
 
     /**
@@ -90,180 +108,13 @@ class GetContactResponse extends AbstractResponse
     public function getContacts(){
         $contacts = [];
         if ($this->data instanceof IPPCustomer){
-            $contact = $this->data;
-            $newContact = [];
-            $newContact['addresses'] = [];
-            $newContact['phones'] = [];
-            $newContact['accounting_id'] = $contact->Id;
-            $newContact['display_name'] = $contact->DisplayName;
-            $newContact['first_name'] = $contact->GivenName;
-            $newContact['last_name'] = $contact->FamilyName;
-            $newContact['types'] = ['CUSTOMER'];
-            $newContact['sync_token'] = $contact->SyncToken;
-            $newContact['is_individual'] = ($contact->CompanyName ? true : false);
-            $newContact['tax_type_id'] = $contact->DefaultTaxCodeRef;
-            $newContact['currency_code'] = $contact->CurrencyRef;
-            if ($contact->MetaData->LastUpdatedTime) {
-                $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
-                $updatedAt->setTimezone('UTC');
-                $newContact['updated_at'] = $updatedAt->toDateTimeString();
-            }
-            if ($contact->Active) {
-                if ($contact->Active == true) {
-                    $newContact['status'] = 'ACTIVE';
-                } else {
-                    $newContact['status'] = 'INACTIVE';
-                }
-            }
-            if ($contact->WebAddr) {
-                $newContact['website'] = $contact->WebAddr->URI;
-            }
-            if ($contact->ShipAddr) {
-                array_push($newContact['addresses'], [
-                    'address_type' =>  'PRIMARY',
-                    'address_line_1' => $contact->ShipAddr->Line1,
-                    'city' => $contact->ShipAddr->City,
-                    'postal_code' => $contact->ShipAddr->PostalCode,
-                    'state' => $contact->ShipAddr->CountrySubDivisionCode,
-                    'country' => $contact->ShipAddr->Country
-                ]);
-            }
-            if ($contact->BillAddr) {
-                array_push($newContact['addresses'], [
-                    'address_type' =>  'BILLING',
-                    'address_line_1' => $contact->BillAddr->Line1,
-                    'city' => $contact->BillAddr->City,
-                    'postal_code' => $contact->BillAddr->PostalCode,
-                    'state' => $contact->BillAddr->CountrySubDivisionCode,
-                    'country' => $contact->BillAddr->Country
-                ]);
-            }
-            if ($contact->OtherAddr) {
-                array_push($newContact['addresses'], [
-                    'type' =>  'EXTRA',
-                    'address_line_1' => $contact->OtherAddr->Line1,
-                    'city' => $contact->OtherAddr->City,
-                    'state' => $contact->OtherAddr->CountrySubDivisionCode,
-                    'postal_code' => $contact->OtherAddr->PostalCode,
-                    'country' => $contact->OtherAddr->Country
-                ]);
-            }
-            if ($contact->PrimaryEmailAddr) {
-                $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
-            }
-            if ($contact->PrimaryPhone) {
-                array_push($newContact['phones'], [
-                    'type' =>  'BUSINESS',
-                    'area_code' => '',
-                    'country_code' => '',
-                    'phone_number' => $contact->PrimaryPhone->FreeFormNumber
-                ]);
-            }
-            if ($contact->Mobile) {
-                array_push($newContact['phones'], [
-                    'type' =>  'MOBILE',
-                    'area_code' => '',
-                    'country_code' => '',
-                    'phone_number' => $contact->Mobile->FreeFormNumber
-                ]);
-            }
-            if ($contact->AlternatePhone) {
-                array_push($newContact['phones'], [
-                    'type' =>  'EXTRA',
-                    'area_code' => '',
-                    'country_code' => '',
-                    'phone_number' => $contact->AlternatePhone->FreeFormNumber
-                ]);
-            }
-            array_push($contacts, $newContact);
+            $newContact = $this->parseData($this->data);
+            $contacts[] = $newContact;
         }
         else {
             foreach ($this->data as $contact) {
-                $newContact = [];
-                $newContact['addresses'] = [];
-                $newContact['phones'] = [];
-                $newContact['accounting_id'] = $contact->Id;
-                $newContact['display_name'] = $contact->DisplayName;
-                $newContact['first_name'] = $contact->GivenName;
-                $newContact['last_name'] = $contact->FamilyName;
-                $newContact['types'] = ['CUSTOMER'];
-                $newContact['sync_token'] = $contact->SyncToken;
-                $newContact['is_individual'] = ($contact->CompanyName ? true : false);
-                $newContact['tax_type_id'] = $contact->DefaultTaxCodeRef;
-                $newContact['currency_code'] = $contact->CurrencyRef;
-                if ($contact->MetaData->LastUpdatedTime) {
-                    $updatedAt = Carbon::parse($contact->MetaData->LastUpdatedTime);
-                    $updatedAt->setTimezone('UTC');
-                    $newContact['updated_at'] = $updatedAt->toDateTimeString();
-                }
-                if ($contact->Active) {
-                    if ($contact->Active == true) {
-                        $newContact['status'] = 'ACTIVE';
-                    } else {
-                        $newContact['status'] = 'INACTIVE';
-                    }
-                }
-                if ($contact->WebAddr) {
-                    $newContact['website'] = $contact->WebAddr->URI;
-                }
-                if ($contact->ShipAddr) {
-                    array_push($newContact['addresses'], [
-                        'address_type' =>  'PRIMARY',
-                        'address_line_1' => $contact->ShipAddr->Line1,
-                        'city' => $contact->ShipAddr->City,
-                        'state' => $contact->ShipAddr->CountrySubDivisionCode,
-                        'postal_code' => $contact->ShipAddr->PostalCode,
-                        'country' => $contact->ShipAddr->Country
-                    ]);
-                }
-                if ($contact->BillAddr) {
-                    array_push($newContact['addresses'], [
-                        'address_type' =>  'BILLING',
-                        'address_line_1' => $contact->BillAddr->Line1,
-                        'city' => $contact->BillAddr->City,
-                        'state' => $contact->BillAddr->CountrySubDivisionCode,
-                        'postal_code' => $contact->BillAddr->PostalCode,
-                        'country' => $contact->BillAddr->Country
-                    ]);
-                }
-                if ($contact->OtherAddr) {
-                    array_push($newContact['addresses'], [
-                        'type' =>  'EXTRA',
-                        'address_line_1' => $contact->OtherAddr->Line1,
-                        'city' => $contact->OtherAddr->City,
-                        'state' => $contact->OtherAddr->CountrySubDivisionCode,
-                        'postal_code' => $contact->OtherAddr->PostalCode,
-                        'country' => $contact->OtherAddr->Country
-                    ]);
-                }
-                if ($contact->PrimaryEmailAddr) {
-                    $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
-                }
-                if ($contact->PrimaryPhone) {
-                    array_push($newContact['phones'], [
-                        'type' =>  'BUSINESS',
-                        'area_code' => '',
-                        'country_code' => '',
-                        'phone_number' => $contact->PrimaryPhone->FreeFormNumber
-                    ]);
-                }
-                if ($contact->Mobile) {
-                    array_push($newContact['phones'], [
-                        'type' =>  'MOBILE',
-                        'area_code' => '',
-                        'country_code' => '',
-                        'phone_number' => $contact->Mobile->FreeFormNumber
-                    ]);
-                }
-                if ($contact->AlternatePhone) {
-                    array_push($newContact['phones'], [
-                        'type' =>  'EXTRA',
-                        'area_code' => '',
-                        'country_code' => '',
-                        'phone_number' => $contact->AlternatePhone->FreeFormNumber
-                    ]);
-                }
-                array_push($contacts, $newContact);
+                $newContact = $this->parseData($contact);
+                $contacts[] = $newContact;
             }
         }
 

@@ -2,8 +2,10 @@
 
 namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 
+use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\GetAccountResponse;
 use QuickBooksOnline\API\Exception\IdsException;
 
@@ -12,8 +14,10 @@ use QuickBooksOnline\API\Exception\IdsException;
  * Get Account(s)
  * @package PHPAccounting\Quickbooks\Message\Accounts\Requests
  */
-class GetAccountRequest extends AbstractRequest
+class GetAccountRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Account';
+
     /**
      * Set AccountingID from Parameter Bag (AccountID generic interface)
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
@@ -121,67 +125,7 @@ class GetAccountRequest extends AbstractRequest
     public function getMatchAllFilters() {
         return $this->getParameter('match_all_filters');
     }
-    /**
-     * Builds search / filter query based on search parameters and filter
-     */
-    private function buildSearchQuery() {
-        $query = "SELECT * FROM Account WHERE ";
-        $separationFilter = "";
-        if ($this->getSearchParams()) {
-            $searchParameters = $this->getSearchParams();
-            foreach($searchParameters as $key => $value)
-            {
-                if ($this->getExactSearchValue())
-                {
-                    $statement = $separationFilter.$key."='".$value."'";
-                } else {
-                    $statement = $separationFilter.$key." LIKE '%".$value."%'";
-                }
 
-                $separationFilter = " AND ";
-                $query .= $statement;
-            }
-        }
-        $queryCounter = 0;
-        if ($this->getSearchFilters()) {
-            if ($this->getSearchParams())
-            {
-                $query.=' AND ';
-            }
-            foreach($this->getSearchFilters() as $key => $value) {
-                $queryString = '';
-                $filterKey = $key;
-                if ($this->getMatchAllFilters())
-                {
-                    foreach($value as $filterValue) {
-                        $searchQuery = $filterKey."='".$filterValue."'";
-                        if ($queryCounter == 0) {
-                            $queryString = $searchQuery;
-                        } else {
-                            $queryString.= ' AND '.$searchQuery;
-                        }
-                        $queryCounter++;
-                    }
-                } else {
-                    $searchQuery = $filterKey." IN (";
-                    $count = 1;
-                    $queryString = $searchQuery;
-                    foreach($value as $filterValue) {
-                        if ($count != count($value))
-                        {
-                            $queryString.="'".$filterValue."', ";
-                        }
-                        else {
-                            $queryString.="'".$filterValue."')";
-                        }
-                        $count++;
-                    }
-                }
-                $query .= $queryString;
-            }
-        }
-        return $query;
-    }
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
@@ -191,6 +135,11 @@ class GetAccountRequest extends AbstractRequest
      */
     public function sendData($data)
     {
+        if($data instanceof InvalidRequestException) {
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
+        }
         $quickbooks = $this->createQuickbooksDataService();
 
         if ($this->getAccountingID()) {
@@ -203,9 +152,15 @@ class GetAccountRequest extends AbstractRequest
             if($this->getSearchParams() || $this->getSearchFilters())
             {
                 // Build search query with filters (if applicable)
-                $query = $this->buildSearchQuery();
+                $query = SearchBuilder::buildSearchQuery(
+                    'Account',
+                    $this->getSearchParams(),
+                    $this->getExactSearchValue(),
+                    $this->getSearchFilters(),
+                    $this->getMatchAllFilters()
+                );
                 // Set contains query for partial matching
-                $response = $quickbooks->Query($query);
+                $response = $quickbooks->Query($query, $this->getPage(), 500);
             } else {
                 $response = $quickbooks->FindAll('account', $this->getPage(), 500);
             }
@@ -215,7 +170,6 @@ class GetAccountRequest extends AbstractRequest
         if ($error) {
             $response = ErrorParsingHelper::parseError($error);
         }
-
         return $this->createResponse($response);
     }
 
@@ -227,5 +181,10 @@ class GetAccountRequest extends AbstractRequest
     public function createResponse($data)
     {
         return $this->response = new GetAccountResponse($this, $data);
+    }
+
+    public function getData()
+    {
+        // TODO: Implement getData() method.
     }
 }

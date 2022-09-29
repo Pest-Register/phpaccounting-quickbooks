@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\ManualJournals\Requests\GetManualJournalRequest;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 use QuickBooksOnline\API\Data\IPPQueryResponse;

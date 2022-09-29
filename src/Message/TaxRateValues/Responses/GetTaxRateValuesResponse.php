@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\TaxRateValues\Responses;
 
 use Omnipay\Common\Message\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 use QuickBooksOnline\API\Data\IPPTaxCode;
 use QuickBooksOnline\API\Data\IPPTaxRate;
 
@@ -11,78 +12,15 @@ use QuickBooksOnline\API\Data\IPPTaxRate;
  * Get Tax Rate(s) Response
  * @package PHPAccounting\Quickbooks\Message\TaxRate\Responses
  */
-class GetTaxRateValuesResponse extends AbstractResponse
+class GetTaxRateValuesResponse extends AbstractQuickbooksResponse
 {
-    /**
-     * Check Response for Error or Success
-     * @return boolean
-     */
-    public function isSuccessful()
-    {
-        if ($this->data) {
-            if (array_key_exists('status', $this->data)) {
-                if (is_array($this->data)) {
-                    if ($this->data['status'] == 'error') {
-                        return false;
-                    }
-                } else {
-                    if ($this->data->status == 'error') {
-                        return false;
-                    }
-                }
-            }
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
+    private function parseData($taxRate) {
+        $newTaxRate = [];
+        $newTaxRate['accounting_id'] = $taxRate->Id;
+        $newTaxRate['rate'] = $taxRate->RateValue;
 
-        return true;
+        return $newTaxRate;
     }
-
-    /**
-     * Fetch Error Message from Response
-     * @return array
-     */
-    public function getErrorMessage(){
-        if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
-                    $detail = $this->data['error']['detail'] ?? [];
-                    return ErrorResponseHelper::parseErrorResponse(
-                        $detail['message'] ?? null,
-                        $this->data['error']['status'],
-                        $detail['error_code'] ?? null,
-                        $detail['status_code'] ?? null,
-                        $detail['detail'] ?? null,
-                        'Tax Rate Value');
-                }
-            } elseif (array_key_exists('status', $this->data)) {
-                $detail = $this->data['detail'] ?? [];
-                return ErrorResponseHelper::parseErrorResponse(
-                    $detail['message'] ?? null,
-                    $this->data['status'],
-                    $detail['error_code'] ?? null,
-                    $detail['status_code'] ?? null,
-                    $detail['detail'] ?? null,
-                    'Tax Rate Value');
-            }
-        } else {
-            return [
-                'message' => 'NULL Returned from API or End of Pagination',
-                'exception' =>'NULL Returned from API or End of Pagination',
-                'error_code' => null,
-                'status_code' => null,
-                'detail' => null
-            ];
-        }
-
-        return null;
-    }
-
 
     /**
      * Return all Invoices with Generic Schema Variable Assignment
@@ -91,17 +29,14 @@ class GetTaxRateValuesResponse extends AbstractResponse
     public function getTaxRateValues(){
         $taxRates = [];
         if ($this->data instanceof IPPTaxRate){
-            $taxRate = $this->data;
-            $newTaxRate = [];
-            $newTaxRate['accounting_id'] = $taxRate->Id;
-            $newTaxRate['rate'] = $taxRate->RateValue;
-            array_push($taxRates, $newTaxRate);
+            $newTaxRate = $this->parseData($this->data);
+            $taxRates[] = $newTaxRate;
         } else {
             foreach ($this->data as $taxRate) {
                 $newTaxRate = [];
                 $newTaxRate['accounting_id'] = $taxRate->Id;
                 $newTaxRate['rate'] = $taxRate->RateValue;
-                array_push($taxRates, $newTaxRate);
+                $taxRates[] = $newTaxRate;
             }
         }
 

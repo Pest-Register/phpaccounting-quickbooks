@@ -6,14 +6,16 @@ namespace PHPAccounting\Quickbooks\Message\Quotations\Requests;
 
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
-use PHPAccounting\Quickbooks\Message\AbstractRequest;
+use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
 use PHPAccounting\Quickbooks\Message\Quotations\Responses\DeleteQuotationResponse;
 use PHPAccounting\Quickbooks\Message\Quotations\Responses\GetQuotationResponse;
 use QuickBooksOnline\API\Facades\Estimate;
 
-class DeleteQuotationRequest extends AbstractRequest
+class DeleteQuotationRequest extends AbstractQuickbooksRequest
 {
+    public string $model = 'Quotation';
+
     /**
      * Get Sync Token Parameter from Parameter Bag
      * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
@@ -82,17 +84,9 @@ class DeleteQuotationRequest extends AbstractRequest
     public function sendData($data)
     {
         if($data instanceof InvalidRequestException) {
-            $response = [
-                'status' => 'error',
-                'type' => 'InvalidRequestException',
-                'detail' =>
-                    [
-                        'message' => $data->getMessage(),
-                        'error_code' => $data->getCode(),
-                        'status_code' => 422,
-                    ],
-            ];
-            return $this->createResponse($response);
+            return $this->createResponse(
+                $this->handleRequestException($data, 'InvalidRequestException')
+            );
         }
 
         $quickbooks = $this->createQuickbooksDataService();
