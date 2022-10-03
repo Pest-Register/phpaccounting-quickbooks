@@ -21,7 +21,7 @@ class GetAccountResponse extends AbstractQuickbooksResponse
     private function parseData($account) {
         $newAccount = [];
         $newAccount['accounting_id'] = $account->Id;
-        $newAccount['code'] = $account->AcctNum;
+        $newAccount['code'] = $account->Id;
         $newAccount['name'] = $account->Name;
         $newAccount['description'] = $account->Description;
         $newAccount['type'] = $account->AccountType;

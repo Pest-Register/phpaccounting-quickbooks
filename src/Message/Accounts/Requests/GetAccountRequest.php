@@ -160,7 +160,7 @@ class GetAccountRequest extends AbstractQuickbooksRequest
                     $this->getMatchAllFilters()
                 );
                 // Set contains query for partial matching
-                $response = $quickbooks->Query($query, $this->getPage(), 500);
+                $response = $quickbooks->Query($query);
             } else {
                 $response = $quickbooks->FindAll('account', $this->getPage(), 500);
             }
