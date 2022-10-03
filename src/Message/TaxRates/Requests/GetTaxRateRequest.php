@@ -147,7 +147,7 @@ class GetTaxRateRequest extends AbstractQuickbooksRequest
             {
                 // Build search query with filters (if applicable)
                 $query = SearchBuilder::buildSearchQuery(
-                    'TaxRate',
+                    'TaxCode',
                     $this->getSearchParams(),
                     $this->getExactSearchValue(),
                     $this->getSearchFilters(),
