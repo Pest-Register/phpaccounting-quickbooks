@@ -329,6 +329,10 @@ class CreatePaymentRequest extends AbstractRequest
         if ($this->getContact()) {
             $this->data['CustomerRef']['value'] = $this->getContact()['accounting_id'];
         }
+
+        if ($this->getDate()) {
+            $this->data['TxnDate'] = $this->getDate();
+        }
         return $this->data;
     }
 
