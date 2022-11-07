@@ -2,9 +2,12 @@
 
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
+use Cassandra\Index;
 use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
+use PHPAccounting\Quickbooks\Helpers\PhoneChecker;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
 use QuickBooksOnline\API\Facades\Customer;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
@@ -180,40 +183,32 @@ class CreateContactRequest extends AbstractQuickbooksRequest
      * @return array
      */
     public function getAddressData($data, $contact) {
-        foreach($data as $address) {
-            switch ($address['type']) {
-                case 'PRIMARY':
-                    $contact['ShipAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
-                case 'BILLING':
-                    $contact['BillAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
-                default:
-                    $contact['OtherAddr'] =
-                        [
-                            'Line1' => IndexSanityCheckHelper::indexSanityCheck('address_line_1', $address),
-                            'City' => IndexSanityCheckHelper::indexSanityCheck('city', $address),
-                            'Country' => IndexSanityCheckHelper::indexSanityCheck('country', $address),
-                            'CountrySubDivisionCode' => IndexSanityCheckHelper::indexSanityCheck('state', $address),
-                            'PostalCode' => IndexSanityCheckHelper::indexSanityCheck('postal_code', $address)
-                        ];
-                    break;
+        $primaryAddress = null;
+        $billingAddress = null;
+
+        foreach ($data as $address) {
+            $type = $address['type'];
+            if ($type == 'PRIMARY') {
+                $primaryAddress = $address;
+            }
+            else if ($type == 'BILLING') {
+                $billingAddress = $address;
             }
         }
+
+        if (($primaryAddress && !$billingAddress) || AddressMatchChecker::doesAddressMatch($primaryAddress, $billingAddress)) {
+            $contact['BillAddr'] = AddressMatchChecker::standardise($primaryAddress);
+            $contact['ShipAddr'] = AddressMatchChecker::standardise($primaryAddress);
+        }
+        else {
+            if ($primaryAddress) {
+                $contact['ShipAddr'] = AddressMatchChecker::standardise($primaryAddress);
+            }
+            if ($billingAddress) {
+                $contact['BillAddr'] = AddressMatchChecker::standardise($billingAddress);
+            }
+        }
+
         return $contact;
     }
 
@@ -229,29 +224,17 @@ class CreateContactRequest extends AbstractQuickbooksRequest
         foreach($data as $phone) {
             switch ($phone['type']) {
                 case 'DEFAULT':
-                    $contact['PrimaryPhone'] =
-                        [
-                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                        ];
+                    $contact['PrimaryPhone'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
                 case 'MOBILE':
-                    $contact['Mobile'] =
-                        [
-                            'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                        ];
+                    $contact['Mobile'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
+                    break;
+                case 'FAX':
+                    $contact['Fax'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                     break;
                 default:
                     if (!array_key_exists('AlternatePhone', $contact)) {
-                        $contact['AlternatePhone'] =
-                            [
-                                'FreeFormNumber' => IndexSanityCheckHelper::indexSanityCheck('country_code', $phone) . ' ' .
-                                    IndexSanityCheckHelper::indexSanityCheck('area_code', $phone). ' '.
-                                    IndexSanityCheckHelper::indexSanityCheck('phone_number', $phone)
-                            ];
+                        $contact['AlternatePhone'] = ['FreeFormNumber' => PhoneChecker::standardise($phone)];
                         break;
                     }
                     break;

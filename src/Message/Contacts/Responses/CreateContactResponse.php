@@ -4,6 +4,7 @@ namespace PHPAccounting\Quickbooks\Message\Contacts\Responses;
 
 use Carbon\Carbon;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
+use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use QuickBooksOnline\API\Data\IPPCustomer;
 
 /**
@@ -17,7 +18,6 @@ class CreateContactResponse extends AbstractQuickbooksResponse
      * @return array
      */
     private function parseData($contact) {
-
         $newContact = [];
         $newContact['addresses'] = [];
         $newContact['phones'] = [];
@@ -46,9 +46,12 @@ class CreateContactResponse extends AbstractQuickbooksResponse
         if ($contact->WebAddr) {
             $newContact['website'] = $contact->WebAddr->URI;
         }
+
+        $billingAddress = null;
+        $shippingAddress = null;
+
         if ($contact->ShipAddr) {
-            $newContact['addresses'][] = [
-                'address_type' => 'PRIMARY',
+            $shippingAddress = [
                 'address_line_1' => $contact->ShipAddr->Line1,
                 'city' => $contact->ShipAddr->City,
                 'postal_code' => $contact->ShipAddr->PostalCode,
@@ -56,9 +59,9 @@ class CreateContactResponse extends AbstractQuickbooksResponse
                 'country' => $contact->ShipAddr->Country
             ];
         }
+
         if ($contact->BillAddr) {
-            $newContact['addresses'][] = [
-                'address_type' => 'BILLING',
+            $billingAddress = [
                 'address_line_1' => $contact->BillAddr->Line1,
                 'city' => $contact->BillAddr->City,
                 'postal_code' => $contact->BillAddr->PostalCode,
@@ -66,16 +69,19 @@ class CreateContactResponse extends AbstractQuickbooksResponse
                 'country' => $contact->BillAddr->Country
             ];
         }
-        if ($contact->OtherAddr) {
-            $newContact['addresses'][] = [
-                'type' => 'EXTRA',
-                'address_line_1' => $contact->OtherAddr->Line1,
-                'city' => $contact->OtherAddr->City,
-                'state' => $contact->OtherAddr->CountrySubDivisionCode,
-                'postal_code' => $contact->OtherAddr->PostalCode,
-                'country' => $contact->OtherAddr->Country
-            ];
+
+        if (AddressMatchChecker::doesAddressMatch($billingAddress, $shippingAddress)) {
+            $newContact['addresses'][] = $billingAddress + ['address_type' => 'PRIMARY'];
         }
+        else {
+            if ($billingAddress) {
+                $newContact['addresses'][] = $billingAddress + ['address_type' => 'BILLING'];
+            }
+            if ($shippingAddress) {
+                $newContact['addresses'][] = $shippingAddress + ['address_type' => 'PRIMARY'];
+            }
+        }
+
         if ($contact->PrimaryEmailAddr) {
             $newContact['email_address'] = $contact->PrimaryEmailAddr->Address;
         }
@@ -126,4 +132,5 @@ class CreateContactResponse extends AbstractQuickbooksResponse
 
         return $contacts;
     }
+
 }
