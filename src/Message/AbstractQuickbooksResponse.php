@@ -71,10 +71,10 @@ class AbstractQuickbooksResponse extends \Omnipay\Common\Message\AbstractRespons
         if ($this->data) {
             if (array_key_exists('error', $this->data)) {
                 if ($this->data['error']['status']){
-                    $this->parseErrorMessage();
+                    return $this->parseErrorMessage();
                 }
             } elseif (array_key_exists('status', $this->data)) {
-                $this->parseErrorMessage();
+                return $this->parseErrorMessage();
             }
         } else {
             return [

@@ -69,7 +69,6 @@ class ErrorResponseHelper
                         'detail'=> $detail
                     ];
                 }
-
                 return $response;
         }
     }
