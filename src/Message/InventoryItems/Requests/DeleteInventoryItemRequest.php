@@ -6,6 +6,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\DeleteInventoryItemResponse;
+use PHPAccounting\Quickbooks\Traits\AccountingIDRequestTrait;
 use QuickBooksOnline\API\Facades\Item;
 
 /**
@@ -14,6 +15,8 @@ use QuickBooksOnline\API\Facades\Item;
  */
 class DeleteInventoryItemRequest extends AbstractQuickbooksRequest
 {
+    use AccountingIDRequestTrait;
+
     public string $model = 'InventoryItem';
 
     /**
@@ -33,25 +36,6 @@ class DeleteInventoryItemRequest extends AbstractQuickbooksRequest
      */
     public function setSyncToken($value){
         return $this->setParameter('sync_token', $value);
-    }
-
-    /**
-     * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @param $value
-     * @return DeleteInventoryItemRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
     }
 
     /**

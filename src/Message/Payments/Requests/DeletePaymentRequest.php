@@ -8,9 +8,12 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Payments\Responses\DeletePaymentResponse;
+use PHPAccounting\Quickbooks\Traits\AccountingIDRequestTrait;
 
 class DeletePaymentRequest extends AbstractQuickbooksRequest
 {
+    use AccountingIDRequestTrait;
+
     public string $model = 'Payment';
 
     /**
@@ -30,25 +33,6 @@ class DeletePaymentRequest extends AbstractQuickbooksRequest
      */
     public function getSyncToken(){
         return $this->getParameter('sync_token');
-    }
-
-    /**
-     * Set AccountingID from Parameter Bag (PaymentID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/payment
-     * @param $value
-     * @return DeletePaymentRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (PaymentID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/payment
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
     }
 
     /**

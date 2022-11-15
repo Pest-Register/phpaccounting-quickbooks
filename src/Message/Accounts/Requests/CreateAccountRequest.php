@@ -5,6 +5,7 @@ namespace PHPAccounting\Quickbooks\Message\Accounts\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
+use PHPAccounting\Quickbooks\Message\Accounts\Requests\Traits\AccountRequestTrait;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\CreateAccountResponse;
 use QuickBooksOnline\API\Facades\Account;
 
@@ -15,103 +16,9 @@ use QuickBooksOnline\API\Facades\Account;
  */
 class CreateAccountRequest extends AbstractQuickbooksRequest
 {
+    use AccountRequestTrait;
+
     public string $model = 'Account';
-
-    /**
-     * Get Code Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getCode(){
-        return $this->getParameter('code');
-    }
-
-    /**
-     * Set Code Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param string $value Account Code
-     * @return CreateAccountRequest
-     */
-    public function setCode($value){
-        return $this->setParameter('code', $value);
-    }
-
-    /**
-     * Get Name Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getName(){
-        return $this->getParameter('name');
-    }
-
-    /**
-     * Set Name Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param string $value Account Name
-     * @return CreateAccountRequest
-     */
-    public function setName($value){
-        return $this->setParameter('name', $value);
-    }
-
-    /**
-     * Get Type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getType(){
-        return $this->getParameter('type');
-    }
-
-    /**
-     * Set Type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param string $value Account Type
-     * @return CreateAccountRequest
-     */
-    public function setType($value){
-        return $this->setParameter('type', $value);
-    }
-
-    /**
-     * Get Tax Type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getTaxTypeID(){
-        return $this->getParameter('tax_type_id');
-    }
-
-    /**
-     * Set Tax Type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param string $value Account Tax Type
-     * @return CreateAccountRequest
-     */
-    public function setTaxTypeID($value){
-        return $this->setParameter('tax_type_id', $value);
-    }
-
-    /**
-     * Set Sub type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param string $value Account Sub Type
-     * @return CreateAccountRequest
-     */
-    public function setSubType($value){
-        return $this->setParameter('sub_type', $value);
-    }
-
-    /**
-     * Get Sub Type Parameter from Parameter Bag
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getSubType(){
-        return $this->getParameter('sub_type');
-    }
-
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to

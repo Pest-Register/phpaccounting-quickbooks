@@ -7,13 +7,14 @@ namespace PHPAccounting\Quickbooks\Message\Quotations\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\GetInventoryItemResponse;
-use PHPAccounting\Quickbooks\Message\Quotations\Responses\DeleteQuotationResponse;
 use PHPAccounting\Quickbooks\Message\Quotations\Responses\GetQuotationResponse;
+use PHPAccounting\Quickbooks\Traits\AccountingIDRequestTrait;
 use QuickBooksOnline\API\Facades\Estimate;
 
 class DeleteQuotationRequest extends AbstractQuickbooksRequest
 {
+    use AccountingIDRequestTrait;
+
     public string $model = 'Quotation';
 
     /**
@@ -33,25 +34,6 @@ class DeleteQuotationRequest extends AbstractQuickbooksRequest
      */
     public function setSyncToken($value){
         return $this->setParameter('sync_token', $value);
-    }
-
-    /**
-     * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @param $value
-     * @return DeleteQuotationRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
     }
 
     /**

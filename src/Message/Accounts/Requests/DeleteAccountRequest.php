@@ -6,6 +6,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Accounts\Responses\DeleteAccountResponse;
+use PHPAccounting\Quickbooks\Traits\AccountingIDRequestTrait;
 use QuickBooksOnline\API\Facades\Account;
 
 
@@ -15,26 +16,9 @@ use QuickBooksOnline\API\Facades\Account;
  */
 class DeleteAccountRequest extends AbstractQuickbooksRequest
 {
+    use AccountingIDRequestTrait;
+
     public string $model = 'Account';
-
-    /**
-     * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @param $value
-     * @return DeleteAccountRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/account
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
-    }
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to

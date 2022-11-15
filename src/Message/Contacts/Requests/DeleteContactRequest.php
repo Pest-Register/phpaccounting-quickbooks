@@ -6,6 +6,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\DeleteContactResponse;
+use PHPAccounting\Quickbooks\Traits\AccountingIDRequestTrait;
 use QuickBooksOnline\API\Facades\Customer;
 
 /**
@@ -14,6 +15,8 @@ use QuickBooksOnline\API\Facades\Customer;
  */
 class DeleteContactRequest extends AbstractQuickbooksRequest
 {
+    use AccountingIDRequestTrait;
+
     public string $model = 'Contact';
 
     /**
@@ -35,24 +38,6 @@ class DeleteContactRequest extends AbstractQuickbooksRequest
         return $this->setParameter('sync_token', $value);
     }
 
-    /**
-     * Set AccountingID from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @param $value
-     * @return DeleteContactRequest
-     */
-    public function setAccountingID($value) {
-        return $this->setParameter('accounting_id', $value);
-    }
-
-    /**
-     * Get Accounting ID Parameter from Parameter Bag (AccountID generic interface)
-     * @see https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/customer
-     * @return mixed
-     */
-    public function getAccountingID() {
-        return  $this->getParameter('accounting_id');
-    }
 
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
