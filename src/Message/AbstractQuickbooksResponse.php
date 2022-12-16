@@ -54,16 +54,10 @@ class AbstractQuickbooksResponse extends \Omnipay\Common\Message\AbstractRespons
      * @return array
      */
     private function parseErrorMessage() {
-       $detail = [];
-       $status = null;
-        if (array_key_exists('error', $this->data)) {
-            $detail = $this->data['error']['detail'] ?? [];
-            $status = $this->data['error']['status'] ?? null;
-        }
-
+        $detail = $this->data['error']['detail'] ?? [];
         return ErrorResponseHelper::parseErrorResponse(
             $detail['message'] ?? null,
-            $status,
+            $this->data['error']['status'] ?? $this->data['status'] ?? null,
             $detail['error_code'] ?? null,
             $detail['status_code'] ?? null,
             $detail['detail'] ?? null,
@@ -75,11 +69,11 @@ class AbstractQuickbooksResponse extends \Omnipay\Common\Message\AbstractRespons
      */
     public function getErrorMessage(){
         if ($this->data) {
-            if (array_key_exists('error', $this->data)) {
-                if ($this->data['error']['status']){
+            if (isset($this->data['error'])) {
+                if (isset($this->data['error']['status'])){
                     return $this->parseErrorMessage();
                 }
-            } elseif (array_key_exists('status', $this->data)) {
+            } elseif (isset($this->data['status'])) {
                 return $this->parseErrorMessage();
             }
         } else {
