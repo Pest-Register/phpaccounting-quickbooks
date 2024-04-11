@@ -35,9 +35,9 @@ class GetInvoiceResponse extends AbstractQuickbooksResponse
                     $salesLineDetail = $lineItem->SalesItemLineDetail;
                     if ($salesLineDetail) {
                         if ($lineItem->SalesItemLineDetail->UnitPrice) {
-                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice / $lineItem->SalesItemLineDetail->Qty;
-                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
-                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->UnitPrice;
+                            $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->UnitPrice * $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice * $lineItem->SalesItemLineDetail->Qty;
                         }
                         if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
                             $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty;
