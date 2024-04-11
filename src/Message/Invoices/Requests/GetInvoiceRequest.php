@@ -37,7 +37,6 @@ class GetInvoiceRequest extends AbstractQuickbooksRequest
             );
         }
         $quickbooks = $this->createQuickbooksDataService();
-
         if ($this->getAccountingID()) {
             if ($this->getAccountingID() !== "") {
                 $response = $quickbooks->FindById('invoice', $this->getAccountingID());
