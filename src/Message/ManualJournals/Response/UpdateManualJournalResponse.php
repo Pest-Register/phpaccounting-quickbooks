@@ -63,7 +63,11 @@ class UpdateManualJournalResponse extends AbstractQuickbooksResponse
         $newJournalEntry['reference_id'] = $journalEntry->DocNumber;
         $newJournalEntry['sync_token'] = $journalEntry->SyncToken;
         $newJournalEntry['date'] = $journalEntry->TxnDate;
-        $newJournalEntry['updated_at'] = Carbon::createFromFormat('Y-m-d\TH:i:s-H:i', $journalEntry->MetaData->LastUpdatedTime)->toDateTimeString();
+        if ($journalEntry->MetaData->LastUpdatedTime) {
+            $updatedAt = Carbon::parse($journalEntry->MetaData->LastUpdatedTime);
+            $updatedAt->setTimezone('UTC');
+            $newJournalEntry['updated_at'] = $updatedAt->toDateTimeString();
+        }
         $newJournalEntry = $this->parseJournalItems($journalEntry->Line, $newJournalEntry);
 
         return $newJournalEntry;
