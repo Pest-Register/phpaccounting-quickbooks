@@ -36,7 +36,7 @@ class CreateQuotationResponse extends AbstractQuickbooksResponse
                             $newLineItem['amount'] = $lineItem->SalesItemLineDetail->UnitPrice * $lineItem->SalesItemLineDetail->Qty;
                         }
                         if ($lineItem->SalesItemLineDetail->TaxInclusiveAmt) {
-                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty;
+                            $newLineItem['unit_amount'] = $lineItem->SalesItemLineDetail->Qty > 0 ? ($lineItem->SalesItemLineDetail->TaxInclusiveAmt / $lineItem->SalesItemLineDetail->Qty) : 0;
                             $newLineItem['line_amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
                             $newLineItem['amount'] = $lineItem->SalesItemLineDetail->TaxInclusiveAmt;
                         }
