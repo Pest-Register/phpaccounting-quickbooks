@@ -157,6 +157,7 @@ class GetQuotationResponse extends AbstractQuickbooksResponse
                 'address_line_1' => $quote->BillAddr->Line1,
                 'city' => $quote->BillAddr->City,
                 'postal_code' => $quote->BillAddr->PostalCode,
+                'state' => $quote->BillAddr->CountrySubDivisionCode,
                 'country' => $quote->BillAddr->Country
             ];
         }

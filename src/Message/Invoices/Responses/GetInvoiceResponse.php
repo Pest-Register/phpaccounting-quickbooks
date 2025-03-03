@@ -167,6 +167,7 @@ class GetInvoiceResponse extends AbstractQuickbooksResponse
                 'address_line_1' => $invoice->BillAddr->Line1,
                 'city' => $invoice->BillAddr->City,
                 'postal_code' => $invoice->BillAddr->PostalCode,
+                'state' => $invoice->BillAddr->CountrySubDivisionCode,
                 'country' => $invoice->BillAddr->Country
             ];
         }
