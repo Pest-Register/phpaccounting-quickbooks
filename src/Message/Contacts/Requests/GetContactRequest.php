@@ -1,7 +1,7 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
@@ -22,7 +22,7 @@ class GetContactRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
+     * @return \PHPAccounting\Quickbooks\Foundation\Contracts\ResponseInterface|GetContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */

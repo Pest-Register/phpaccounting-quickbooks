@@ -2,7 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\InventoryItems\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\InventoryItems\Responses\DeleteInventoryItemResponse;
@@ -43,7 +43,7 @@ class DeleteInventoryItemRequest extends AbstractQuickbooksRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException
      */
     public function getData()
     {
@@ -61,7 +61,7 @@ class DeleteInventoryItemRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|DeleteInventoryItemResponse
+     * @return \PHPAccounting\Quickbooks\Foundation\Contracts\ResponseInterface|DeleteInventoryItemResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */

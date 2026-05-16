@@ -1,7 +1,7 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\Payments\Requests;
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\SearchQueryBuilder as SearchBuilder;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;

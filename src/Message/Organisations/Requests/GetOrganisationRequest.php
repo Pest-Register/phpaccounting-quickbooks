@@ -2,7 +2,7 @@
 namespace PHPAccounting\Quickbooks\Message\Organisations\Requests;
 
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\Organisations\Responses\GetOrganisationResponse;
 use QuickBooksOnline\API\Exception\IdsException;
@@ -14,7 +14,7 @@ class GetOrganisationRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|GetOrganisationResponse
+     * @return \PHPAccounting\Quickbooks\Foundation\Contracts\ResponseInterface|GetOrganisationResponse
      * @throws IdsException
      */
     public function sendData($data)

@@ -3,7 +3,7 @@ namespace PHPAccounting\Quickbooks\Message;
 
 use QuickBooksOnline\API\DataService\DataService;
 
-abstract class AbstractQuickbooksRequest extends \Omnipay\Common\Message\AbstractRequest
+abstract class AbstractQuickbooksRequest extends \PHPAccounting\Quickbooks\Foundation\AbstractRequest
 {
     /**
      * QBO API minor version — pin it explicitly so we don't silently fall

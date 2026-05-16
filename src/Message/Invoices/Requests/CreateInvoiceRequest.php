@@ -2,7 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\Invoices\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
@@ -25,7 +25,7 @@ class CreateInvoiceRequest extends AbstractQuickbooksRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException
      */
     public function getData()
     {
@@ -110,7 +110,7 @@ class CreateInvoiceRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|CreateInvoiceResponse
+     * @return \PHPAccounting\Quickbooks\Foundation\Contracts\ResponseInterface|CreateInvoiceResponse
      * @throws \Exception
      */
     public function sendData($data)

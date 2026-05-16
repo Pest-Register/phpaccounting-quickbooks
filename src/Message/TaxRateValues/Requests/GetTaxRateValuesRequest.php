@@ -1,7 +1,7 @@
 <?php
 
 namespace PHPAccounting\Quickbooks\Message\TaxRateValues\Requests;
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Message\TaxRateValues\Responses\GetTaxRateValuesResponse;

@@ -10,7 +10,7 @@ namespace PHPAccounting\Quickbooks\Message\ManualJournals\Responses;
 
 
 use Carbon\Carbon;
-use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Foundation\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;

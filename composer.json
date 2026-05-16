@@ -9,9 +9,18 @@
             "email": "max@pestregister.com"
         }
     ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "ext-simplexml": "*",
+        "guzzlehttp/guzzle": "^7.10",
+        "quickbooks/v3-php-sdk": "^6.2.2",
+        "fakerphp/faker": "^1.9.1",
+        "nesbot/carbon": "^3.8"
+    },
     "require-dev": {
-        "phpunit/phpunit": "~7.0",
-        "vlucas/phpdotenv": "^3.3"
+        "phpunit/phpunit": "^10.0",
+        "vlucas/phpdotenv": "^5.0"
     },
     "autoload": {
         "psr-4": { "PHPAccounting\\Quickbooks\\" : "src/" }
@@ -20,15 +29,6 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
-    },
-    "require": {
-        "php-http/guzzle7-adapter": "*",
-        "ext-json": "*",
-        "omnipay/common": "^3.0",
-        "fakerphp/faker": "^1.9.1",
-        "quickbooks/v3-php-sdk": "^6.2.2",
-        "nesbot/carbon": "^3.8",
-      "ext-simplexml": "*"
     },
     "scripts": {
         "docs": "swagger src/"

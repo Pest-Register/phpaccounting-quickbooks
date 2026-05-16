@@ -1,7 +1,7 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message;
 
-use Omnipay\Common\Message\RequestInterface;
+use PHPAccounting\Quickbooks\Foundation\Contracts\RequestInterface;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 
 
@@ -12,7 +12,7 @@ use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
  * Time: 3:33 PM
  */
 
-class AbstractQuickbooksResponse extends \Omnipay\Common\Message\AbstractResponse
+class AbstractQuickbooksResponse extends \PHPAccounting\Quickbooks\Foundation\AbstractResponse
 {
     /**
      * Model type used for abstract parsing of errors and responses
