@@ -105,4 +105,37 @@ trait GetRequestTrait
     public function getMatchAllFilters() {
         return $this->getParameter('match_all_filters');
     }
+
+    /**
+     * Set the delta-sync cutoff. QB's Accounting API accepts SQL-style
+     * `WHERE Metadata.LastUpdatedTime >= '<datetime>'` in Query() requests,
+     * which is the per-entity equivalent of the /cdc batch endpoint.
+     *
+     * Accepts a DateTimeInterface, a string parsable by DateTime, or null.
+     *
+     * @param \DateTimeInterface|string|null $value
+     */
+    public function setLastModifiedSince($value) {
+        return $this->setParameter('last_modified_since', $value);
+    }
+
+    /**
+     * Return the cutoff formatted as QB expects in a Query() WHERE clause:
+     * ISO-8601 with no timezone, e.g. `2026-05-15T12:00:00`. Returns null
+     * when not set.
+     */
+    public function getLastModifiedSince(): ?string {
+        $value = $this->getParameter('last_modified_since');
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d\TH:i:s');
+        }
+        try {
+            return (new \DateTime((string) $value))->format('Y-m-d\TH:i:s');
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }

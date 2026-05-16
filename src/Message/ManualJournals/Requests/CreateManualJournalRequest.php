@@ -12,7 +12,7 @@ use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\ManualJournals\Response\CreateManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Responses\CreateManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
 class CreateManualJournalRequest extends AbstractQuickbooksRequest

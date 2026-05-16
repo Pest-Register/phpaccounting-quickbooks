@@ -34,21 +34,24 @@ class GetQuotationRequest extends AbstractQuickbooksRequest
         }
 
         $quickbooks = $this->createQuickbooksDataService();
+        $modifiedSince = $this->getLastModifiedSince();
 
         if ($this->getAccountingID()) {
             if ($this->getAccountingID() !== "") {
                 $response = $quickbooks->FindById('estimate', $this->getAccountingID());
             }
         } else {
-            if($this->getSearchParams() || $this->getSearchFilters())
+            if($this->getSearchParams() || $this->getSearchFilters() || $modifiedSince)
             {
-                // Build search query with filters (if applicable)
+                // Build search query with filters (and a Metadata.LastUpdatedTime
+                // clause for delta sync).
                 $query = SearchBuilder::buildSearchQuery(
                     'Estimate',
                     $this->getSearchParams(),
                     $this->getExactSearchValue(),
                     $this->getSearchFilters(),
-                    $this->getMatchAllFilters()
+                    $this->getMatchAllFilters(),
+                    $modifiedSince
                 );
                 // Set contains query for partial matching
                 $response = $quickbooks->Query($query, $this->getPage(), 500);

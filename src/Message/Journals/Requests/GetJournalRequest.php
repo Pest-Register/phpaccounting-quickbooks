@@ -12,7 +12,7 @@ namespace PHPAccounting\Quickbooks\Message\Journals\Requests;
 use Omnipay\Common\Exception\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\Journals\Response\GetJournalResponse;
+use PHPAccounting\Quickbooks\Message\Journals\Responses\GetJournalResponse;
 
 class GetJournalRequest extends AbstractQuickbooksRequest
 {

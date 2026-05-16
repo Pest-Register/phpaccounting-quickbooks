@@ -6,7 +6,7 @@
  * Time: 3:10 PM
  */
 
-namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Responses;
 
 
 use Carbon\Carbon;

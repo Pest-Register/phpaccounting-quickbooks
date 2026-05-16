@@ -2,10 +2,16 @@
 namespace PHPAccounting\Quickbooks\Message;
 
 use QuickBooksOnline\API\DataService\DataService;
-use XeroPHP\Remote\Exception\RateLimitExceededException;
 
 abstract class AbstractQuickbooksRequest extends \Omnipay\Common\Message\AbstractRequest
 {
+    /**
+     * QBO API minor version — pin it explicitly so we don't silently fall
+     * onto Intuit's "oldest supported" default and lose access to fields
+     * introduced after that snapshot. Bump in lockstep with SDK upgrades.
+     */
+    protected const QBO_MINOR_VERSION = 75;
+
     /**
      * Live or Test Endpoint URL.
      *
@@ -111,6 +117,9 @@ abstract class AbstractQuickbooksRequest extends \Omnipay\Common\Message\Abstrac
                 'QBORealmID' => $this->getQBORealmID(),
                 'baseUrl' => $this->getBaseURL()
             ));
+            // Pin minorversion to avoid silently running against Intuit's
+            // oldest supported snapshot (currently minor ~4).
+            $quickbooksDataService->setMinorVersion(self::QBO_MINOR_VERSION);
             $this->quickbooksDataService = $quickbooksDataService;
         } catch (\Exception $exception) {
             return $exception->getMessage();

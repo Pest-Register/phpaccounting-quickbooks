@@ -34,19 +34,21 @@ class GetInventoryItemRequest extends AbstractQuickbooksRequest
             );
         }
         $quickbooks = $this->createQuickbooksDataService();
+        $modifiedSince = $this->getLastModifiedSince();
 
         if ($this->getAccountingID()) {
             $items = $quickbooks->FindById('item', $this->getAccountingID());
             $response = $items;
         } else {
-            if($this->getSearchParams())
+            if($this->getSearchParams() || $modifiedSince)
             {
                 $query = SearchBuilder::buildSearchQuery(
                     'Item',
                     $this->getSearchParams(),
                     $this->getExactSearchValue(),
                     $this->getSearchFilters(),
-                    $this->getMatchAllFilters()
+                    $this->getMatchAllFilters(),
+                    $modifiedSince
                 );
                 // Set contains query for partial matching
                 $response = $quickbooks->Query($query, $this->getPage(), 500);
