@@ -165,7 +165,7 @@ class AbstractQuickbooksResponse extends \PHPAccounting\Quickbooks\Foundation\Ab
      * Check Response for Error or Success
      * @return boolean
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         if ($this->data) {
             if (is_object($this->data)) {

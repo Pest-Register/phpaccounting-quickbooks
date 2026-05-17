@@ -25,7 +25,7 @@ class GetManualJournalResponse extends AbstractResponse
      * Check Response for Error or Success
      * @return boolean
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         if ($this->data) {
             if (array_key_exists('status', $this->data)) {
