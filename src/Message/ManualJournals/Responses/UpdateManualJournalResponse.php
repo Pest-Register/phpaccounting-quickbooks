@@ -1,12 +1,18 @@
 <?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: Dylan
+ * Date: 2/10/2019
+ * Time: 3:59 PM
+ */
 
-namespace PHPAccounting\Quickbooks\Message\Journals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Responses;
 
 use Carbon\Carbon;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 use QuickBooksOnline\API\Data\IPPJournalEntry;
 
-class GetJournalResponse extends AbstractQuickbooksResponse
+class UpdateManualJournalResponse extends AbstractQuickbooksResponse
 {
     /**
      * Add LineItems to JournalEntry
@@ -22,8 +28,9 @@ class GetJournalResponse extends AbstractQuickbooksResponse
                 $newJournalItem['tax_amount'] = 0;
                 $newJournalItem['accounting_id'] = $journalItem->Id;
                 $newJournalItem['description'] = $journalItem->Description;
-                $newJournalItem['is_credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit'? true : false;
+                $newJournalItem['is_credit'] = $journalItem->JournalEntryLineDetail->PostingType == 'Credit' ? true : false;
                 $newJournalItem['gross_amount'] = $journalItem->Amount;
+
                 if(isset($journalItem->JournalEntryLineDetail->AccountRef)){
                     $newJournalItem['account_code'] = $journalItem->JournalEntryLineDetail->AccountRef;
                 }
@@ -37,7 +44,8 @@ class GetJournalResponse extends AbstractQuickbooksResponse
                 } else {
                     $newJournalItem['net_amount'] = $newJournalItem['gross_amount'];
                 }
-                $journalItems[] = $newJournalItem;
+
+                array_push($journalItems, $newJournalItem);
             }
 
             $journal['journal_data'] = $journalItems;
@@ -45,6 +53,10 @@ class GetJournalResponse extends AbstractQuickbooksResponse
         return $journal;
     }
 
+    /**
+     * @param $journalEntry
+     * @return mixed
+     */
     private function parseData($journalEntry) {
         $newJournalEntry = [];
         $newJournalEntry['accounting_id'] = $journalEntry->Id;
@@ -64,7 +76,7 @@ class GetJournalResponse extends AbstractQuickbooksResponse
      * Return all JournalEntries with Generic Schema Variable Assignment
      * @return array
      */
-    public function getJournals(){
+    public function getManualJournals(){
         $journalEntries = [];
         if ($this->data instanceof IPPJournalEntry){
             $newJournalEntry = $this->parseData($this->data);

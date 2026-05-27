@@ -1,14 +1,14 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\AddressMatchChecker;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
 use PHPAccounting\Quickbooks\Helpers\PhoneChecker;
 use PHPAccounting\Quickbooks\Message\Accounts\Requests\UpdateAccountRequest;
 use PHPAccounting\Quickbooks\Message\Contacts\Requests\Traits\ContactRequestTrait;
-use PHPAccounting\Quickbooks\Message\Contacts\Responses\CreateContactResponse;
+use PHPAccounting\Quickbooks\Message\Contacts\Responses\UpdateContactResponse;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use QuickBooksOnline\API\Facades\Customer;
 
@@ -30,7 +30,7 @@ class UpdateContactRequest extends AbstractQuickbooksRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException
      */
     public function getData()
     {
@@ -81,7 +81,7 @@ class UpdateContactRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return CreateContactResponse
+     * @return UpdateContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
@@ -149,10 +149,10 @@ class UpdateContactRequest extends AbstractQuickbooksRequest
     /**
      * Create Generic Response from Quickbooks Endpoint
      * @param mixed $data Array Elements or Quickbooks Collection from Response
-     * @return CreateContactResponse
+     * @return UpdateContactResponse
      */
     public function createResponse($data)
     {
-        return $this->response = new CreateContactResponse($this, $data);
+        return $this->response = new UpdateContactResponse($this, $data);
     }
 }

@@ -6,7 +6,7 @@
  * Time: 4:00 PM
  */
 
-namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Responses;
 
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 

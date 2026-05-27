@@ -18,7 +18,14 @@ class ErrorParsingHelper
             $messageExploded = explode(';', $errorObj['Fault']['Error']['Message']);
 
             if (array_key_exists(0, $messageExploded)) {
-                $message = substr($messageExploded[0], strpos($messageExploded[0], "="));
+                // substr() with the `=` position includes the `=` character, so
+                // every parsed message historically started with "=...". Skip
+                // one past the `=`; fall back to the whole segment if there's
+                // no `=` (preserves prior behaviour for that case).
+                $equalsPos = strpos($messageExploded[0], '=');
+                $message = $equalsPos !== false
+                    ? substr($messageExploded[0], $equalsPos + 1)
+                    : $messageExploded[0];
                 $errorResponse['message'] = $message;
             }
 

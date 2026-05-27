@@ -6,11 +6,11 @@
  * Time: 3:10 PM
  */
 
-namespace PHPAccounting\Quickbooks\Message\ManualJournals\Response;
+namespace PHPAccounting\Quickbooks\Message\ManualJournals\Responses;
 
 
 use Carbon\Carbon;
-use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Foundation\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
@@ -25,7 +25,7 @@ class GetManualJournalResponse extends AbstractResponse
      * Check Response for Error or Success
      * @return boolean
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         if ($this->data) {
             if (array_key_exists('status', $this->data)) {

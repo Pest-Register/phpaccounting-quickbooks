@@ -9,10 +9,10 @@
 namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\ManualJournals\Response\DeleteManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Responses\DeleteManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
 class DeleteManualJournalRequest extends AbstractQuickbooksRequest
@@ -81,7 +81,7 @@ class DeleteManualJournalRequest extends AbstractQuickbooksRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException
      */
     public function getData()
     {

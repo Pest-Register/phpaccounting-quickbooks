@@ -9,11 +9,11 @@
 namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\ManualJournals\Response\GetManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Responses\GetManualJournalResponse;
 
 class GetManualJournalRequest extends AbstractQuickbooksRequest
 {

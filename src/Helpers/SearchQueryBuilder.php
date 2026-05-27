@@ -5,9 +5,13 @@ namespace PHPAccounting\Quickbooks\Helpers;
 class SearchQueryBuilder
 {
     /**
-     * Builds search / filter query based on search parameters and filter
+     * Builds search / filter query based on search parameters and filter.
+     * When $modifiedSince is supplied, appends a
+     * `Metadata.LastUpdatedTime >= '...'` clause for delta sync — QB's
+     * per-entity equivalent of the /cdc batch endpoint. The cutoff is an
+     * ISO-8601 datetime in QB's expected `Y-m-d\TH:i:s` format.
      */
-    public static function buildSearchQuery($modelClass, $searchParams, $exactSearch, $searchFilters, $exactFilters) {
+    public static function buildSearchQuery($modelClass, $searchParams, $exactSearch, $searchFilters, $exactFilters, ?string $modifiedSince = null) {
         $query = "SELECT * FROM ". $modelClass. " WHERE ";
         $separationFilter = "";
         if ($searchParams) {
@@ -87,6 +91,15 @@ class SearchQueryBuilder
                 $query .= $queryString;
             }
         }
+
+        if ($modifiedSince !== null && $modifiedSince !== '') {
+            $hasPriorClauses = (bool) ($searchParams || $searchFilters);
+            if ($hasPriorClauses) {
+                $query .= " AND ";
+            }
+            $query .= "Metadata.LastUpdatedTime >= '" . $modifiedSince . "'";
+        }
+
         return $query;
     }
 }

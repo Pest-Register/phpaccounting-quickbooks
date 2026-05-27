@@ -13,6 +13,12 @@ use QuickBooksOnline\API\Data\IPPLinkedTxn;
  */
 class GetInvoiceResponse extends AbstractQuickbooksResponse
 {
+    /**
+     * Tolerance for floating-point currency comparisons. The package is
+     * standalone, so it can't read accounting.php — keep this in sync with
+     * config('accounting.php_float_check') on the Mira side.
+     */
+    private const FLOAT_TOLERANCE = 0.001;
 
     /**
      * Add LineItems to Invoice
@@ -80,7 +86,17 @@ class GetInvoiceResponse extends AbstractQuickbooksResponse
     private function parseContact($data, $invoice) {
         if ($data) {
             $newContact = [];
-            $newContact['accounting_id'] = $data;
+            if (is_object($data)) {
+                // IPPReferenceType — `value` is the QB customer id, `name` is
+                // the display name. Capturing both lets Mira show the
+                // customer name on synced invoices without an extra Customer
+                // lookup per invoice.
+                $newContact['accounting_id'] = $data->value ?? null;
+                $newContact['name'] = $data->name ?? null;
+            } else {
+                // Defensive: a raw scalar slipped through somewhere upstream.
+                $newContact['accounting_id'] = $data;
+            }
             $invoice['contact'] = $newContact;
         }
 
@@ -96,23 +112,28 @@ class GetInvoiceResponse extends AbstractQuickbooksResponse
      */
     private function parsePayments($data, $invoice) {
         if ($data) {
-            if ($data instanceof IPPLinkedTxn) {
-                    if ($data->TxnType === 'Payment') {
-                        $newPayment = [];
-                        $newPayment['accounting_id'] = $data->TxnId;
-                        array_push($invoice['payments'], $newPayment);
-                    }
-            } else {
-                foreach($data as $transaction) {
-                    if ($transaction) {
-                        if ($transaction->TxnType === 'Payment') {
-                            $newPayment = [];
-                            $newPayment['accounting_id'] = $transaction->TxnId;
-                            array_push($invoice['payments'], $newPayment);
-                        }
-                    }
+            $linkedTransactions = [];
+            // LinkedTxn is either a single IPPLinkedTxn or an array of them.
+            $iterable = $data instanceof IPPLinkedTxn ? [$data] : $data;
+            foreach ($iterable as $transaction) {
+                if (! $transaction) {
+                    continue;
+                }
+                // Record every link type — CreditMemo, Payment, ReimburseCharge,
+                // JournalEntry, BillPayment etc. — so Mira can reconcile balances
+                // (e.g. an invoice partially settled by a credit memo would
+                // otherwise look unpaid).
+                $linkedTransactions[] = [
+                    'accounting_id' => $transaction->TxnId,
+                    'type' => $transaction->TxnType,
+                ];
+                if ($transaction->TxnType === 'Payment') {
+                    $invoice['payments'][] = [
+                        'accounting_id' => $transaction->TxnId,
+                    ];
                 }
             }
+            $invoice['linked_transactions'] = $linkedTransactions;
         }
         return $invoice;
     }
@@ -172,15 +193,23 @@ class GetInvoiceResponse extends AbstractQuickbooksResponse
             ];
         }
 
-        if ($newInvoice['amount_due'] == 0) {
+        // Float-tolerant comparison — direct `==` on currency values has bitten
+        // us when a $0.0001 rounding diff makes a fully-paid invoice show as
+        // OPEN. Mira's accounting.php_float_check uses the same 0.001 default.
+        $amountDue = (float) $newInvoice['amount_due'];
+        $total = (float) $newInvoice['total'];
+        if (abs($amountDue) < self::FLOAT_TOLERANCE) {
             $newInvoice['status'] = 'PAID';
-        } else if ($newInvoice['amount_due'] > 0 && $newInvoice['amount_due'] !== $newInvoice['total']) {
+        } elseif ($amountDue > self::FLOAT_TOLERANCE && abs($amountDue - $total) > self::FLOAT_TOLERANCE) {
             $newInvoice['status'] = 'PARTIAL';
         } else {
             $newInvoice['status'] = 'OPEN';
         }
 
-        if ($invoice->PrivateNote === 'Voided') {
+        // QB's documented void behaviour: TotalAmt is zeroed and PrivateNote is
+        // set to "Voided". Requiring both reduces false positives where a user
+        // happens to type "Voided" in their private note text.
+        if (abs($total) < self::FLOAT_TOLERANCE && $invoice->PrivateNote === 'Voided') {
             $newInvoice['status'] = 'DELETED';
         }
 

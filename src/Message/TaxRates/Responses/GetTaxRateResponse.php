@@ -2,7 +2,7 @@
 
 namespace PHPAccounting\Quickbooks\Message\TaxRates\Responses;
 
-use Omnipay\Common\Message\AbstractResponse;
+use PHPAccounting\Quickbooks\Foundation\AbstractResponse;
 use PHPAccounting\Quickbooks\Helpers\ErrorResponseHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksResponse;
 use QuickBooksOnline\API\Data\IPPTaxCode;

@@ -1,7 +1,7 @@
 <?php
 namespace PHPAccounting\Quickbooks\Message\Contacts\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Message\Contacts\Responses\GetContactResponse;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
@@ -22,7 +22,7 @@ class GetContactRequest extends AbstractQuickbooksRequest
     /**
      * Send Data to Quickbooks Endpoint and Retrieve Response via Response Interface
      * @param mixed $data Parameter Bag Variables After Validation
-     * @return \Omnipay\Common\Message\ResponseInterface|GetContactResponse
+     * @return \PHPAccounting\Quickbooks\Foundation\Contracts\ResponseInterface|GetContactResponse
      * @throws \QuickBooksOnline\API\Exception\IdsException
      * @throws \Exception
      */
@@ -34,20 +34,25 @@ class GetContactRequest extends AbstractQuickbooksRequest
             );
         }
         $quickbooks = $this->createQuickbooksDataService();
+        $modifiedSince = $this->getLastModifiedSince();
 
         if ($this->getAccountingID()) {
             $accounts = $quickbooks->FindById('customer', $this->getAccountingID());
             $response = $accounts;
         } else {
-            if($this->getSearchParams() || $this->getSearchFilters())
+            if($this->getSearchParams() || $this->getSearchFilters() || $modifiedSince)
             {
-                // Build search query with filters (if applicable)
+                // Build search query with filters (and a Metadata.LastUpdatedTime
+                // clause for delta sync). Forces the Query() path even when
+                // there are no other filters, since FindAll() has no
+                // since-cutoff equivalent.
                 $query = SearchBuilder::buildSearchQuery(
                     'Customer',
                     $this->getSearchParams(),
                     $this->getExactSearchValue(),
                     $this->getSearchFilters(),
-                    $this->getMatchAllFilters()
+                    $this->getMatchAllFilters(),
+                    $modifiedSince
                 );
                 // Set contains query for partial matching
                 $response = $quickbooks->Query($query, $this->getPage(), 500);

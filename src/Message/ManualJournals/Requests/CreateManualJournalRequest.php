@@ -8,11 +8,11 @@
 
 namespace PHPAccounting\Quickbooks\Message\ManualJournals\Requests;
 
-use Omnipay\Common\Exception\InvalidRequestException;
+use PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException;
 use PHPAccounting\Quickbooks\Helpers\ErrorParsingHelper;
 use PHPAccounting\Quickbooks\Helpers\IndexSanityCheckHelper;
 use PHPAccounting\Quickbooks\Message\AbstractQuickbooksRequest;
-use PHPAccounting\Quickbooks\Message\ManualJournals\Response\CreateManualJournalResponse;
+use PHPAccounting\Quickbooks\Message\ManualJournals\Responses\CreateManualJournalResponse;
 use QuickBooksOnline\API\Facades\JournalEntry;
 
 class CreateManualJournalRequest extends AbstractQuickbooksRequest
@@ -104,7 +104,7 @@ class CreateManualJournalRequest extends AbstractQuickbooksRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
-     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     * @throws \PHPAccounting\Quickbooks\Foundation\Exceptions\InvalidRequestException
      */
     public function getData()
     {
